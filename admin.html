@@ -954,12 +954,33 @@ function saveJob(status){
   var title = document.getElementById('jTitle').value.trim()
   var company = document.getElementById('jCompany').value.trim()
   var cat = document.getElementById('jCategory').value
+
+  // Scroll to top of form and highlight missing fields
+  if(!title){
+    document.getElementById('jTitle').style.borderColor='#f43f5e'
+    document.getElementById('jTitle').scrollIntoView({behavior:'smooth',block:'center'})
+    document.getElementById('jTitle').focus()
+    aToast('Enter Job Title first!', 1)
+    setTimeout(function(){document.getElementById('jTitle').style.borderColor=''},2000)
+    return
+  }
+  if(!company){
+    document.getElementById('jCompany').style.borderColor='#f43f5e'
+    document.getElementById('jCompany').scrollIntoView({behavior:'smooth',block:'center'})
+    document.getElementById('jCompany').focus()
+    aToast('Enter Company Name!', 1)
+    setTimeout(function(){document.getElementById('jCompany').style.borderColor=''},2000)
+    return
+  }
+  if(!cat){
+    document.getElementById('jCategory').style.borderColor='#f43f5e'
+    document.getElementById('jCategory').scrollIntoView({behavior:'smooth',block:'center'})
+    aToast('Select a Category!', 1)
+    setTimeout(function(){document.getElementById('jCategory').style.borderColor=''},2000)
+    return
+  }
+
   var link = document.getElementById('jApplyLink').value.trim()
-
-  if(!title){ aToast('Job Title is required!', 1); document.getElementById('jTitle').focus(); return }
-  if(!company){ aToast('Company Name is required!', 1); document.getElementById('jCompany').focus(); return }
-  if(!cat){ aToast('Please select a Category!', 1); return }
-
   var badges = {}
   document.querySelectorAll('.badge-opt.on').forEach(function(b){
     badges[b.textContent.trim().toLowerCase().replace(/\s+/g,'_')] = true
@@ -982,30 +1003,41 @@ function saveJob(status){
     posted_at:new Date().toISOString()
   }
 
-  // Save to localStorage immediately (never fails)
+  // Save locally immediately
   jobs.unshift(job)
   localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
   loadAllData()
   clearJobForm()
-  aToast(status==='draft' ? 'Draft saved!' : 'Job published! Visible in app now.')
 
-  // Push to Supabase in background
-  var sbJob = {
-    title:job.title, company:job.company, category:job.category,
-    location:job.location, salary:job.salary, experience:job.exp,
-    job_type:job.type, match_score:job.match_score,
-    apply_link:job.apply_link, description:job.description,
-    skills:JSON.stringify(job.skills), badges:JSON.stringify(job.badges),
-    logo:logoBase64||null,
-    active:job.active, created_at:new Date().toISOString()
+  if(status==='draft'){
+    aToast('Draft saved!')
+  } else {
+    aToast('Publishing to Supabase...')
+    // Push to Supabase
+    var sbJob = {
+      title:job.title, company:job.company, category:job.category,
+      location:job.location, salary:job.salary, experience:job.exp,
+      job_type:job.type, match_score:job.match_score,
+      apply_link:job.apply_link, description:job.description,
+      skills:JSON.stringify(job.skills), badges:JSON.stringify(job.badges),
+      active:true, created_at:new Date().toISOString()
+    }
+    sbPush('jobs', sbJob).then(function(res){
+      if(res && res.length > 0){
+        aToast('Job is LIVE on JobSettle!')
+        console.log('Published to Supabase:', res[0])
+      } else {
+        aToast('Saved locally. Check Supabase connection.')
+      }
+    }).catch(function(e){
+      console.error('Supabase push failed:', e)
+      aToast('Saved locally only.')
+    })
   }
-  sbPush('jobs', sbJob).then(function(res){
-    if(res && res[0]) aToast('Synced to Supabase! Live on site.')
-  }).catch(function(){})
 
   setTimeout(function(){
     showPage('manage-jobs', document.querySelectorAll('.adm-lnk')[3])
-  }, 600)
+  }, 800)
 }
 
 function renderJobsTable(filter, cat){
