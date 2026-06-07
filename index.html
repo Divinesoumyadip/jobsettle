@@ -3148,25 +3148,6 @@ async function sbInsert(table, data){
   } catch(e){ return null }
 }
 
-async function loadJobsFromSupabase(){
-  const data = await sbFrom('jobs', {order:'created_at', limit:200, eq:['active','true']})
-  if(data && data.length){
-    return data.map(function(j){return{
-      id:String(j.id), title:j.title, company:j.company,
-      logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
-      location:j.location||'Remote', salary:j.salary||'Competitive',
-      exp:j.experience||'0-2 years', type:j.job_type||'Full-time',
-      category:(j.category||'sde').toLowerCase(),
-      badges:typeof j.badges==='string'?JSON.parse(j.badges||'{}'):j.badges||{},
-      match_score:j.match_score||82,
-      apply_link:j.apply_link||'',
-      description:j.description||'',
-      skills:typeof j.skills==='string'?JSON.parse(j.skills||'[]'):j.skills||[],
-      posted_at:j.created_at
-    }})
-  }
-  return null
-}
 
 async function saveUserToSupabase(u){
   await sbInsert('users', {
@@ -3436,32 +3417,54 @@ async function enterDash(){
   document.getElementById('dsAv').textContent=user.initial
   if(sbCol)document.getElementById('dsb').classList.add('col')
 
-  // Show loading indicator
+  // Show loading
   document.getElementById('jCount').textContent='...'
+  updateLiveStatus('loading')
 
-  // 1. Try Supabase first
-  const remoteJobs = await loadJobsFromSupabase()
-  if(remoteJobs && remoteJobs.length){
-    cachedJobs = remoteJobs
-    localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
-    toast('Loaded '+remoteJobs.length+' live jobs from server')
-    // Start real-time subscription
-    subscribeToJobUpdates()
-  } else {
-    // 2. Fall back to localStorage or FALLBACK_JOBS
-    cachedJobs = JSON.parse(localStorage.getItem('js_jobs_data')||'null') || FALLBACK_JOBS
+  // Always load FALLBACK first so UI isn't empty
+  cachedJobs = JSON.parse(localStorage.getItem('js_jobs_data')||'null') || FALLBACK_JOBS
+  showJobsView(); renderJobs(); updateCounts(); updateCatCounts()
+
+  // Then try Supabase (async, non-blocking)
+  try {
+    const remoteJobs = await loadJobsFromSupabase()
+    if(remoteJobs && remoteJobs.length){
+      cachedJobs = remoteJobs
+      localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+      renderJobs(); updateCounts(); updateCatCounts()
+      updateLiveStatus('live')
+      toast('Loaded '+remoteJobs.length+' live jobs!')
+      subscribeToJobUpdates()
+    } else {
+      updateLiveStatus('local')
+    }
+  } catch(e){
+    updateLiveStatus('local')
   }
 
-  // Save user to Supabase
+  // Save user
   saveUserToSupabase(user)
 
-  showJobsView()
-  renderJobs()
-  updateCounts()
-  updateCatCounts()
   showScreen('dashboard')
   initPlan()
-  toast('Welcome, '+user.name.split(' ')[ 0]+'!')
+  toast('Welcome, '+user.name.split(' ')[0]+'!')
+}
+
+function updateLiveStatus(state){
+  var dot = document.getElementById('liveStatusDot')
+  var txt = document.getElementById('liveStatusTxt')
+  var badge = document.getElementById('liveStatusBadge')
+  if(!dot||!txt||!badge) return
+  if(state==='live'){
+    dot.style.background='var(--mint2)'; dot.style.boxShadow='0 0 6px var(--mint2)'
+    txt.textContent='LIVE'; badge.style.borderColor='rgba(0,229,176,.3)'
+  } else if(state==='loading'){
+    dot.style.background='#f59e0b'; dot.style.boxShadow='0 0 6px #f59e0b'
+    txt.textContent='LOADING...'
+  } else {
+    dot.style.background='var(--t3)'; dot.style.boxShadow='none'
+    txt.textContent='LOCAL'
+  }
 }
 
 
