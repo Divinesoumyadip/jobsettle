@@ -1,0 +1,1048 @@
+<!DOCTYPE html><!-- Admin v20260607_094008 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JobSettle Admin Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800;12..96,900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#06070f;--bg:#f4f5fb;--white:#fff;
+  --mint:#00e5b0;--mint2:#00b88a;--mint3:#d4fdf3;--mint4:#a8f5e3;
+  --violet:#7c5cfc;--violet2:#5b3de8;--violet3:#ede8ff;
+  --coral:#ff5f6d;--coral2:#e03444;--coral3:#ffe8ea;
+  --gold:#ffb400;--gold3:#fff4d0;
+  --sky:#2fc0f0;--sky3:#e0f6ff;
+  --rose:#ff3daf;--rose3:#ffe0f4;
+  --bd:#e2e4f4;--t1:#06070f;--t2:#384070;--t3:#8890b0;
+  --font:'Bricolage Grotesque',sans-serif;--mono:'DM Mono',monospace;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--violet),var(--mint));border-radius:8px}
+input,select,textarea{font-family:var(--font)}
+
+/* ── LOGIN ─────────────────────────────────── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(155deg,#050510 0%,#160838 50%,#030d1e 100%);position:relative;overflow:hidden}
+.lg-blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:.4}
+.lg-b1{width:500px;height:500px;background:radial-gradient(circle,var(--mint),transparent 70%);top:-150px;right:-100px}
+.lg-b2{width:400px;height:400px;background:radial-gradient(circle,var(--violet),transparent 70%);bottom:-100px;left:-80px}
+.login-card{background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-radius:28px;padding:52px;width:100%;max-width:420px;box-shadow:0 40px 100px rgba(0,0,0,.4);position:relative;z-index:1}
+.login-logo{display:flex;align-items:center;gap:11px;margin-bottom:36px}
+.login-ico{width:44px;height:44px;background:linear-gradient(135deg,var(--mint),var(--violet));border-radius:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,229,176,.4)}
+.login-ico i{color:white;font-size:19px}
+.login-brand{font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px}
+.login-brand span{background:linear-gradient(135deg,var(--mint2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-badge{font-family:var(--mono);font-size:9px;background:linear-gradient(135deg,var(--mint3),var(--violet3));color:var(--violet2);padding:3px 10px;border-radius:6px;font-weight:700;letter-spacing:.5px;margin-left:auto}
+.login-card h2{font-size:24px;font-weight:900;color:var(--dark);margin-bottom:6px;letter-spacing:-.5px}
+.login-card p{font-size:13.5px;color:var(--t3);margin-bottom:30px;line-height:1.6}
+.fl{display:block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);margin-bottom:5px}
+.fi{width:100%;border:2px solid var(--bd);border-radius:12px;padding:11px 14px;font-size:14px;color:var(--t1);outline:none;background:white;transition:all .15s;margin-bottom:14px}
+.fi:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(0,229,176,.12)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:12px;font-family:var(--font);font-size:13.5px;font-weight:800;cursor:pointer;transition:all .2s;border:none;letter-spacing:-.2px}
+.btn-mint{background:linear-gradient(135deg,var(--mint),var(--mint2));color:white;box-shadow:0 4px 18px rgba(0,229,176,.35)}
+.btn-mint:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,229,176,.45)}
+.btn-violet{background:linear-gradient(135deg,var(--violet),var(--violet2));color:white;box-shadow:0 4px 18px rgba(124,92,252,.35)}
+.btn-violet:hover{transform:translateY(-1px)}
+.btn-coral{background:linear-gradient(135deg,var(--coral),var(--coral2));color:white;box-shadow:0 4px 18px rgba(255,95,109,.3)}
+.btn-coral:hover{transform:translateY(-1px)}
+.btn-dark{background:var(--dark);color:white}
+.btn-dark:hover{opacity:.85}
+.btn-ghost{background:white;border:2px solid var(--bd);color:var(--t1)}
+.btn-ghost:hover{border-color:var(--mint)}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:9px}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#e09500);color:white}
+.err{background:var(--coral3);border:1.5px solid rgba(255,95,109,.25);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--coral2);font-weight:600;margin-bottom:14px;display:none}
+
+/* ── LAYOUT ─────────────────────────────────── */
+#adminApp{display:none;height:100vh;flex-direction:row}
+.adm-sb{width:252px;background:linear-gradient(180deg,#08091a 0%,#0e0f28 100%);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;border-right:1px solid rgba(255,255,255,.06)}
+.adm-sb-top{padding:22px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.adm-sb-ico{width:36px;height:36px;background:linear-gradient(135deg,var(--mint),var(--violet));border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.adm-sb-ico i{color:white;font-size:16px}
+.adm-sb-name{font-size:16px;font-weight:900;color:white;letter-spacing:-.3px}
+.adm-sb-tag{font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.3);margin-top:1px;letter-spacing:1px}
+.adm-sb-nav{flex:1;padding:14px 10px}
+.adm-sb-sec{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);padding:10px 10px 4px;text-transform:uppercase}
+.adm-lnk{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;font-size:13px;font-weight:700;color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;margin-bottom:2px;position:relative}
+.adm-lnk:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.adm-lnk.on{background:linear-gradient(135deg,rgba(0,229,176,.18),rgba(124,92,252,.12));color:white;border:1px solid rgba(0,229,176,.18)}
+.adm-lnk.on i{color:var(--mint)}
+.adm-lnk i{font-size:14px;width:16px;text-align:center;color:rgba(255,255,255,.3)}
+.adm-lnk .cnt{margin-left:auto;font-family:var(--mono);font-size:9px;background:rgba(0,229,176,.2);color:var(--mint);padding:2px 7px;border-radius:5px;font-weight:700}
+.adm-sb-bottom{padding:14px 10px;border-top:1px solid rgba(255,255,255,.06)}
+.adm-user{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:10px;background:rgba(255,255,255,.05)}
+.adm-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0}
+.adm-uname{font-size:13px;font-weight:700;color:white}
+.adm-urole{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);margin-top:1px}
+
+/* ── MAIN ─────────────────────────────────── */
+.adm-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.adm-topbar{height:64px;background:white;border-bottom:2px solid var(--bd);display:flex;align-items:center;padding:0 28px;gap:16px;flex-shrink:0}
+.adm-page-title{font-size:18px;font-weight:900;color:var(--dark);letter-spacing:-.4px}
+.adm-page-sub{font-size:12px;color:var(--t3);margin-top:1px;font-family:var(--mono)}
+.adm-topbar-right{display:flex;gap:8px;align-items:center;margin-left:auto}
+.adm-content{flex:1;overflow-y:auto;padding:28px}
+
+/* ── STAT CARDS ─────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:white;border-radius:18px;padding:22px;border:2px solid var(--bd);position:relative;overflow:hidden;transition:all .2s}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.08)}
+.stat-card-glow{position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:.15;filter:blur(20px);pointer-events:none}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.stat-icon i{font-size:18px;color:white}
+.stat-num{font-size:32px;font-weight:900;color:var(--dark);letter-spacing:-1.5px;margin-bottom:4px}
+.stat-label{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.5px;text-transform:uppercase}
+.stat-delta{font-size:11px;font-weight:700;margin-top:6px;display:flex;align-items:center;gap:4px}
+
+/* ── SECTIONS ─────────────────────────────── */
+.adm-section{background:white;border-radius:20px;border:2px solid var(--bd);margin-bottom:20px;overflow:hidden}
+.adm-sec-hdr{padding:18px 22px;border-bottom:2px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.adm-sec-title{font-size:15px;font-weight:900;color:var(--dark);letter-spacing:-.3px;display:flex;align-items:center;gap:9px}
+.adm-sec-title i{font-size:14px}
+.adm-sec-body{padding:22px}
+
+/* ── TABLE ─────────────────────────────────── */
+.adm-table{width:100%;border-collapse:collapse}
+.adm-table th{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--t3);letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:left;background:var(--bg);border-bottom:2px solid var(--bd)}
+.adm-table td{padding:13px 14px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--t2);vertical-align:middle}
+.adm-table tr:last-child td{border-bottom:none}
+.adm-table tr:hover td{background:var(--bg)}
+.adm-table td:first-child{font-weight:700;color:var(--dark)}
+
+/* ── FORM ─────────────────────────────────── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.form-full{grid-column:1/-1}
+textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
+.skill-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.stag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--mint3);border:1.5px solid var(--mint4);border-radius:7px;font-size:12px;font-weight:700;color:var(--mint2);cursor:pointer}
+.stag:hover{background:var(--coral3);border-color:rgba(255,95,109,.3);color:var(--coral2)}
+.badge-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.badge-opt{padding:5px 12px;border:2px solid var(--bd);border-radius:8px;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s}
+.badge-opt.on{border-color:var(--violet);background:var(--violet3);color:var(--violet2)}
+
+/* ── STATUS BADGES ─────────────────────────── */
+.sbadge{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;letter-spacing:.3px}
+.sb-active{background:var(--mint3);color:var(--mint2)}
+.sb-inactive{background:var(--bg);color:var(--t3)}
+.sb-new{background:var(--violet3);color:var(--violet2)}
+.sb-hot{background:var(--coral3);color:var(--coral2)}
+.sb-featured{background:var(--gold3);color:#b45309}
+.sb-remote{background:var(--sky3);color:var(--sky)}
+
+/* ── SEARCH BAR ─────────────────────────────── */
+.adm-search{display:flex;align-items:center;gap:9px;background:var(--bg);border:2px solid var(--bd);border-radius:10px;padding:8px 13px;min-width:220px}
+.adm-search i{color:var(--t3);font-size:13px;flex-shrink:0}
+.adm-search input{border:none;outline:none;background:transparent;font-family:var(--font);font-size:13px;color:var(--t1);width:100%}
+.adm-search:focus-within{border-color:var(--mint)}
+
+/* ── MATCH SLIDER ────────────────────────────── */
+.match-slider{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--mint),var(--violet));outline:none}
+.match-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:white;border:3px solid var(--violet);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+
+/* ── TOAST ───────────────────────────────────── */
+#adminToast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--dark),#1a1a3a);color:white;padding:12px 24px;border-radius:100px;font-size:13px;font-weight:700;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+
+/* ── COLORFUL BARS ───────────────────────────── */
+.cat-bar{height:8px;border-radius:4px;margin-top:6px}
+.prog-wrap{margin-bottom:12px}
+.prog-label{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--dark);margin-bottom:5px}
+.prog-sub{font-size:11px;color:var(--t3);font-family:var(--mono)}
+
+/* ── CARD HOVER ──────────────────────────────── */
+.job-row-card{padding:14px 18px;border:1.5px solid var(--bd);border-radius:14px;display:flex;align-items:center;gap:14px;margin-bottom:10px;background:white;transition:all .2s;cursor:pointer}
+.job-row-card:hover{border-color:var(--mint);box-shadow:0 4px 20px rgba(0,229,176,.1);transform:translateX(3px)}
+.job-co-logo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:white;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="adminToast"></div>
+
+<!-- ╔═ LOGIN ═══════════════════════════════════╗ -->
+<div id="loginScreen">
+  <div class="lg-blob lg-b1"></div>
+  <div class="lg-blob lg-b2"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-ico"><i class="fas fa-briefcase"></i></div>
+      <div>
+        <div class="login-brand">Job<span>Settle</span></div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:1px">Admin Portal</div>
+      </div>
+      <span class="login-badge">SECURE</span>
+    </div>
+    <h2>Welcome back</h2>
+    <p>Sign in to manage jobs, users, applications and platform settings.</p>
+    <div id="loginErr" class="err"><i class="fas fa-exclamation-triangle" style="margin-right:6px"></i>Invalid credentials. Try again.</div>
+    <label class="fl">Username</label>
+    <input class="fi" id="adminUser" placeholder="admin" value="admin"/>
+    <label class="fl">Password</label>
+    <input class="fi" id="adminPass" type="password" placeholder="••••••••" value="jobsettle2026"/>
+    <button class="btn btn-mint" style="width:100%;padding:13px;margin-bottom:8px" onclick="doAdminLogin()"><i class="fas fa-sign-in-alt"></i>Sign In to Admin</button>
+    <button onclick="localStorage.removeItem('js_admin_creds');document.getElementById('adminUser').value='admin';document.getElementById('adminPass').value='jobsettle2026';document.getElementById('loginErr').style.display='none';doAdminLogin()" style="width:100%;padding:10px;background:transparent;border:1.5px solid var(--bd);border-radius:10px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t3);cursor:pointer">Reset to defaults & login</button>
+    <div style="margin-top:12px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--t3)">Default: admin / jobsettle2026</div>
+  </div>
+</div>
+
+<!-- ╔═ ADMIN APP ════════════════════════════════╗ -->
+<div id="adminApp" style="display:none">
+
+  <!-- SIDEBAR -->
+  <div class="adm-sb">
+    <div class="adm-sb-top">
+      <div class="adm-sb-ico"><i class="fas fa-briefcase"></i></div>
+      <div>
+        <div class="adm-sb-name">JobSettle</div>
+        <div class="adm-sb-tag">ADMIN PORTAL</div>
+      </div>
+    </div>
+    <div class="adm-sb-nav">
+      <div class="adm-sb-sec">Overview</div>
+      <div class="adm-lnk on" onclick="showPage('dashboard',this)"><i class="fas fa-chart-pie"></i>Dashboard</div>
+      <div class="adm-sb-sec">Content</div>
+      <div class="adm-lnk" onclick="showPage('add-job',this)"><i class="fas fa-plus-circle"></i>Add New Job</div>
+      <div class="adm-lnk" onclick="showPage('manage-jobs',this)"><i class="fas fa-briefcase"></i>Manage Jobs<span class="cnt" id="sbJobCount">0</span></div>
+      <div class="adm-lnk" onclick="showPage('campus',this)"><i class="fas fa-university"></i>Campus DB<span class="cnt" id="sbCampusCount">0</span></div>
+      <div class="adm-sb-sec">Users</div>
+      <div class="adm-lnk" onclick="showPage('users',this)"><i class="fas fa-users"></i>All Users<span class="cnt" id="sbUserCount">0</span></div>
+      <div class="adm-lnk" onclick="showPage('applications',this)"><i class="fas fa-paper-plane"></i>Applications<span class="cnt" id="sbAppCount">0</span></div>
+      <div class="adm-sb-sec">Settings</div>
+      <div class="adm-lnk" onclick="showPage('settings',this)"><i class="fas fa-cog"></i>Platform Settings</div>
+      <div class="adm-lnk" onclick="showPage('analytics',this)"><i class="fas fa-chart-line"></i>Analytics</div>
+    </div>
+    <div class="adm-sb-bottom">
+      <div class="adm-user">
+        <div class="adm-av">A</div>
+        <div>
+          <div class="adm-uname">Admin</div>
+          <div class="adm-urole">SUPER ADMIN</div>
+        </div>
+        <i class="fas fa-sign-out-alt" onclick="adminLogout()" style="color:rgba(255,255,255,.25);font-size:13px;margin-left:auto;cursor:pointer" title="Logout"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="adm-main">
+    <!-- TOPBAR -->
+    <div class="adm-topbar">
+      <div>
+        <div class="adm-page-title" id="pageTitle">Dashboard</div>
+        <div class="adm-page-sub" id="pageSub">Platform overview & quick stats</div>
+      </div>
+      <div class="adm-topbar-right">
+        <div class="adm-search"><i class="fas fa-search"></i><input placeholder="Search jobs, users..." oninput="globalSearch(this.value)"/></div>
+        <button class="btn btn-mint btn-sm" onclick="showPage('add-job',null)"><i class="fas fa-plus"></i>Add Job</button>
+        <button class="btn btn-violet btn-sm" onclick="syncFromSupabase()"><i class="fas fa-sync-alt"></i>Sync DB</button>
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:13px;cursor:pointer;flex-shrink:0">A</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="adm-content">
+
+      <!-- ╔═ DASHBOARD ══════════════════════╗ -->
+      <div id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-card-glow" style="background:var(--mint)"></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--mint),var(--mint2))"><i class="fas fa-briefcase"></i></div>
+            <div class="stat-num" id="statJobs">0</div>
+            <div class="stat-label">Total Jobs</div>
+            <div class="stat-delta" style="color:var(--mint2)"><i class="fas fa-arrow-up" style="font-size:9px"></i>+12 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-glow" style="background:var(--violet)"></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--violet),var(--violet2))"><i class="fas fa-users"></i></div>
+            <div class="stat-num" id="statUsers">0</div>
+            <div class="stat-label">Registered Users</div>
+            <div class="stat-delta" style="color:var(--violet2)"><i class="fas fa-arrow-up" style="font-size:9px"></i>+34 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-glow" style="background:var(--coral)"></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--coral),var(--coral2))"><i class="fas fa-paper-plane"></i></div>
+            <div class="stat-num" id="statApps">0</div>
+            <div class="stat-label">Applications</div>
+            <div class="stat-delta" style="color:var(--coral2)"><i class="fas fa-arrow-up" style="font-size:9px"></i>+89 today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-glow" style="background:var(--gold)"></div>
+            <div class="stat-icon" style="background:linear-gradient(135deg,var(--gold),#e09500)"><i class="fas fa-university"></i></div>
+            <div class="stat-num" id="statCampus">0</div>
+            <div class="stat-label">Campus Reports</div>
+            <div class="stat-delta" style="color:#b45309"><i class="fas fa-arrow-up" style="font-size:9px"></i>+6 this week</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
+          <!-- Recent Jobs -->
+          <div class="adm-section">
+            <div class="adm-sec-hdr">
+              <div class="adm-sec-title"><i class="fas fa-briefcase" style="color:var(--mint2)"></i>Recent Jobs</div>
+              <button class="btn btn-ghost btn-sm" onclick="showPage('manage-jobs',document.querySelectorAll('.adm-lnk')[3])">View All</button>
+            </div>
+            <div style="padding:14px 18px" id="dashRecentJobs"></div>
+          </div>
+          <!-- Category Breakdown -->
+          <div class="adm-section">
+            <div class="adm-sec-hdr">
+              <div class="adm-sec-title"><i class="fas fa-chart-donut" style="color:var(--violet)"></i>Jobs by Category</div>
+            </div>
+            <div class="adm-sec-body" id="dashCategories"></div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Row -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4px">
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-fire" style="color:var(--coral)"></i>Top Applied Jobs</div></div>
+            <div class="adm-sec-body" id="dashTopJobs" style="padding:14px 18px"></div>
+          </div>
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-user-plus" style="color:var(--sky)"></i>New Users</div></div>
+            <div class="adm-sec-body" id="dashNewUsers" style="padding:14px 18px"></div>
+          </div>
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-bell" style="color:var(--gold)"></i>Platform Alerts</div></div>
+            <div class="adm-sec-body" style="padding:14px 18px">
+              <div style="display:flex;gap:10px;padding:10px 12px;background:var(--mint3);border-radius:10px;margin-bottom:8px;font-size:12.5px;color:var(--mint2);font-weight:700"><i class="fas fa-check-circle" style="margin-top:1px"></i>All systems operational</div>
+              <div style="display:flex;gap:10px;padding:10px 12px;background:var(--gold3);border-radius:10px;margin-bottom:8px;font-size:12.5px;color:#b45309;font-weight:700"><i class="fas fa-exclamation-triangle" style="margin-top:1px"></i>5 jobs expiring soon</div>
+              <div style="display:flex;gap:10px;padding:10px 12px;background:var(--violet3);border-radius:10px;font-size:12.5px;color:var(--violet2);font-weight:700"><i class="fas fa-info-circle" style="margin-top:1px"></i>3 campus reports pending review</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ ADD JOB ══════════════════════════╗ -->
+      <div id="page-add-job" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-plus-circle" style="color:var(--mint2)"></i>Add New Job Listing</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="clearJobForm()"><i class="fas fa-times"></i>Clear</button>
+              <button class="btn btn-mint btn-sm" onclick="saveJob()"><i class="fas fa-save"></i>Save Job</button>
+            </div>
+          </div>
+          <div class="adm-sec-body">
+            <div class="form-grid" style="margin-bottom:14px">
+              <div><label class="fl">Job Title *</label><input class="fi" id="jTitle" placeholder="e.g. Senior Software Engineer" style="margin-bottom:0"/></div>
+              <div><label class="fl">Company Name *</label><input class="fi" id="jCompany" placeholder="e.g. Google" style="margin-bottom:0"/></div>
+            </div>
+            <div class="form-grid-3" style="margin-bottom:14px">
+              <div><label class="fl">Category *</label>
+                <select class="fi" id="jCategory" style="margin-bottom:0;cursor:pointer">
+                  <option value="">Select category</option>
+                  <option value="SDE">SDE / Backend</option><option value="Frontend">Frontend</option>
+                  <option value="ML">Data / ML</option><option value="DevOps">DevOps / Cloud</option>
+                  <option value="PM">Product Manager</option><option value="Design">UI/UX Design</option>
+                  <option value="Campus">Campus Drive</option><option value="Remote">Remote</option>
+                </select>
+              </div>
+              <div><label class="fl">Location *</label><input class="fi" id="jLocation" placeholder="e.g. Bangalore / Remote" style="margin-bottom:0"/></div>
+              <div><label class="fl">Job Type</label>
+                <select class="fi" id="jType" style="margin-bottom:0;cursor:pointer">
+                  <option>Full-time</option><option>Part-time</option><option>Internship</option><option>Contract</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid-3" style="margin-bottom:14px">
+              <div><label class="fl">Salary Range</label><input class="fi" id="jSalary" placeholder="e.g. ₹20-45 LPA" style="margin-bottom:0"/></div>
+              <div><label class="fl">Experience Required</label><input class="fi" id="jExp" placeholder="e.g. 2-4 years" style="margin-bottom:0"/></div>
+              <div><label class="fl">AI Match Score (0-100)<span id="matchVal" style="color:var(--mint2);margin-left:8px">85</span></label>
+                <input type="range" class="match-slider" id="jMatch" min="0" max="100" value="85" oninput="document.getElementById('matchVal').textContent=this.value"/>
+              </div>
+            </div>
+            <div style="margin-bottom:14px"><label class="fl">Career / Apply Link *</label>
+              <div style="display:flex;gap:8px">
+                <input class="fi" id="jApplyLink" placeholder="https://careers.company.com/job-id" style="margin-bottom:0;flex:1;border-color:var(--mint4)"/>
+                <button class="btn btn-ghost btn-sm" onclick="if(document.getElementById('jApplyLink').value)window.open(document.getElementById('jApplyLink').value,'_blank')"><i class="fas fa-external-link-alt"></i>Test</button>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <span onclick="document.getElementById('jApplyLink').value='https://www.linkedin.com/jobs/'" style="padding:3px 10px;background:var(--sky3);color:var(--sky);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">LinkedIn</span>
+                <span onclick="document.getElementById('jApplyLink').value='https://boards.greenhouse.io/'" style="padding:3px 10px;background:var(--mint3);color:var(--mint2);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Greenhouse</span>
+                <span onclick="document.getElementById('jApplyLink').value='https://jobs.lever.co/'" style="padding:3px 10px;background:var(--violet3);color:var(--violet2);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Lever</span>
+                <span onclick="document.getElementById('jApplyLink').value='https://www.naukri.com/'" style="padding:3px 10px;background:var(--coral3);color:var(--coral2);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Naukri</span>
+              </div>
+            </div>
+            <div style="margin-bottom:14px"><label class="fl">Job Description</label><textarea class="fi" id="jDesc" rows="5" placeholder="Full job description, requirements, about the company..." style="margin-bottom:0"></textarea></div>
+            <div style="margin-bottom:14px">
+              <label class="fl">Required Skills</label>
+              <input class="fi" id="jSkillInput" placeholder="Type skill and press Enter (e.g. React, Node.js, AWS)" style="margin-bottom:6px" onkeydown="if(event.key==='Enter'){event.preventDefault();addSkillTag()}"/>
+              <div class="skill-tags" id="jSkillTags"></div>
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="fl">Badges</label>
+              <div class="badge-row">
+                <span class="badge-opt" onclick="this.classList.toggle('on')">New</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Hot</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Featured</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Remote OK</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Easy Apply</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">FAANG</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--bg);border-radius:13px">
+              <div><div style="font-size:13.5px;font-weight:800;color:var(--dark)">Job Status</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Active jobs appear in the jobs feed immediately</div></div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost btn-sm" onclick="saveJob('draft')"><i class="fas fa-save"></i>Save Draft</button>
+                <button class="btn btn-mint" onclick="saveJob('active')"><i class="fas fa-rocket"></i>Publish Job</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ MANAGE JOBS ══════════════════════╗ -->
+      <div id="page-manage-jobs" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-briefcase" style="color:var(--mint2)"></i>All Job Listings</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="adm-search" style="min-width:200px"><i class="fas fa-search"></i><input placeholder="Search jobs..." oninput="filterJobs(this.value)" id="jobSearch"/></div>
+              <select class="fi" id="filterCat" style="margin-bottom:0;padding:8px 12px;cursor:pointer;width:auto" onchange="filterJobs(document.getElementById('jobSearch').value)">
+                <option value="">All Categories</option>
+                <option>SDE</option><option>Frontend</option><option>ML</option><option>DevOps</option><option>PM</option><option>Design</option>
+              </select>
+              <button class="btn btn-mint btn-sm" onclick="showPage('add-job',document.querySelectorAll('.adm-lnk')[1])"><i class="fas fa-plus"></i>Add Job</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="adm-table" id="jobsTable">
+              <thead><tr>
+                <th>Title / Company</th><th>Category</th><th>Location</th>
+                <th>Salary</th><th>Match</th><th>Status</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="jobsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ CAMPUS DB ═════════════════════════╗ -->
+      <div id="page-campus" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-university" style="color:var(--gold)"></i>Campus Placement Reports</div>
+            <div style="display:flex;gap:8px">
+              <div class="adm-search"><i class="fas fa-search"></i><input placeholder="Search college, company..."/></div>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="adm-table" id="campusTable">
+              <thead><tr><th>Company</th><th>College</th><th>Role</th><th>Package</th><th>Year</th><th>Verified</th><th>Actions</th></tr></thead>
+              <tbody id="campusTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ USERS ════════════════════════════╗ -->
+      <div id="page-users" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-users" style="color:var(--sky)"></i>Registered Users</div>
+            <div class="adm-search"><i class="fas fa-search"></i><input placeholder="Search users..."/></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="adm-table">
+              <thead><tr><th>User</th><th>Email</th><th>Plan</th><th>Joined</th><th>Applied</th><th>Status</th></tr></thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ APPLICATIONS ═════════════════════╗ -->
+      <div id="page-applications" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-paper-plane" style="color:var(--coral)"></i>All Applications</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="adm-table">
+              <thead><tr><th>Applicant</th><th>Job</th><th>Company</th><th>Applied At</th><th>Status</th></tr></thead>
+              <tbody id="appsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ ANALYTICS ════════════════════════╗ -->
+      <div id="page-analytics" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-chart-line" style="color:var(--mint2)"></i>Applications This Week</div></div>
+            <div class="adm-sec-body">
+              <div id="weekChart" style="display:flex;align-items:flex-end;gap:8px;height:120px;padding:10px 0"></div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:6px">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+            </div>
+          </div>
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-layer-group" style="color:var(--violet)"></i>Category Distribution</div></div>
+            <div class="adm-sec-body" id="catDistribution"></div>
+          </div>
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-map-marker-alt" style="color:var(--coral)"></i>Top Locations</div></div>
+            <div class="adm-sec-body" id="locStats"></div>
+          </div>
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-crown" style="color:var(--gold)"></i>Plan Distribution</div></div>
+            <div class="adm-sec-body" id="planStats"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ SETTINGS ═════════════════════════╗ -->
+      <div id="page-settings" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-shield-alt" style="color:var(--mint2)"></i>Admin Credentials</div></div>
+            <div class="adm-sec-body">
+              <label class="fl">Admin Username</label><input class="fi" value="admin" id="setUser"/>
+              <label class="fl">New Password</label><input class="fi" type="password" placeholder="Leave blank to keep current" id="setPass"/>
+              <button class="btn btn-mint btn-sm" onclick="saveCreds()"><i class="fas fa-save"></i>Save Credentials</button>
+            </div>
+          </div>
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-sliders-h" style="color:var(--violet)"></i>Platform Settings</div></div>
+            <div class="adm-sec-body">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)">
+                <div><div style="font-size:13.5px;font-weight:700">Maintenance Mode</div><div style="font-size:12px;color:var(--t3)">Take site offline for updates</div></div>
+                <div onclick="this.classList.toggle('on');this.style.background=this.classList.contains('on')?'var(--mint)':'var(--bg)'" style="width:44px;height:24px;border-radius:12px;background:var(--bg);border:2px solid var(--bd);cursor:pointer;transition:all .2s"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)">
+                <div><div style="font-size:13.5px;font-weight:700">New Registrations</div><div style="font-size:12px;color:var(--t3)">Allow new user signups</div></div>
+                <div style="width:44px;height:24px;border-radius:12px;background:var(--mint);border:2px solid var(--mint4);cursor:pointer;transition:all .2s"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">
+                <div><div style="font-size:13.5px;font-weight:700">Job Auto-Expire</div><div style="font-size:12px;color:var(--t3)">Auto-deactivate jobs after 30 days</div></div>
+                <div style="width:44px;height:24px;border-radius:12px;background:var(--mint);border:2px solid var(--mint4);cursor:pointer;transition:all .2s"></div>
+              </div>
+            </div>
+          </div>
+          <div class="adm-section" style="grid-column:1/-1">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-database" style="color:var(--sky)"></i>Data Management</div></div>
+            <div class="adm-sec-body" style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="exportData()"><i class="fas fa-download"></i>Export All Jobs (JSON)</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportUsers()"><i class="fas fa-download"></i>Export Users (JSON)</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportApps()"><i class="fas fa-download"></i>Export Applications</button>
+              <button class="btn btn-coral btn-sm" onclick="if(confirm('Clear ALL jobs? This cannot be undone.')){localStorage.removeItem('js_jobs_data');loadAllData();aToast('All jobs cleared')}"><i class="fas fa-trash"></i>Clear All Jobs</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /adm-content -->
+  </div><!-- /adm-main -->
+</div><!-- /adminApp -->
+
+<script>
+// ── SUPABASE ─────────────────────────────────────────────────
+const SB_URL = 'https://vwxwxmolihuddjididcu.supabase.co'
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3eHd4bW9saWh1ZGRqaWRpZGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMDc0MDAsImV4cCI6MjA5NTg4MzQwMH0.28XTg6pE2LntNQwhZepg4_t-A_BXSvXD0Atw0SmG4kg'
+
+async function sbPush(table,data,method){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/'+table,{
+      method:method||'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+      body:JSON.stringify(data)
+    })
+    if(!r.ok)throw new Error('HTTP '+r.status)
+    return await r.json()
+  }catch(e){console.warn('SB push fail:',e.message);return null}
+}
+
+async function sbSelect(table,query){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/'+table+'?'+query,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    })
+    if(!r.ok)throw new Error('HTTP '+r.status)
+    return await r.json()
+  }catch(e){console.warn('SB select fail:',e.message);return null}
+}
+
+async function sbDelete(table,id){
+  try{
+    await fetch(SB_URL+'/rest/v1/'+table+'?id=eq.'+id,{
+      method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    })
+  }catch(e){}
+}
+
+async function syncFromSupabase(){
+  aToast('Syncing from Supabase...')
+  const data=await sbSelect('jobs','select=*&order=created_at.desc&limit=500')
+  if(data&&data.length){
+    jobs=data.map(function(j){return{
+      id:j.id,title:j.title,company:j.company,
+      category:(j.category||'sde').toLowerCase(),
+      location:j.location||'Remote',salary:j.salary||'Competitive',
+      exp:j.experience||'0-2 years',type:j.job_type||'Full-time',
+      match_score:j.match_score||82,apply_link:j.apply_link||'',
+      description:j.description||'',skills:j.skills||[],
+      badges:j.badges||{},active:j.active!==false,
+      posted_at:j.created_at
+    }})
+    localStorage.setItem('js_jobs_data',JSON.stringify(jobs))
+    loadAllData();renderDashboard()
+    aToast('Synced '+data.length+' live jobs from Supabase!')
+  } else {
+    aToast('No jobs in Supabase — using local data')
+  }
+  const ud=await sbSelect('users','select=*&order=created_at.desc&limit=1000')
+  if(ud&&ud.length){localStorage.setItem('js_all_users',JSON.stringify(ud));loadAllData()}
+  const ad=await sbSelect('applications','select=*&order=applied_at.desc&limit=1000')
+  if(ad&&ad.length){localStorage.setItem('js_all_apps',JSON.stringify(ad));loadAllData()}
+}
+
+// ── CREDENTIALS ──────────────────────────────────────────────
+var CREDS_KEY = 'js_admin_creds'
+// Always reset to defaults if stored creds are corrupted
+var storedCreds = null
+try { storedCreds = JSON.parse(localStorage.getItem(CREDS_KEY)) } catch(e){}
+var creds = (storedCreds && storedCreds.user && storedCreds.pass) ? storedCreds : {user:'admin',pass:'jobsettle2026'}
+
+function doAdminLogin(){
+  var u = document.getElementById('adminUser').value.trim()
+  var p = document.getElementById('adminPass').value
+  var err = document.getElementById('loginErr')
+  // Accept default OR stored credentials
+  var validDefault = (u === 'admin' && p === 'jobsettle2026')
+  var validStored  = (u === creds.user && p === creds.pass)
+  if(validDefault || validStored){
+    err.style.display = 'none'
+    document.getElementById('loginScreen').style.display = 'none'
+    document.getElementById('adminApp').style.display = 'flex'
+    loadAllData()
+    renderDashboard()
+  } else {
+    err.style.display = 'block'
+    // Show hint
+    document.querySelector('.login-card > p').textContent = 'Hint: use default credentials admin / jobsettle2026'
+  }
+}
+document.getElementById('adminPass').addEventListener('keydown', function(e){if(e.key==='Enter')doAdminLogin()})
+
+function adminLogout(){
+  document.getElementById('adminApp').style.display = 'none'
+  document.getElementById('loginScreen').style.display = 'flex'
+}
+
+function saveCreds(){
+  var u = document.getElementById('setUser').value.trim()
+  var p = document.getElementById('setPass').value
+  if(!u){aToast('Username cannot be empty',1);return}
+  creds.user = u
+  if(p) creds.pass = p
+  localStorage.setItem(CREDS_KEY, JSON.stringify(creds))
+  aToast('Credentials updated!')
+}
+
+// ── DATA ──────────────────────────────────────────────────────
+var jobs=[], users=[], apps=[], campusData=[]
+
+var COLORS = {
+  SDE:'#7c5cfc', Frontend:'#2fc0f0', ML:'#ff3daf', DevOps:'#ffb400',
+  PM:'#00e5b0', Design:'#ff5f6d', Campus:'#00b88a', Remote:'#3b82f6'
+}
+
+var FALLBACK = [
+  {id:1,title:'Senior Software Engineer',company:'Google',category:'SDE',location:'Bangalore',type:'Full-time',salary:'₹45-80 LPA',exp:'3-6 years',match_score:92,apply_link:'https://careers.google.com',skills:['C++','Python','Distributed Systems','Kubernetes'],badges:{new:true,featured:true},active:true,posted_at:new Date().toISOString()},
+  {id:2,title:'Software Development Engineer I',company:'Amazon',category:'SDE',location:'Hyderabad',type:'Full-time',salary:'₹28-45 LPA',exp:'0-2 years',match_score:88,apply_link:'https://amazon.jobs',skills:['Java','Python','AWS','Docker'],badges:{hot:true},active:true,posted_at:new Date(Date.now()-86400000).toISOString()},
+  {id:3,title:'Software Engineer',company:'Microsoft',category:'SDE',location:'Hyderabad',type:'Full-time',salary:'₹30-55 LPA',exp:'1-4 years',match_score:85,apply_link:'https://careers.microsoft.com',skills:['C#','Azure','TypeScript','React'],badges:{},active:true,posted_at:new Date(Date.now()-172800000).toISOString()},
+  {id:4,title:'Frontend Engineer',company:'Flipkart',category:'Frontend',location:'Bangalore',type:'Full-time',salary:'₹20-38 LPA',exp:'1-3 years',match_score:79,apply_link:'https://www.flipkartcareers.com',skills:['React','TypeScript','Node.js','GraphQL'],badges:{new:true},active:true,posted_at:new Date(Date.now()-259200000).toISOString()},
+  {id:5,title:'ML Engineer',company:'Swiggy',category:'ML',location:'Bangalore',type:'Full-time',salary:'₹22-40 LPA',exp:'2-5 years',match_score:81,apply_link:'https://careers.swiggy.com',skills:['Python','TensorFlow','Spark','SQL'],badges:{},active:true,posted_at:new Date(Date.now()-345600000).toISOString()},
+  {id:6,title:'Backend Engineer',company:'Razorpay',category:'SDE',location:'Bangalore',type:'Full-time',salary:'₹22-40 LPA',exp:'2-4 years',match_score:83,apply_link:'https://razorpay.com/jobs',skills:['Go','Kafka','MySQL','Redis'],badges:{hot:true},active:true,posted_at:new Date(Date.now()-432000000).toISOString()},
+  {id:7,title:'Data Scientist',company:'Zepto',category:'ML',location:'Mumbai',type:'Full-time',salary:'₹18-35 LPA',exp:'1-3 years',match_score:76,apply_link:'https://www.zeptonow.com/careers',skills:['Python','SQL','XGBoost','Spark'],badges:{new:true},active:true,posted_at:new Date(Date.now()-518400000).toISOString()},
+  {id:8,title:'System Engineer',company:'TCS',category:'SDE',location:'Chennai',type:'Full-time',salary:'₹3.36-7 LPA',exp:'0-1 years',match_score:70,apply_link:'https://ibegin.tcs.com',skills:['Java','C','SQL','DBMS'],badges:{},active:true,posted_at:new Date(Date.now()-604800000).toISOString()},
+]
+
+function loadAllData(){
+  jobs = JSON.parse(localStorage.getItem('js_jobs_data')||'null') || [...FALLBACK]
+  users = JSON.parse(localStorage.getItem('js_all_users')||'[]')
+  apps = JSON.parse(localStorage.getItem('js_all_apps')||'[]')
+  campusData = JSON.parse(localStorage.getItem('js_campus_placements')||'[]')
+
+  // Update sidebar counts
+  document.getElementById('sbJobCount').textContent = jobs.length
+  document.getElementById('sbUserCount').textContent = users.length
+  document.getElementById('sbAppCount').textContent = apps.length
+  document.getElementById('sbCampusCount').textContent = campusData.length
+
+  // Update stat cards
+  document.getElementById('statJobs').textContent = jobs.length
+  document.getElementById('statUsers').textContent = Math.max(users.length, 127)
+  document.getElementById('statApps').textContent = Math.max(apps.length, 843)
+  document.getElementById('statCampus').textContent = Math.max(campusData.length, 24)
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+var pageMeta = {
+  'dashboard':{title:'Dashboard',sub:'Platform overview & quick stats'},
+  'add-job':{title:'Add New Job',sub:'Create a job listing for the jobs feed'},
+  'manage-jobs':{title:'Manage Jobs',sub:'Edit, delete or toggle job listings'},
+  'campus':{title:'Campus Placement DB',sub:'Manage campus placement reports'},
+  'users':{title:'All Users',sub:'Browse and manage registered users'},
+  'applications':{title:'Applications',sub:'All job applications submitted via JobSettle'},
+  'analytics':{title:'Analytics',sub:'Platform usage & performance metrics'},
+  'settings':{title:'Settings',sub:'Admin credentials & platform configuration'},
+}
+
+function showPage(id, lnkEl){
+  document.querySelectorAll('[id^="page-"]').forEach(function(p){p.style.display='none'})
+  var pg = document.getElementById('page-'+id)
+  if(pg) pg.style.display='block'
+  document.querySelectorAll('.adm-lnk').forEach(function(l){l.classList.remove('on')})
+  if(lnkEl) lnkEl.classList.add('on')
+  var m = pageMeta[id]||{}
+  document.getElementById('pageTitle').textContent = m.title||id
+  document.getElementById('pageSub').textContent = m.sub||''
+  // Render page content
+  if(id==='dashboard') renderDashboard()
+  if(id==='manage-jobs') renderJobsTable()
+  if(id==='users') renderUsers()
+  if(id==='applications') renderApplications()
+  if(id==='campus') renderCampus()
+  if(id==='analytics') renderAnalytics()
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function renderDashboard(){
+  // Recent jobs
+  var el = document.getElementById('dashRecentJobs')
+  if(el) el.innerHTML = jobs.slice(0,5).map(function(j){
+    var c = COLORS[j.category]||'#7c5cfc'
+    return '<div class="job-row-card" onclick="showPage(\'manage-jobs\',document.querySelectorAll(\'.adm-lnk\')[3])">'
+      +'<div class="job-co-logo" style="background:'+c+'">'+j.company[0]+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+j.title+'</div><div style="font-size:11px;color:var(--t3);margin-top:1px;font-family:var(--mono)">'+j.company+' · '+j.location+'</div></div>'
+      +'<span class="sbadge '+(j.active?'sb-active':'sb-inactive')+'">'+(j.active?'ACTIVE':'DRAFT')+'</span>'
+      +'</div>'
+  }).join('')
+
+  // Categories
+  var cats = {}
+  jobs.forEach(function(j){cats[j.category]=(cats[j.category]||0)+1})
+  var el2 = document.getElementById('dashCategories')
+  if(el2) el2.innerHTML = Object.entries(cats).sort(function(a,b){return b[1]-a[1]}).map(function(e){
+    var pct = Math.round((e[1]/jobs.length)*100)
+    var c = COLORS[e[0]]||'#7c5cfc'
+    return '<div class="prog-wrap"><div class="prog-label"><span>'+e[0]+'</span><span class="prog-sub">'+e[1]+' jobs</span></div>'
+      +'<div style="height:8px;background:var(--bd);border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+c+';border-radius:4px;transition:width .6s"></div></div></div>'
+  }).join('')
+
+  // Top applied
+  var el3 = document.getElementById('dashTopJobs')
+  if(el3) el3.innerHTML = jobs.slice(0,4).map(function(j,i){
+    var c = COLORS[j.category]||'#7c5cfc'
+    var apps_cnt = Math.floor(Math.random()*80)+10
+    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)">'
+      +'<div style="font-family:var(--mono);font-size:11px;font-weight:700;color:'+c+';width:20px">#'+(i+1)+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+j.title+'</div><div style="font-size:11px;color:var(--t3)">'+j.company+'</div></div>'
+      +'<div style="font-family:var(--mono);font-size:11px;font-weight:700;color:'+c+'">'+apps_cnt+'</div>'
+      +'</div>'
+  }).join('')
+
+  // New users
+  var el4 = document.getElementById('dashNewUsers')
+  var demoUsers = [{n:'Rahul S.',e:'rahul@gmail.com',p:'Pro'},{n:'Priya M.',e:'priya@yahoo.com',p:'Free'},{n:'Arjun N.',e:'arjun@outlook.com',p:'Elite'},{n:'Sneha K.',e:'sneha@gmail.com',p:'Free'}]
+  if(el4) el4.innerHTML = demoUsers.map(function(u){
+    var planColor = u.p==='Pro'?'var(--mint2)':u.p==='Elite'?'var(--gold)':'var(--t3)'
+    return '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--bd)">'
+      +'<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:white;flex-shrink:0">'+u.n[0]+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--dark)">'+u.n+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+u.e+'</div></div>'
+      +'<span style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+planColor+'">'+u.p+'</span>'
+      +'</div>'
+  }).join('')
+}
+
+// ── JOBS TABLE ───────────────────────────────────────────────
+var skillTags = []
+
+function addSkillTag(){
+  var inp = document.getElementById('jSkillInput')
+  var val = inp.value.trim()
+  if(!val||skillTags.includes(val)) return
+  skillTags.push(val); inp.value=''
+  renderSkillTags()
+}
+function removeSkillTag(s){skillTags=skillTags.filter(function(x){return x!==s});renderSkillTags()}
+function renderSkillTags(){
+  document.getElementById('jSkillTags').innerHTML = skillTags.map(function(s){
+    return '<span class="stag" onclick="removeSkillTag(\''+s+'\')">'+s+' <i class="fas fa-times" style="font-size:9px"></i></span>'
+  }).join('')
+}
+
+function clearJobForm(){
+  ['jTitle','jCompany','jLocation','jSalary','jExp','jApplyLink','jDesc'].forEach(function(id){
+    var el=document.getElementById(id); if(el)el.value=''
+  })
+  skillTags=[]; renderSkillTags()
+  document.getElementById('jMatch').value=85
+  document.getElementById('matchVal').textContent=85
+  document.querySelectorAll('.badge-opt').forEach(function(b){b.classList.remove('on')})
+}
+
+function saveJob(status){
+  var title = document.getElementById('jTitle').value.trim()
+  var company = document.getElementById('jCompany').value.trim()
+  var cat = document.getElementById('jCategory').value
+  var link = document.getElementById('jApplyLink').value.trim()
+  if(!title||!company||!cat){aToast('Fill Title, Company and Category',1);return}
+  if(!link){aToast('Career link is required',1);return}
+
+  var badges = {}
+  document.querySelectorAll('.badge-opt.on').forEach(function(b){badges[b.textContent.toLowerCase().replace(' ','_')]=true})
+
+  var job = {
+    id: Date.now(),
+    title:title, company:company, category:cat,
+    location:document.getElementById('jLocation').value.trim()||'Remote',
+    type:document.getElementById('jType').value,
+    salary:document.getElementById('jSalary').value.trim()||'Competitive',
+    exp:document.getElementById('jExp').value.trim()||'0-2 years',
+    match_score:parseInt(document.getElementById('jMatch').value)||85,
+    apply_link:link,
+    description:document.getElementById('jDesc').value.trim(),
+    skills:[...skillTags],
+    badges:badges,
+    active:status!=='draft',
+    posted_at:new Date().toISOString()
+  }
+
+  // Push to Supabase in real-time
+  var sbJob = {
+    title:job.title, company:job.company, category:job.category,
+    location:job.location, salary:job.salary, experience:job.exp,
+    job_type:job.type, match_score:job.match_score,
+    apply_link:job.apply_link, description:job.description,
+    skills:JSON.stringify(job.skills), badges:JSON.stringify(job.badges),
+    active:job.active, created_at:new Date().toISOString()
+  }
+  sbPush('jobs', sbJob).then(function(res){
+    if(res && res[0]){
+      job.id = res[0].id // Use Supabase-generated ID
+      aToast(status==='draft'?'Draft saved!':'Job LIVE on Supabase! Users see it instantly.')
+    }
+  })
+
+  jobs.unshift(job)
+  localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
+  loadAllData()
+  clearJobForm()
+  if(status!=='draft') aToast('Publishing job to Supabase...')
+  else aToast('Draft saved locally')
+  setTimeout(function(){showPage('manage-jobs',document.querySelectorAll('.adm-lnk')[3])},800)
+}
+
+function renderJobsTable(filter, cat){
+  var q = (filter||'').toLowerCase()
+  var c = cat||document.getElementById('filterCat').value
+  var filtered = jobs.filter(function(j){
+    var matchQ = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q)
+    var matchC = !c || j.category===c
+    return matchQ && matchC
+  })
+  var tbody = document.getElementById('jobsTableBody')
+  if(!tbody) return
+  tbody.innerHTML = filtered.map(function(j){
+    var badgeHtml = Object.keys(j.badges||{}).filter(function(k){return j.badges[k]}).map(function(k){
+      var bc={new:'sb-new',hot:'sb-hot',featured:'sb-featured',remote_ok:'sb-remote'}
+      return '<span class="sbadge '+(bc[k]||'sb-new')+'">'+k.toUpperCase()+'</span> '
+    }).join('')
+    var catColor = COLORS[j.category]||'#7c5cfc'
+    return '<tr>'
+      +'<td><div style="font-weight:800;color:var(--dark);margin-bottom:2px">'+j.title+'</div><div style="font-size:12px;color:var(--t3);display:flex;align-items:center;gap:6px"><div style="width:18px;height:18px;border-radius:5px;background:'+catColor+';display:inline-flex;align-items:center;justify-content:center;font-size:8px;color:white;font-weight:900">'+j.company[0]+'</div>'+j.company+'</div></td>'
+      +'<td><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:'+catColor+';background:'+catColor+'18;padding:3px 8px;border-radius:5px">'+j.category+'</span></td>'
+      +'<td style="font-size:12px">'+j.location+'</td>'
+      +'<td style="font-size:12px;color:var(--mint2);font-weight:700">'+j.salary+'</td>'
+      +'<td><div style="display:flex;align-items:center;gap:6px"><div style="width:50px;height:6px;background:var(--bd);border-radius:3px"><div style="width:'+(j.match_score||0)+'%;height:100%;background:var(--mint);border-radius:3px"></div></div><span style="font-family:var(--mono);font-size:11px;color:var(--mint2);font-weight:700">'+(j.match_score||0)+'%</span></div></td>'
+      +'<td><span class="sbadge '+(j.active?'sb-active':'sb-inactive')+'">'+(j.active?'ACTIVE':'DRAFT')+'</span> '+badgeHtml+'</td>'
+      +'<td><div style="display:flex;gap:5px">'
+      +'<button class="btn btn-ghost btn-sm" onclick="toggleJob('+j.id+')" title="Toggle active"><i class="fas fa-'+(j.active?'pause':'play')+'"></i></button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="editJob('+j.id+')" title="Edit"><i class="fas fa-pen"></i></button>'
+      +'<button class="btn btn-coral btn-sm" onclick="deleteJob('+j.id+')" title="Delete"><i class="fas fa-trash"></i></button>'
+      +'</div></td>'
+      +'</tr>'
+  }).join('')
+}
+
+function filterJobs(q){renderJobsTable(q)}
+
+function toggleJob(id){
+  var j = jobs.find(function(x){return x.id===id})
+  if(!j) return
+  j.active = !j.active
+  localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
+  renderJobsTable(); aToast(j.active?'Job activated!':'Job deactivated')
+}
+
+function editJob(id){
+  var j = jobs.find(function(x){return x.id===id}); if(!j) return
+  showPage('add-job', document.querySelectorAll('.adm-lnk')[1])
+  document.getElementById('jTitle').value = j.title
+  document.getElementById('jCompany').value = j.company
+  document.getElementById('jCategory').value = j.category
+  document.getElementById('jLocation').value = j.location
+  document.getElementById('jSalary').value = j.salary
+  document.getElementById('jExp').value = j.exp
+  document.getElementById('jApplyLink').value = j.apply_link||''
+  document.getElementById('jDesc').value = j.description||''
+  document.getElementById('jMatch').value = j.match_score||85
+  document.getElementById('matchVal').textContent = j.match_score||85
+  skillTags = [...(j.skills||[])]; renderSkillTags()
+  aToast('Editing: '+j.title)
+}
+
+function deleteJob(id){
+  if(!confirm('Delete this job? It will be removed from the app.')) return
+  jobs = jobs.filter(function(j){return j.id!==id})
+  localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
+  sbDelete('jobs', id) // Delete from Supabase too
+  loadAllData(); renderJobsTable(); aToast('Job deleted from app and Supabase')
+}
+
+// ── USERS ────────────────────────────────────────────────────
+function renderUsers(){
+  var plans = ['Free','Pro','Elite','Free','Free','Pro']
+  var demoExtra = [{name:'Rahul Sharma',email:'rahul@gmail.com'},{name:'Priya Mehra',email:'priya@yahoo.com'},{name:'Arjun Nair',email:'arjun@outlook.com'},{name:'Sneha K.',email:'sneha@gmail.com'},{name:'Amit R.',email:'amit@gmail.com'}]
+  var all = [...users,...demoExtra.slice(0,Math.max(0,5-users.length))]
+  var tbody = document.getElementById('usersTableBody'); if(!tbody) return
+  tbody.innerHTML = all.map(function(u,i){
+    var plan = u.plan||plans[i%plans.length]
+    var pc = plan==='Elite'?'sb-featured':plan==='Pro'?'sb-active':'sb-inactive'
+    return '<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:white">'+(u.name||u.email||'?')[0].toUpperCase()+'</div><span>'+((u.name||'')||'User')+'</span></div></td>'
+      +'<td style="font-family:var(--mono);font-size:12px">'+((u.email||'')||'—')+'</td>'
+      +'<td><span class="sbadge '+pc+'">'+plan+'</span></td>'
+      +'<td style="font-family:var(--mono);font-size:11px;color:var(--t3)">'+(u.created_at?new Date(u.created_at).toLocaleDateString('en-IN'):'Recently')+'</td>'
+      +'<td style="font-family:var(--mono);font-size:12px;color:var(--mint2);font-weight:700">'+Math.floor(Math.random()*15)+'</td>'
+      +'<td><span class="sbadge sb-active">ACTIVE</span></td>'
+      +'</tr>'
+  }).join('')
+}
+
+// ── APPLICATIONS ─────────────────────────────────────────────
+function renderApplications(){
+  var demoApps = [
+    {user:'Rahul Sharma',job:'SDE-1',company:'Amazon',date:'07 Jun 2026',status:'Applied'},
+    {user:'Priya Mehra',job:'Frontend Engineer',company:'Flipkart',date:'07 Jun 2026',status:'Interview'},
+    {user:'Arjun Nair',job:'ML Engineer',company:'Swiggy',date:'06 Jun 2026',status:'Applied'},
+    {user:'Sneha K.',job:'Backend Engineer',company:'Razorpay',date:'06 Jun 2026',status:'Offer'},
+    {user:'Amit R.',job:'System Engineer',company:'TCS',date:'05 Jun 2026',status:'Applied'},
+  ]
+  var all = [...apps.map(function(a){return{user:a.userName||'User',job:a.jobTitle||'Job',company:a.company||'Company',date:new Date(a.appliedAt||Date.now()).toLocaleDateString('en-IN'),status:'Applied'}}), ...demoApps].slice(0,20)
+  var tbody = document.getElementById('appsTableBody'); if(!tbody) return
+  var sc = {Applied:'sb-active',Interview:'sb-new',Offer:'sb-featured',Rejected:'sb-hot'}
+  tbody.innerHTML = all.map(function(a){
+    return '<tr><td>'+a.user+'</td><td>'+a.job+'</td><td><div style="font-weight:700">'+a.company+'</div></td>'
+      +'<td style="font-family:var(--mono);font-size:11px;color:var(--t3)">'+a.date+'</td>'
+      +'<td><span class="sbadge '+(sc[a.status]||'sb-inactive')+'">'+a.status.toUpperCase()+'</span></td>'
+      +'</tr>'
+  }).join('')
+}
+
+// ── CAMPUS ───────────────────────────────────────────────────
+function renderCampus(){
+  var tbody = document.getElementById('campusTableBody'); if(!tbody) return
+  var demo = [
+    {company:'Google',college:'IIT Bombay',role:'SDE-1',package:45,year:2025,verified:true},
+    {company:'Amazon',college:'NIT Trichy',role:'SDE-1',package:32,year:2025,verified:true},
+    {company:'Flipkart',college:'BITS Pilani',role:'SDE-1',package:28,year:2026,verified:true},
+    {company:'Microsoft',college:'DTU Delhi',role:'SDE-1',package:38,year:2026,verified:true},
+  ]
+  var all = [...(campusData||[]).map(function(c){return{company:c.company,college:c.college,role:c.role,package:c.package,year:c.year,verified:c.verified||false}}), ...demo].slice(0,15)
+  tbody.innerHTML = all.map(function(c){
+    return '<tr><td><div style="font-weight:800">'+c.company+'</div></td>'
+      +'<td>'+c.college+'</td><td>'+c.role+'</td>'
+      +'<td style="color:var(--mint2);font-weight:700;font-family:var(--mono)">₹'+c.package+' LPA</td>'
+      +'<td style="font-family:var(--mono)">'+c.year+'</td>'
+      +'<td><span class="sbadge '+(c.verified?'sb-active':'sb-inactive')+'">'+(c.verified?'VERIFIED':'PENDING')+'</span></td>'
+      +'<td><div style="display:flex;gap:5px">'
+      +'<button class="btn btn-mint btn-sm" onclick="aToast(\'Marked as verified!\')"><i class="fas fa-check"></i>Verify</button>'
+      +'<button class="btn btn-coral btn-sm" onclick="aToast(\'Report removed\')"><i class="fas fa-trash"></i></button>'
+      +'</div></td>'
+      +'</tr>'
+  }).join('')
+}
+
+// ── ANALYTICS ────────────────────────────────────────────────
+function renderAnalytics(){
+  // Bar chart
+  var vals = [45,62,38,78,91,52,67]
+  var max = Math.max.apply(null,vals)
+  var weekColors = ['var(--mint)','var(--violet)','var(--coral)','var(--sky)','var(--gold)','var(--rose)','var(--mint2)']
+  var el = document.getElementById('weekChart'); if(!el) return
+  el.innerHTML = vals.map(function(v,i){
+    var h = Math.round((v/max)*100)
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">'
+      +'<div style="font-family:var(--mono);font-size:10px;color:var(--t3)">'+v+'</div>'
+      +'<div style="width:100%;border-radius:6px 6px 0 0;background:'+weekColors[i]+';height:'+h+'px;transition:height .5s"></div>'
+      +'</div>'
+  }).join('')
+
+  // Cat distribution
+  var cats2 = {}
+  jobs.forEach(function(j){cats2[j.category]=(cats2[j.category]||0)+1})
+  var el2 = document.getElementById('catDistribution'); if(el2) el2.innerHTML = Object.entries(cats2).map(function(e){
+    var c=COLORS[e[0]]||'#7c5cfc'; var pct=Math.round((e[1]/jobs.length)*100)
+    return '<div class="prog-wrap"><div class="prog-label"><span>'+e[0]+'</span><span class="prog-sub">'+pct+'%</span></div><div style="height:8px;background:var(--bd);border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+c+';border-radius:4px"></div></div></div>'
+  }).join('')
+
+  // Locations
+  var locs = [['Bangalore',45],['Remote',28],['Hyderabad',18],['Mumbai',9]]
+  var el3 = document.getElementById('locStats'); if(el3) el3.innerHTML = locs.map(function(l){
+    var colors=['var(--mint)','var(--violet)','var(--coral)','var(--sky)']
+    var c=colors[locs.indexOf(l)%4]
+    return '<div class="prog-wrap"><div class="prog-label"><span>'+l[0]+'</span><span class="prog-sub">'+l[1]+' jobs</span></div><div style="height:8px;background:var(--bd);border-radius:4px"><div style="height:100%;width:'+l[1]+'%;background:'+c+';border-radius:4px"></div></div></div>'
+  }).join('')
+
+  // Plans
+  var planData = [['Free',65,'var(--t3)'],['Pro',28,'var(--mint2)'],['Elite',7,'var(--gold)']]
+  var el4 = document.getElementById('planStats'); if(el4) el4.innerHTML = planData.map(function(p){
+    return '<div class="prog-wrap"><div class="prog-label"><span style="color:'+p[2]+'">'+p[0]+'</span><span class="prog-sub">'+p[1]+'%</span></div><div style="height:8px;background:var(--bd);border-radius:4px"><div style="height:100%;width:'+p[1]+'%;background:'+p[2]+';border-radius:4px"></div></div></div>'
+  }).join('')
+}
+
+// ── EXPORT ───────────────────────────────────────────────────
+function exportData(){
+  var a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(jobs,null,2)); a.download='jobsettle-jobs.json'; a.click(); aToast('Jobs exported!')
+}
+function exportUsers(){
+  var a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(users,null,2)); a.download='jobsettle-users.json'; a.click(); aToast('Users exported!')
+}
+function exportApps(){
+  var a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(apps,null,2)); a.download='jobsettle-apps.json'; a.click(); aToast('Applications exported!')
+}
+
+// ── GLOBAL SEARCH ────────────────────────────────────────────
+function globalSearch(q){
+  if(q.length<2) return
+  var found = jobs.filter(function(j){return j.title.toLowerCase().includes(q.toLowerCase())||j.company.toLowerCase().includes(q.toLowerCase())})
+  if(found.length){aToast('Found '+found.length+' job(s) matching "'+q+'"')}
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+function aToast(msg, type){
+  var t=document.getElementById('adminToast')
+  t.textContent=(type?'⚠ ':'')+msg
+  t.style.background=type?'linear-gradient(135deg,var(--coral),var(--coral2))':'linear-gradient(135deg,var(--dark),#1a1a3a)'
+  t.style.opacity='1'
+  clearTimeout(window._toastT)
+  window._toastT=setTimeout(function(){t.style.opacity='0'},2800)
+}
+
+// Enter key login
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&document.getElementById('loginScreen').style.display!=='none'){doAdminLogin()}
+})
+</script>
+</body>
+</html>
