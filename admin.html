@@ -1219,7 +1219,122 @@ function exportApps(){
   var a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(apps,null,2)); a.download='jobsettle-apps.json'; a.click(); aToast('Applications exported!')
 }
 
-// ── GLOBAL SEARCH ────────────────────────────────────────────
+// ── COLLEGE CONNECT ───────────────────────────────────────────
+var colleges = JSON.parse(localStorage.getItem('js_admin_colleges')||'[]')
+var DEMO_COLLEGES = [
+  {id:1,name:'IIT Bombay',type:'IIT',city:'Mumbai',students:10000,website:'https://iitb.ac.in',poName:'Dr. Rajesh Kumar',poEmail:'placement@iitb.ac.in',partnerships:['Job Alerts','Campus Drive'],active:true},
+  {id:2,name:'NIT Trichy',type:'NIT',city:'Trichy',students:6000,website:'https://nitt.edu',poName:'Prof. Anand M',poEmail:'placement@nitt.edu',partnerships:['Job Alerts','Resume Review'],active:true},
+  {id:3,name:'BITS Pilani',type:'BITS',city:'Pilani',students:5500,website:'https://bits-pilani.ac.in',poName:'Dr. Meera S',poEmail:'placement@bits-pilani.ac.in',partnerships:['Job Alerts','Campus Drive','Workshops'],active:true},
+  {id:4,name:'VIT Vellore',type:'Private',city:'Vellore',students:25000,website:'https://vit.ac.in',poName:'Mr. Suresh R',poEmail:'placement@vit.ac.in',partnerships:['Job Alerts'],active:true},
+  {id:5,name:'DTU Delhi',type:'State Govt.',city:'New Delhi',students:8000,website:'https://dtu.ac.in',poName:'Dr. Priya K',poEmail:'placement@dtu.ac.in',partnerships:['Job Alerts','Campus Drive'],active:true},
+]
+
+function saveCollege(){
+  var name=document.getElementById('colName').value.trim()
+  if(!name){aToast('College name required',1);return}
+  var col={id:Date.now(),name,type:document.getElementById('colType').value,city:document.getElementById('colCity').value,students:parseInt(document.getElementById('colStudents').value)||0,website:document.getElementById('colWebsite').value,poName:document.getElementById('colPOName').value,poEmail:document.getElementById('colPOEmail').value,partnerships:[...document.querySelectorAll('.badge-opt.on')].map(b=>b.textContent),active:true,added:new Date().toISOString()}
+  colleges.unshift(col)
+  localStorage.setItem('js_admin_colleges',JSON.stringify(colleges))
+  ;['colName','colCity','colStudents','colWebsite','colPOName','colPOEmail'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=''})
+  renderColleges();updateCollegeStats()
+  sbPush('colleges',col).catch(()=>{})
+  aToast('College partner added!')
+}
+
+function renderColleges(filter){
+  var all=[...colleges,...DEMO_COLLEGES.filter(d=>!colleges.find(c=>c.name===d.name))]
+  if(filter) all=all.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase())||c.city.toLowerCase().includes(filter.toLowerCase()))
+  var tbody=document.getElementById('collegesTableBody');if(!tbody)return
+  var typeColors={IIT:'var(--mint2)',NIT:'var(--violet2)',BITS:'#2fc0f0','State Govt.':'var(--gold)','Private':'var(--coral2)','Deemed':'var(--t2)'}
+  tbody.innerHTML=all.map(function(c){
+    var tc=typeColors[c.type]||'var(--t2)'
+    return '<tr><td><div style="font-weight:800;color:var(--dark)">'+c.name+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+(c.website||'')+'</div></td>'
+      +'<td><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+tc+';background:'+tc+'15;padding:3px 8px;border-radius:5px">'+c.type+'</span></td>'
+      +'<td>'+c.city+'</td><td style="font-family:var(--mono);font-size:12px;color:var(--mint2);font-weight:700">'+(c.students?c.students.toLocaleString():'—')+'</td>'
+      +'<td><div style="display:flex;flex-wrap:wrap;gap:3px">'+(c.partnerships||[]).map(p=>'<span style="font-size:10px;padding:2px 7px;background:var(--violet3);color:var(--violet2);border-radius:5px;font-weight:700">'+p+'</span>').join('')+'</div></td>'
+      +'<td><div style="font-size:12px;font-weight:700;color:var(--dark)">'+c.poName+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+c.poEmail+'</div></td>'
+      +'<td><div style="display:flex;gap:5px"><button class="btn btn-mint btn-sm" onclick="window.open(\'mailto:'+c.poEmail+'\')" title="Email"><i class="fas fa-envelope"></i></button>'
+      +'<button class="btn btn-coral btn-sm" onclick="removeCollege('+c.id+')" title="Remove"><i class="fas fa-trash"></i></button></div></td></tr>'
+  }).join('')
+}
+function filterColleges(q){renderColleges(q)}
+function removeCollege(id){colleges=colleges.filter(c=>c.id!==id);localStorage.setItem('js_admin_colleges',JSON.stringify(colleges));renderColleges();aToast('Removed')}
+function sendBulkEmail(){var sub=document.getElementById('bulkSubject').value;if(!sub){aToast('Add subject',1);return};aToast('Bulk email sent!')}
+function updateCollegeStats(){
+  var all=[...colleges,...DEMO_COLLEGES.filter(d=>!colleges.find(c=>c.name===d.name))]
+  var e1=document.getElementById('statColleges');if(e1)e1.textContent=all.length
+  var e2=document.getElementById('statStudentsReached');if(e2)e2.textContent=(all.reduce((s,c)=>s+(c.students||0),0)/1000).toFixed(0)+'K'
+  var e3=document.getElementById('statCampusDrives');if(e3)e3.textContent=all.filter(c=>(c.partnerships||[]).includes('Campus Drive')).length
+  var e4=document.getElementById('statPlacements');if(e4)e4.textContent=Math.floor(all.length*8)
+}
+
+// ── CAMPUS AMBASSADORS ────────────────────────────────────────
+var ambassadors = JSON.parse(localStorage.getItem('js_admin_ambassadors')||'[]')
+var DEMO_AMBASSADORS = [
+  {id:1,name:'Soumyadip D.',college:'JIS University',year:'4th Year',branch:'CSE',email:'soumyagle@gmail.com',phone:'+91 6289703243',referrals:24,earned:12000,status:'active',joined:'2026-01-15'},
+  {id:2,name:'Priya Sharma',college:'NIT Trichy',year:'3rd Year',branch:'IT',email:'priya@nitt.edu',phone:'+91 9876543210',referrals:18,earned:9000,status:'active',joined:'2026-02-01'},
+  {id:3,name:'Arjun Nair',college:'IIT Bombay',year:'3rd Year',branch:'CS',email:'arjun@iitb.ac.in',phone:'+91 8765432109',referrals:31,earned:15500,status:'active',joined:'2026-01-05'},
+]
+var ambAvatarBase64=null
+function previewAmbAvatar(inp){if(!inp.files[0])return;var r=new FileReader();r.onload=function(e){ambAvatarBase64=e.target.result;document.getElementById('ambAvatarImg').src=ambAvatarBase64;document.getElementById('ambAvatarImg').style.display='block';document.getElementById('ambAvatarIcon').style.display='none'};r.readAsDataURL(inp.files[0])}
+
+function saveAmbassador(){
+  var name=document.getElementById('ambName').value.trim()
+  var email=document.getElementById('ambEmail').value.trim()
+  if(!name||!email){aToast('Name and email required',1);return}
+  var amb={id:Date.now(),name,email,college:document.getElementById('ambCollege').value,year:document.getElementById('ambYear').value,branch:document.getElementById('ambBranch').value,phone:document.getElementById('ambPhone').value,linkedin:document.getElementById('ambLinkedin').value,why:document.getElementById('ambWhy').value,avatar:ambAvatarBase64,referrals:0,earned:0,status:'active',joined:new Date().toISOString()}
+  ambassadors.unshift(amb)
+  localStorage.setItem('js_admin_ambassadors',JSON.stringify(ambassadors))
+  ;['ambName','ambEmail','ambCollege','ambBranch','ambPhone','ambLinkedin','ambWhy'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=''})
+  ambAvatarBase64=null
+  renderAmbassadors();updateAmbStats()
+  sbPush('ambassadors',amb).catch(()=>{})
+  aToast('Ambassador added!')
+}
+
+function renderAmbassadors(filter){
+  var all=[...ambassadors,...DEMO_AMBASSADORS.filter(d=>!ambassadors.find(a=>a.email===d.email))]
+  if(filter)all=all.filter(a=>a.name.toLowerCase().includes(filter.toLowerCase())||a.college.toLowerCase().includes(filter.toLowerCase()))
+  var tbody=document.getElementById('ambassadorsTableBody');if(!tbody)return
+  tbody.innerHTML=all.map(function(a){
+    return '<tr><td><div style="display:flex;align-items:center;gap:8px">'
+      +(a.avatar?'<img src="'+a.avatar+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover"/>':'<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:white">'+a.name[0]+'</div>')
+      +'<div><div style="font-weight:800;color:var(--dark)">'+a.name+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+a.email+'</div></div></div></td>'
+      +'<td>'+a.college+'</td><td style="font-family:var(--mono);font-size:11px;color:var(--t3)">'+a.year+'</td>'
+      +'<td><div style="font-size:18px;font-weight:900;color:var(--violet2)">'+a.referrals+'</div></td>'
+      +'<td style="font-weight:800;color:var(--mint2)">₹'+((a.referrals||0)*500).toLocaleString()+'</td>'
+      +'<td><span class="sbadge '+(a.status==='active'?'sb-active':'sb-inactive')+'">'+a.status.toUpperCase()+'</span></td>'
+      +'<td><div style="display:flex;gap:5px"><button class="btn btn-ghost btn-sm" onclick="window.open(\'mailto:'+a.email+'\')"><i class="fas fa-envelope"></i></button>'
+      +(a.linkedin?'<button class="btn btn-ghost btn-sm" onclick="window.open(\''+a.linkedin+'\')"><i class="fab fa-linkedin"></i></button>':'')
+      +'<button class="btn btn-coral btn-sm" onclick="removeAmbassador('+a.id+')"><i class="fas fa-trash"></i></button></div></td></tr>'
+  }).join('')
+
+  var lb=document.getElementById('ambLeaderboard');if(!lb)return
+  var sorted=[...all].sort((a,b)=>(b.referrals||0)-(a.referrals||0)).slice(0,5)
+  var medals=['<span style="color:#f59e0b;font-weight:900">#1</span>','<span style="color:#94a3b8;font-weight:900">#2</span>','<span style="color:#cd7f32;font-weight:900">#3</span>']
+  lb.innerHTML=sorted.map(function(a,i){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)">'
+      +'<div style="width:24px;text-align:center;font-size:16px">'+(i<3?medals[i]:'#'+(i+1))+'</div>'
+      +(a.avatar?'<img src="'+a.avatar+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover"/>':'<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white">'+a.name[0]+'</div>')
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:800;color:var(--dark)">'+a.name+'</div><div style="font-size:11px;color:var(--t3)">'+a.college+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:15px;font-weight:900;color:var(--violet2)">'+a.referrals+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--t3)">referrals</div></div></div>'
+  }).join('')
+}
+function filterAmbassadors(q){renderAmbassadors(q)}
+function removeAmbassador(id){ambassadors=ambassadors.filter(a=>a.id!==id);localStorage.setItem('js_admin_ambassadors',JSON.stringify(ambassadors));renderAmbassadors();updateAmbStats();aToast('Removed')}
+function exportAmbassadors(){var all=[...ambassadors,...DEMO_AMBASSADORS];var a=document.createElement('a');a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(all,null,2));a.download='ambassadors.json';a.click();aToast('Exported!')}
+function sendAmbMessage(){aToast('Broadcast sent to all ambassadors!')}
+function updateAmbStats(){
+  var all=[...ambassadors,...DEMO_AMBASSADORS.filter(d=>!ambassadors.find(a=>a.email===d.email))]
+  var totalRefs=all.reduce((s,a)=>s+(a.referrals||0),0)
+  var e1=document.getElementById('statAmb');if(e1)e1.textContent=all.length
+  var e2=document.getElementById('statAmbReferrals');if(e2)e2.textContent=totalRefs
+  var e3=document.getElementById('statAmbEarned');if(e3)e3.textContent='₹'+(totalRefs*500).toLocaleString()
+  var e4=document.getElementById('statAmbColleges');if(e4)e4.textContent=new Set(all.map(a=>a.college)).size
+  var e5=document.getElementById('sbAmbCount');if(e5)e5.textContent=all.length
+}
+
+// ── GLOBAL SEARCH ─────────────────────────────────────────────
 function globalSearch(q){
   if(q.length<2) return
   var found = jobs.filter(function(j){return j.title.toLowerCase().includes(q.toLowerCase())||j.company.toLowerCase().includes(q.toLowerCase())})
