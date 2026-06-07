@@ -1102,16 +1102,6 @@ function loadAllData(){
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────
-var pageMeta = {
-  'dashboard':{title:'Dashboard',sub:'Platform overview & quick stats'},
-  'add-job':{title:'Add New Job',sub:'Create a job listing for the jobs feed'},
-  'manage-jobs':{title:'Manage Jobs',sub:'Edit, delete or toggle job listings'},
-  'campus':{title:'Campus Placement DB',sub:'Manage campus placement reports'},
-  'users':{title:'All Users',sub:'Browse and manage registered users'},
-  'applications':{title:'Applications',sub:'All job applications submitted via JobSettle'},
-  'analytics':{title:'Analytics',sub:'Platform usage & performance metrics'},
-  'settings':{title:'Settings',sub:'Admin credentials & platform configuration'},
-}
 
 function showPage(id, lnkEl){
   document.querySelectorAll('[id^="page-"]').forEach(function(p){p.style.display='none'})
@@ -1214,29 +1204,41 @@ function saveJob(status){
   var company = document.getElementById('jCompany').value.trim()
   var cat = document.getElementById('jCategory').value
   var link = document.getElementById('jApplyLink').value.trim()
-  if(!title||!company||!cat){aToast('Fill Title, Company and Category',1);return}
-  if(!link){aToast('Career link is required',1);return}
+
+  if(!title){ aToast('Job Title is required!', 1); document.getElementById('jTitle').focus(); return }
+  if(!company){ aToast('Company Name is required!', 1); document.getElementById('jCompany').focus(); return }
+  if(!cat){ aToast('Please select a Category!', 1); return }
 
   var badges = {}
-  document.querySelectorAll('.badge-opt.on').forEach(function(b){badges[b.textContent.toLowerCase().replace(' ','_')]=true})
+  document.querySelectorAll('.badge-opt.on').forEach(function(b){
+    badges[b.textContent.trim().toLowerCase().replace(/\s+/g,'_')] = true
+  })
 
   var job = {
     id: Date.now(),
     title:title, company:company, category:cat,
-    location:document.getElementById('jLocation').value.trim()||'Remote',
-    type:document.getElementById('jType').value,
+    location:document.getElementById('jLocation').value.trim()||'India',
+    type:document.getElementById('jType').value||'Full-time',
     salary:document.getElementById('jSalary').value.trim()||'Competitive',
     exp:document.getElementById('jExp').value.trim()||'0-2 years',
     match_score:parseInt(document.getElementById('jMatch').value)||85,
-    apply_link:link,
+    apply_link:link||'',
     description:document.getElementById('jDesc').value.trim(),
     skills:[...skillTags],
     badges:badges,
+    logo:logoBase64||null,
     active:status!=='draft',
     posted_at:new Date().toISOString()
   }
 
-  // Push to Supabase in real-time
+  // Save to localStorage immediately (never fails)
+  jobs.unshift(job)
+  localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
+  loadAllData()
+  clearJobForm()
+  aToast(status==='draft' ? 'Draft saved!' : 'Job published! Visible in app now.')
+
+  // Push to Supabase in background
   var sbJob = {
     title:job.title, company:job.company, category:job.category,
     location:job.location, salary:job.salary, experience:job.exp,
@@ -1247,19 +1249,12 @@ function saveJob(status){
     active:job.active, created_at:new Date().toISOString()
   }
   sbPush('jobs', sbJob).then(function(res){
-    if(res && res[0]){
-      job.id = res[0].id // Use Supabase-generated ID
-      aToast(status==='draft'?'Draft saved!':'Job LIVE on Supabase! Users see it instantly.')
-    }
-  })
+    if(res && res[0]) aToast('Synced to Supabase! Live on site.')
+  }).catch(function(){})
 
-  jobs.unshift(job)
-  localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
-  loadAllData()
-  clearJobForm()
-  if(status!=='draft') aToast('Publishing job to Supabase...')
-  else aToast('Draft saved locally')
-  setTimeout(function(){showPage('manage-jobs',document.querySelectorAll('.adm-lnk')[3])},800)
+  setTimeout(function(){
+    showPage('manage-jobs', document.querySelectorAll('.adm-lnk')[3])
+  }, 600)
 }
 
 function renderJobsTable(filter, cat){
