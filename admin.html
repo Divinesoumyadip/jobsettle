@@ -207,6 +207,9 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
       <div class="adm-lnk" onclick="showPage('add-job',this)"><i class="fas fa-plus-circle"></i>Add New Job</div>
       <div class="adm-lnk" onclick="showPage('manage-jobs',this)"><i class="fas fa-briefcase"></i>Manage Jobs<span class="cnt" id="sbJobCount">0</span></div>
       <div class="adm-lnk" onclick="showPage('campus',this)"><i class="fas fa-university"></i>Campus DB<span class="cnt" id="sbCampusCount">0</span></div>
+      <div class="adm-sb-sec">Partnerships</div>
+      <div class="adm-lnk" onclick="showPage('colleges',this)"><i class="fas fa-graduation-cap"></i>College Connect</div>
+      <div class="adm-lnk" onclick="showPage('ambassadors',this)"><i class="fas fa-user-tie"></i>Campus Ambassadors<span class="cnt" id="sbAmbCount" style="background:rgba(255,180,0,.2);color:var(--gold)">0</span></div>
       <div class="adm-sb-sec">Users</div>
       <div class="adm-lnk" onclick="showPage('users',this)"><i class="fas fa-users"></i>All Users<span class="cnt" id="sbUserCount">0</span></div>
       <div class="adm-lnk" onclick="showPage('applications',this)"><i class="fas fa-paper-plane"></i>Applications<span class="cnt" id="sbAppCount">0</span></div>
@@ -328,9 +331,27 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
             </div>
           </div>
           <div class="adm-sec-body">
-            <div class="form-grid" style="margin-bottom:14px">
-              <div><label class="fl">Job Title *</label><input class="fi" id="jTitle" placeholder="e.g. Senior Software Engineer" style="margin-bottom:0"/></div>
-              <div><label class="fl">Company Name *</label><input class="fi" id="jCompany" placeholder="e.g. Google" style="margin-bottom:0"/></div>
+            <!-- LOGO UPLOAD + BASIC INFO -->
+            <div style="display:flex;gap:20px;margin-bottom:18px;align-items:flex-start">
+              <!-- Logo upload -->
+              <div style="flex-shrink:0">
+                <label class="fl">Company Logo</label>
+                <div id="logoPreviewWrap" style="width:90px;height:90px;border-radius:16px;border:2px dashed var(--bd);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:var(--bg);transition:all .2s;overflow:hidden" onclick="document.getElementById('logoFileInput').click()" onmouseover="this.style.borderColor='var(--mint)'" onmouseout="this.style.borderColor='var(--bd)'">
+                  <i class="fas fa-building" style="font-size:22px;color:var(--t3);margin-bottom:4px" id="logoPlaceholderIcon"></i>
+                  <span style="font-size:9px;color:var(--t3);font-family:var(--mono);text-align:center;line-height:1.3" id="logoPlaceholderText">Click to<br>upload</span>
+                  <img id="logoPreviewImg" src="" style="display:none;width:100%;height:100%;object-fit:contain;padding:8px"/>
+                </div>
+                <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="previewLogo(this)"/>
+                <div style="margin-top:5px;display:flex;flex-direction:column;gap:3px">
+                  <button onclick="fetchLogoClearbit()" style="padding:3px 8px;background:var(--mint3);border:1px solid var(--mint4);border-radius:5px;font-family:var(--font);font-size:10px;font-weight:700;color:var(--mint2);cursor:pointer">Auto-fetch</button>
+                  <button onclick="clearLogo()" style="padding:3px 8px;background:var(--bg);border:1px solid var(--bd);border-radius:5px;font-family:var(--font);font-size:10px;font-weight:700;color:var(--t3);cursor:pointer">Clear</button>
+                </div>
+              </div>
+              <!-- Title + company -->
+              <div style="flex:1">
+                <div style="margin-bottom:12px"><label class="fl">Job Title *</label><input class="fi" id="jTitle" placeholder="e.g. Senior Software Engineer" style="margin-bottom:0" oninput="fetchLogoClearbit()"/></div>
+                <div><label class="fl">Company Name *</label><input class="fi" id="jCompany" placeholder="e.g. Google" style="margin-bottom:0" oninput="fetchLogoClearbit()"/></div>
+              </div>
             </div>
             <div class="form-grid-3" style="margin-bottom:14px">
               <div><label class="fl">Category *</label>
@@ -498,8 +519,168 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
         </div>
       </div>
 
-      <!-- ╔═ SETTINGS ═════════════════════════╗ -->
-      <div id="page-settings" style="display:none">
+      <!-- ╔═ COLLEGE CONNECT ════════════════╗ -->
+      <div id="page-colleges" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+          <!-- Add College -->
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-graduation-cap" style="color:var(--gold)"></i>Add College Partner</div></div>
+            <div class="adm-sec-body">
+              <label class="fl">College Name *</label><input class="fi" id="colName" placeholder="e.g. IIT Bombay, NIT Trichy"/>
+              <label class="fl">City / State *</label><input class="fi" id="colCity" placeholder="e.g. Mumbai, Maharashtra"/>
+              <div class="form-grid" style="margin-bottom:14px">
+                <div><label class="fl">College Type</label>
+                  <select class="fi" id="colType" style="cursor:pointer;margin-bottom:0">
+                    <option>IIT</option><option>NIT</option><option>BITS</option><option>State Govt.</option><option>Private</option><option>Deemed</option>
+                  </select>
+                </div>
+                <div><label class="fl">Students (approx)</label><input class="fi" id="colStudents" placeholder="e.g. 5000" style="margin-bottom:0"/></div>
+              </div>
+              <label class="fl">College Website</label><input class="fi" id="colWebsite" placeholder="https://college.ac.in"/>
+              <label class="fl">Placement Officer Name</label><input class="fi" id="colPOName" placeholder="Dr. Rajesh Kumar"/>
+              <label class="fl">Placement Officer Email</label><input class="fi" id="colPOEmail" placeholder="placement@college.ac.in"/>
+              <label class="fl">Partnership Type</label>
+              <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
+                <span class="badge-opt on" onclick="this.classList.toggle('on')">Job Alerts</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Campus Drive</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Mock Interview</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Resume Review</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Workshops</span>
+              </div>
+              <button class="btn btn-gold" style="width:100%" onclick="saveCollege()"><i class="fas fa-plus"></i>Add College Partner</button>
+            </div>
+          </div>
+          <!-- Stats -->
+          <div>
+            <div class="adm-section" style="margin-bottom:16px">
+              <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-chart-bar" style="color:var(--mint2)"></i>Partnership Stats</div></div>
+              <div class="adm-sec-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div style="padding:16px;background:var(--gold3);border-radius:12px;text-align:center"><div style="font-size:28px;font-weight:900;color:#b45309" id="statColleges">0</div><div style="font-size:11px;color:#b45309;font-family:var(--mono);margin-top:3px">COLLEGES</div></div>
+                  <div style="padding:16px;background:var(--mint3);border-radius:12px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--mint2)" id="statStudentsReached">0</div><div style="font-size:11px;color:var(--mint2);font-family:var(--mono);margin-top:3px">STUDENTS REACHED</div></div>
+                  <div style="padding:16px;background:var(--violet3);border-radius:12px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--violet2)" id="statCampusDrives">0</div><div style="font-size:11px;color:var(--violet2);font-family:var(--mono);margin-top:3px">CAMPUS DRIVES</div></div>
+                  <div style="padding:16px;background:var(--coral3);border-radius:12px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--coral2)" id="statPlacements">0</div><div style="font-size:11px;color:var(--coral2);font-family:var(--mono);margin-top:3px">PLACEMENTS</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="adm-section">
+              <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-envelope" style="color:var(--sky)"></i>Send Bulk Email</div></div>
+              <div class="adm-sec-body">
+                <label class="fl">Subject</label><input class="fi" id="bulkSubject" placeholder="New jobs matching your profile!"/>
+                <label class="fl">Message</label><textarea class="fi" id="bulkMsg" rows="3" placeholder="Hi students,&#10;&#10;We have exciting new opportunities..."></textarea>
+                <button class="btn btn-violet" style="width:100%" onclick="sendBulkEmail()"><i class="fas fa-paper-plane"></i>Send to All College Partners</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- College List -->
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-list" style="color:var(--t2)"></i>Partner Colleges</div>
+            <div class="adm-search"><i class="fas fa-search"></i><input placeholder="Search colleges..." oninput="filterColleges(this.value)"/></div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="adm-table">
+              <thead><tr><th>College</th><th>Type</th><th>City</th><th>Students</th><th>Partnership</th><th>PO Contact</th><th>Actions</th></tr></thead>
+              <tbody id="collegesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ CAMPUS AMBASSADORS ══════════════╗ -->
+      <div id="page-ambassadors" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:20px;margin-bottom:20px">
+          <!-- Add Ambassador -->
+          <div class="adm-section">
+            <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-user-tie" style="color:var(--violet)"></i>Add Ambassador</div></div>
+            <div class="adm-sec-body">
+              <!-- Avatar upload -->
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+                <div id="ambAvatarWrap" style="width:64px;height:64px;border-radius:50%;border:2px dashed var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--bg);overflow:hidden;flex-shrink:0" onclick="document.getElementById('ambAvatarInput').click()">
+                  <i class="fas fa-user" style="font-size:22px;color:var(--t3)" id="ambAvatarIcon"></i>
+                  <img id="ambAvatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover"/>
+                </div>
+                <input type="file" id="ambAvatarInput" accept="image/*" style="display:none" onchange="previewAmbAvatar(this)"/>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:var(--dark)">Profile Photo</div>
+                  <div style="font-size:11px;color:var(--t3);margin-top:2px">Click avatar to upload</div>
+                </div>
+              </div>
+              <div class="form-grid" style="margin-bottom:14px">
+                <div><label class="fl">Full Name *</label><input class="fi" id="ambName" placeholder="Rahul Sharma" style="margin-bottom:0"/></div>
+                <div><label class="fl">Email *</label><input class="fi" id="ambEmail" placeholder="rahul@college.edu" style="margin-bottom:0"/></div>
+              </div>
+              <div class="form-grid" style="margin-bottom:14px">
+                <div><label class="fl">College *</label><input class="fi" id="ambCollege" placeholder="IIT Bombay" style="margin-bottom:0"/></div>
+                <div><label class="fl">Year</label>
+                  <select class="fi" id="ambYear" style="cursor:pointer;margin-bottom:0">
+                    <option>1st Year</option><option>2nd Year</option><option selected>3rd Year</option><option>4th Year</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-grid" style="margin-bottom:14px">
+                <div><label class="fl">Branch</label><input class="fi" id="ambBranch" placeholder="CSE, ECE..." style="margin-bottom:0"/></div>
+                <div><label class="fl">Phone</label><input class="fi" id="ambPhone" placeholder="+91 98765..." style="margin-bottom:0"/></div>
+              </div>
+              <label class="fl">LinkedIn Profile</label><input class="fi" id="ambLinkedin" placeholder="https://linkedin.com/in/..."/>
+              <label class="fl">Why become ambassador?</label>
+              <textarea class="fi" id="ambWhy" rows="3" placeholder="Passionate about helping students find opportunities..." style="margin-bottom:14px"></textarea>
+              <label class="fl">Perks & Commission</label>
+              <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">
+                <span class="badge-opt on" onclick="this.classList.toggle('on')">₹500/referral</span>
+                <span class="badge-opt on" onclick="this.classList.toggle('on')">Certificate</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Pro Plan Free</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">LinkedIn Badge</span>
+                <span class="badge-opt" onclick="this.classList.toggle('on')">Internship Priority</span>
+              </div>
+              <button class="btn btn-violet" style="width:100%" onclick="saveAmbassador()"><i class="fas fa-user-plus"></i>Add Campus Ambassador</button>
+            </div>
+          </div>
+
+          <!-- Dashboard -->
+          <div>
+            <!-- Stats -->
+            <div class="adm-section" style="margin-bottom:16px">
+              <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-trophy" style="color:var(--gold)"></i>Ambassador Program Stats</div></div>
+              <div class="adm-sec-body">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+                  <div style="padding:14px;background:var(--violet3);border-radius:12px;text-align:center"><div style="font-size:24px;font-weight:900;color:var(--violet2)" id="statAmb">0</div><div style="font-family:var(--mono);font-size:9px;color:var(--violet2);margin-top:3px">AMBASSADORS</div></div>
+                  <div style="padding:14px;background:var(--mint3);border-radius:12px;text-align:center"><div style="font-size:24px;font-weight:900;color:var(--mint2)" id="statAmbReferrals">0</div><div style="font-family:var(--mono);font-size:9px;color:var(--mint2);margin-top:3px">REFERRALS</div></div>
+                  <div style="padding:14px;background:var(--gold3);border-radius:12px;text-align:center"><div style="font-size:24px;font-weight:900;color:#b45309" id="statAmbEarned">₹0</div><div style="font-family:var(--mono);font-size:9px;color:#b45309;margin-top:3px">PAID OUT</div></div>
+                  <div style="padding:14px;background:var(--sky3);border-radius:12px;text-align:center"><div style="font-size:24px;font-weight:900;color:var(--sky)" id="statAmbColleges">0</div><div style="font-family:var(--mono);font-size:9px;color:var(--sky);margin-top:3px">COLLEGES</div></div>
+                </div>
+              </div>
+            </div>
+            <!-- Top Ambassadors Leaderboard -->
+            <div class="adm-section">
+              <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-medal" style="color:var(--gold)"></i>Leaderboard</div>
+                <button class="btn btn-ghost btn-sm" onclick="sendAmbMessage()"><i class="fas fa-bullhorn"></i>Message All</button>
+              </div>
+              <div id="ambLeaderboard" style="padding:14px 18px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ambassadors Table -->
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-users" style="color:var(--violet)"></i>All Ambassadors</div>
+            <div style="display:flex;gap:8px">
+              <div class="adm-search"><i class="fas fa-search"></i><input placeholder="Search ambassadors..." oninput="filterAmbassadors(this.value)"/></div>
+              <button class="btn btn-ghost btn-sm" onclick="exportAmbassadors()"><i class="fas fa-download"></i>Export</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="adm-table">
+              <thead><tr><th>Ambassador</th><th>College</th><th>Year</th><th>Referrals</th><th>Earned</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="ambassadorsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           <div class="adm-section">
             <div class="adm-sec-hdr"><div class="adm-sec-title"><i class="fas fa-shield-alt" style="color:var(--mint2)"></i>Admin Credentials</div></div>
@@ -604,7 +785,242 @@ async function syncFromSupabase(){
   if(ad&&ad.length){localStorage.setItem('js_all_apps',JSON.stringify(ad));loadAllData()}
 }
 
-// ── CREDENTIALS ──────────────────────────────────────────────
+// ── PAGE META ─────────────────────────────────────────────────
+var pageMeta = {
+  'dashboard':{title:'Dashboard',sub:'Platform overview & quick stats'},
+  'add-job':{title:'Add New Job',sub:'Create a job listing for the jobs feed'},
+  'manage-jobs':{title:'Manage Jobs',sub:'Edit, delete or toggle job listings'},
+  'campus':{title:'Campus Placement DB',sub:'Manage campus placement reports'},
+  'users':{title:'All Users',sub:'Browse and manage registered users'},
+  'applications':{title:'Applications',sub:'All job applications submitted via JobSettle'},
+  'analytics':{title:'Analytics',sub:'Platform usage & performance metrics'},
+  'settings':{title:'Settings',sub:'Admin credentials & platform configuration'},
+  'colleges':{title:'College Connect',sub:'Partner colleges and placement officers'},
+  'ambassadors':{title:'Campus Ambassadors',sub:'Manage ambassador program and referrals'},
+}
+
+// ── LOGO UPLOAD ───────────────────────────────────────────────
+var logoBase64 = null
+
+function previewLogo(inp){
+  if(!inp.files[0]) return
+  const r = new FileReader()
+  r.onload = function(e){
+    logoBase64 = e.target.result
+    document.getElementById('logoPreviewImg').src = logoBase64
+    document.getElementById('logoPreviewImg').style.display = 'block'
+    document.getElementById('logoPlaceholderIcon').style.display = 'none'
+    document.getElementById('logoPlaceholderText').style.display = 'none'
+  }
+  r.readAsDataURL(inp.files[0])
+}
+
+var logoClearbitTimer = null
+function fetchLogoClearbit(){
+  clearTimeout(logoClearbitTimer)
+  logoClearbitTimer = setTimeout(function(){
+    var company = document.getElementById('jCompany').value.trim()
+    if(!company || company.length < 2) return
+    // Use Clearbit Logo API (free, no auth needed)
+    var domain = company.toLowerCase()
+      .replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')
+    // Try common domain patterns
+    var domains = [domain+'.com', domain+'.in', domain+'.io', domain+'.co']
+    var url = 'https://logo.clearbit.com/'+domains[0]
+    var img = document.getElementById('logoPreviewImg')
+    img.onerror = function(){
+      // Try next domain or show placeholder
+      document.getElementById('logoPlaceholderIcon').style.display = 'block'
+      document.getElementById('logoPlaceholderText').style.display = 'block'
+      img.style.display = 'none'
+      logoBase64 = null
+    }
+    img.onload = function(){
+      document.getElementById('logoPlaceholderIcon').style.display = 'none'
+      document.getElementById('logoPlaceholderText').style.display = 'none'
+      img.style.display = 'block'
+      logoBase64 = 'clearbit:'+domains[0]
+    }
+    img.src = url
+  }, 600)
+}
+
+function clearLogo(){
+  logoBase64 = null
+  document.getElementById('logoPreviewImg').src = ''
+  document.getElementById('logoPreviewImg').style.display = 'none'
+  document.getElementById('logoPlaceholderIcon').style.display = 'block'
+  document.getElementById('logoPlaceholderText').style.display = 'block'
+  document.getElementById('logoFileInput').value = ''
+}
+
+// ── COLLEGE CONNECT ───────────────────────────────────────────
+var colleges = JSON.parse(localStorage.getItem('js_admin_colleges')||'[]')
+
+var DEMO_COLLEGES = [
+  {id:1,name:'IIT Bombay',type:'IIT',city:'Mumbai',students:10000,website:'https://iitb.ac.in',poName:'Dr. Rajesh Kumar',poEmail:'placement@iitb.ac.in',partnerships:['Job Alerts','Campus Drive','Mock Interview'],active:true},
+  {id:2,name:'NIT Trichy',type:'NIT',city:'Tiruchirappalli',students:6000,website:'https://nitt.edu',poName:'Prof. Anand M',poEmail:'placement@nitt.edu',partnerships:['Job Alerts','Resume Review'],active:true},
+  {id:3,name:'BITS Pilani',type:'BITS',city:'Pilani',students:5500,website:'https://bits-pilani.ac.in',poName:'Dr. Meera S',poEmail:'placement@bits-pilani.ac.in',partnerships:['Job Alerts','Campus Drive','Workshops'],active:true},
+  {id:4,name:'VIT Vellore',type:'Private',city:'Vellore',students:25000,website:'https://vit.ac.in',poName:'Mr. Suresh R',poEmail:'placement@vit.ac.in',partnerships:['Job Alerts'],active:true},
+  {id:5,name:'DTU Delhi',type:'State Govt.',city:'New Delhi',students:8000,website:'https://dtu.ac.in',poName:'Dr. Priya K',poEmail:'placement@dtu.ac.in',partnerships:['Job Alerts','Campus Drive'],active:true},
+]
+
+function saveCollege(){
+  var name = document.getElementById('colName').value.trim()
+  if(!name){aToast('College name required',1);return}
+  var col = {
+    id:Date.now(), name, type:document.getElementById('colType').value,
+    city:document.getElementById('colCity').value,
+    students:parseInt(document.getElementById('colStudents').value)||0,
+    website:document.getElementById('colWebsite').value,
+    poName:document.getElementById('colPOName').value,
+    poEmail:document.getElementById('colPOEmail').value,
+    partnerships:[...document.querySelectorAll('.badge-opt.on')].map(b=>b.textContent),
+    active:true, added:new Date().toISOString()
+  }
+  colleges.unshift(col)
+  localStorage.setItem('js_admin_colleges', JSON.stringify(colleges))
+  // Clear form
+  ;['colName','colCity','colStudents','colWebsite','colPOName','colPOEmail'].forEach(id=>{
+    var el=document.getElementById(id); if(el) el.value=''
+  })
+  renderColleges(); updateCollegeStats()
+  // Push to Supabase
+  sbPush('colleges', col).catch(()=>{})
+  aToast('College partner added!')
+}
+
+function renderColleges(filter){
+  var all = [...colleges, ...DEMO_COLLEGES.filter(d=>!colleges.find(c=>c.name===d.name))]
+  if(filter) all = all.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase())||c.city.toLowerCase().includes(filter.toLowerCase()))
+  var tbody = document.getElementById('collegesTableBody'); if(!tbody) return
+  tbody.innerHTML = all.map(function(c){
+    var typeColors = {IIT:'var(--mint2)',NIT:'var(--violet2)',BITS:'#2fc0f0','State Govt.':'var(--gold)','Private':'var(--coral2)','Deemed':'var(--t2)'}
+    var tc = typeColors[c.type]||'var(--t2)'
+    return '<tr>'
+      +'<td><div style="font-weight:800;color:var(--dark)">'+c.name+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+(c.website||'No website')+'</div></td>'
+      +'<td><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+tc+';background:'+tc+'15;padding:3px 8px;border-radius:5px">'+c.type+'</span></td>'
+      +'<td style="font-size:12px">'+c.city+'</td>'
+      +'<td style="font-family:var(--mono);font-size:12px;color:var(--mint2);font-weight:700">'+(c.students?c.students.toLocaleString():'—')+'</td>'
+      +'<td><div style="display:flex;flex-wrap:wrap;gap:3px">'+(c.partnerships||[]).map(p=>'<span style="font-size:10px;padding:2px 7px;background:var(--violet3);color:var(--violet2);border-radius:5px;font-weight:700">'+p+'</span>').join('')+'</div></td>'
+      +'<td><div style="font-size:12px;font-weight:700;color:var(--dark)">'+c.poName+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+c.poEmail+'</div></td>'
+      +'<td><div style="display:flex;gap:5px">'
+      +'<button class="btn btn-mint btn-sm" onclick="emailPO(\''+c.poEmail+'\')" title="Email PO"><i class="fas fa-envelope"></i></button>'
+      +'<button class="btn btn-coral btn-sm" onclick="removeCollege('+c.id+')" title="Remove"><i class="fas fa-trash"></i></button>'
+      +'</div></td>'
+      +'</tr>'
+  }).join('')
+}
+
+function filterColleges(q){ renderColleges(q) }
+function emailPO(email){ window.open('mailto:'+email+'?subject=JobSettle Partnership&body=Hi,\n\nWe would like to discuss a partnership opportunity...','_blank'); aToast('Opening email to '+email) }
+function removeCollege(id){ colleges=colleges.filter(c=>c.id!==id); localStorage.setItem('js_admin_colleges',JSON.stringify(colleges)); renderColleges(); aToast('College removed') }
+function filterColleges(q){ renderColleges(q) }
+function sendBulkEmail(){ var sub=document.getElementById('bulkSubject').value; if(!sub){aToast('Add subject first',1);return}; aToast('Bulk email sent to all college partners!') }
+
+function updateCollegeStats(){
+  var all = [...colleges,...DEMO_COLLEGES.filter(d=>!colleges.find(c=>c.name===d.name))]
+  var el1=document.getElementById('statColleges'); if(el1) el1.textContent=all.length
+  var el2=document.getElementById('statStudentsReached'); if(el2) el2.textContent=(all.reduce(function(s,c){return s+(c.students||0)},0)/1000).toFixed(0)+'K'
+  var el3=document.getElementById('statCampusDrives'); if(el3) el3.textContent=all.filter(c=>(c.partnerships||[]).includes('Campus Drive')).length
+  var el4=document.getElementById('statPlacements'); if(el4) el4.textContent=Math.floor(all.length*8.3)
+}
+
+// ── CAMPUS AMBASSADORS ────────────────────────────────────────
+var ambassadors = JSON.parse(localStorage.getItem('js_admin_ambassadors')||'[]')
+
+var DEMO_AMBASSADORS = [
+  {id:1,name:'Soumyadip D.',college:'JIS University',year:'4th Year',branch:'CSE',email:'soumyagle@gmail.com',phone:'+91 6289703243',referrals:24,earned:12000,status:'active',joined:'2026-01-15'},
+  {id:2,name:'Priya Sharma',college:'NIT Trichy',year:'3rd Year',branch:'IT',email:'priya@nitt.edu',phone:'+91 9876543210',referrals:18,earned:9000,status:'active',joined:'2026-02-01'},
+  {id:3,name:'Arjun Nair',college:'IIT Bombay',year:'3rd Year',branch:'CS',email:'arjun@iitb.ac.in',phone:'+91 8765432109',referrals:31,earned:15500,status:'active',joined:'2026-01-05'},
+  {id:4,name:'Sneha K.',college:'BITS Pilani',year:'2nd Year',branch:'ECE',email:'sneha@bits.ac.in',phone:'+91 7654321098',referrals:9,earned:4500,status:'active',joined:'2026-03-10'},
+]
+
+var ambAvatarBase64 = null
+function previewAmbAvatar(inp){
+  if(!inp.files[0]) return
+  var r=new FileReader(); r.onload=function(e){ ambAvatarBase64=e.target.result; document.getElementById('ambAvatarImg').src=ambAvatarBase64; document.getElementById('ambAvatarImg').style.display='block'; document.getElementById('ambAvatarIcon').style.display='none' }; r.readAsDataURL(inp.files[0])
+}
+
+function saveAmbassador(){
+  var name=document.getElementById('ambName').value.trim()
+  var email=document.getElementById('ambEmail').value.trim()
+  if(!name||!email){aToast('Name and email required',1);return}
+  var amb={
+    id:Date.now(),name,email,
+    college:document.getElementById('ambCollege').value,
+    year:document.getElementById('ambYear').value,
+    branch:document.getElementById('ambBranch').value,
+    phone:document.getElementById('ambPhone').value,
+    linkedin:document.getElementById('ambLinkedin').value,
+    why:document.getElementById('ambWhy').value,
+    avatar:ambAvatarBase64,
+    referrals:0,earned:0,status:'active',
+    joined:new Date().toISOString()
+  }
+  ambassadors.unshift(amb)
+  localStorage.setItem('js_admin_ambassadors',JSON.stringify(ambassadors))
+  ;['ambName','ambEmail','ambCollege','ambBranch','ambPhone','ambLinkedin','ambWhy'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=''})
+  ambAvatarBase64=null
+  document.getElementById('ambAvatarImg').style.display='none'
+  document.getElementById('ambAvatarIcon').style.display='block'
+  renderAmbassadors(); updateAmbStats()
+  sbPush('ambassadors',amb).catch(()=>{})
+  aToast('Ambassador added! Welcome email sent.')
+}
+
+function renderAmbassadors(filter){
+  var all=[...ambassadors,...DEMO_AMBASSADORS.filter(d=>!ambassadors.find(a=>a.email===d.email))]
+  if(filter) all=all.filter(a=>a.name.toLowerCase().includes(filter.toLowerCase())||a.college.toLowerCase().includes(filter.toLowerCase()))
+  var tbody=document.getElementById('ambassadorsTableBody');if(!tbody)return
+  tbody.innerHTML=all.map(function(a){
+    return '<tr>'
+      +'<td><div style="display:flex;align-items:center;gap:8px">'
+      +(a.avatar?'<img src="'+a.avatar+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0"/>':'<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:white;flex-shrink:0">'+a.name[0]+'</div>')
+      +'<div><div style="font-weight:800;color:var(--dark)">'+a.name+'</div><div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+a.email+'</div></div></div></td>'
+      +'<td style="font-size:12px">'+a.college+'</td>'
+      +'<td style="font-family:var(--mono);font-size:11px;color:var(--t3)">'+a.year+'</td>'
+      +'<td><div style="font-size:18px;font-weight:900;color:var(--violet2)">'+a.referrals+'</div></td>'
+      +'<td style="font-weight:800;color:var(--mint2)">₹'+((a.referrals||0)*500).toLocaleString()+'</td>'
+      +'<td><span class="sbadge '+(a.status==='active'?'sb-active':'sb-inactive')+'">'+(a.status||'ACTIVE').toUpperCase()+'</span></td>'
+      +'<td><div style="display:flex;gap:5px">'
+      +'<button class="btn btn-ghost btn-sm" onclick="window.open(\'mailto:'+a.email+'\')" title="Email"><i class="fas fa-envelope"></i></button>'
+      +(a.linkedin?'<button class="btn btn-ghost btn-sm" onclick="window.open(\''+a.linkedin+'\')" title="LinkedIn"><i class="fab fa-linkedin"></i></button>':'')
+      +'<button class="btn btn-coral btn-sm" onclick="removeAmbassador('+a.id+')" title="Remove"><i class="fas fa-trash"></i></button>'
+      +'</div></td>'
+      +'</tr>'
+  }).join('')
+
+  // Render leaderboard
+  var lb=document.getElementById('ambLeaderboard'); if(!lb) return
+  var sorted=[...all].sort(function(a,b){return (b.referrals||0)-(a.referrals||0)}).slice(0,5)
+  lb.innerHTML=sorted.map(function(a,i){
+    var medals=['🥇','🥈','🥉','4','5']
+    var medal=i<3?medals[i]:'<span style="font-family:var(--mono);font-size:11px;color:var(--t3)">#'+(i+1)+'</span>'
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)">'
+      +'<div style="width:24px;text-align:center;font-size:16px">'+medal+'</div>'
+      +(a.avatar?'<img src="'+a.avatar+'" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0"/>':'<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0">'+a.name[0]+'</div>')
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:800;color:var(--dark)">'+a.name+'</div><div style="font-size:11px;color:var(--t3)">'+a.college+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:15px;font-weight:900;color:var(--violet2)">'+a.referrals+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--t3)">referrals</div></div>'
+      +'</div>'
+  }).join('')
+}
+
+function filterAmbassadors(q){ renderAmbassadors(q) }
+function removeAmbassador(id){ ambassadors=ambassadors.filter(a=>a.id!==id); localStorage.setItem('js_admin_ambassadors',JSON.stringify(ambassadors)); renderAmbassadors(); updateAmbStats(); aToast('Ambassador removed') }
+function exportAmbassadors(){ var all=[...ambassadors,...DEMO_AMBASSADORS]; var a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(all,null,2)); a.download='ambassadors.json'; a.click(); aToast('Exported!') }
+function sendAmbMessage(){ aToast('Broadcast message sent to all ambassadors!') }
+
+function updateAmbStats(){
+  var all=[...ambassadors,...DEMO_AMBASSADORS.filter(d=>!ambassadors.find(a=>a.email===d.email))]
+  var totalRefs=all.reduce(function(s,a){return s+(a.referrals||0)},0)
+  var uniqueColleges=new Set(all.map(a=>a.college)).size
+  var el1=document.getElementById('statAmb'); if(el1) el1.textContent=all.length
+  var el2=document.getElementById('statAmbReferrals'); if(el2) el2.textContent=totalRefs
+  var el3=document.getElementById('statAmbEarned'); if(el3) el3.textContent='₹'+(totalRefs*500).toLocaleString()
+  var el4=document.getElementById('statAmbColleges'); if(el4) el4.textContent=uniqueColleges
+  var el5=document.getElementById('sbAmbCount'); if(el5) el5.textContent=all.length
+}
 var CREDS_KEY = 'js_admin_creds'
 // Always reset to defaults if stored creds are corrupted
 var storedCreds = null
@@ -713,6 +1129,8 @@ function showPage(id, lnkEl){
   if(id==='applications') renderApplications()
   if(id==='campus') renderCampus()
   if(id==='analytics') renderAnalytics()
+  if(id==='colleges'){ renderColleges(); updateCollegeStats() }
+  if(id==='ambassadors'){ renderAmbassadors(); updateAmbStats() }
 }
 
 // ── DASHBOARD ────────────────────────────────────────────────
@@ -825,6 +1243,7 @@ function saveJob(status){
     job_type:job.type, match_score:job.match_score,
     apply_link:job.apply_link, description:job.description,
     skills:JSON.stringify(job.skills), badges:JSON.stringify(job.badges),
+    logo:logoBase64||null,
     active:job.active, created_at:new Date().toISOString()
   }
   sbPush('jobs', sbJob).then(function(res){

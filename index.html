@@ -298,7 +298,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 #savedJobsView,#appliedView,#interviewPrepView,#alertsView,
 #salaryView,#companiesView,#referralView,#mockView,
 #leaderboardView,#resumeBuilderView,#communityView,#newsView,
-#campusDBView,#callbackView,#rejectionView,#emergencyPrepView{
+#campusDBView,#callbackView,#rejectionView,#emergencyPrepView,
+#collegeConnectView,#ambassadorView{
   position:fixed;
   left:var(--sb);
   right:0;
@@ -1488,6 +1489,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
       <div class="dsb-lnk" onclick="setNav(this);showRejectionView()"><i class="fas fa-heartbeat li"></i><span class="lbl">Rejection Analyzer</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:white">AI</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showEmergencyPrepView()" style="background:linear-gradient(135deg,rgba(244,63,94,.08),rgba(244,63,94,.03));border:1.5px solid rgba(244,63,94,.15)"><i class="fas fa-fire li" style="color:#f43f5e"></i><span class="lbl" style="color:#f43f5e">Interview Tomorrow!</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:white;animation:pulse 1.5s infinite">SOS</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showCampusDBView()"><i class="fas fa-university li"></i><span class="lbl">Campus Placements</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:white">New</span></div>
+      <div class="dsb-lnk" onclick="setNav(this);showCollegeConnectView()"><i class="fas fa-handshake li"></i><span class="lbl">College Connect</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white">Partner</span></div>
+      <div class="dsb-lnk" onclick="setNav(this);showAmbassadorView()"><i class="fas fa-user-tie li"></i><span class="lbl">Be Ambassador</span><span class="dsb-badge" style="background:linear-gradient(135deg,#7c5cfc,#5b3de8);color:white">₹500</span></div>
 
       <div class="dsb-sec">ACCOUNT</div>
       <div class="dsb-lnk" onclick="setNav(this);showProfile()"><i class="fas fa-user li"></i><span class="lbl">My Profile</span></div>
@@ -2628,6 +2631,304 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 </div>
 
 <!-- MODAL -->
+<!-- ╔═ COLLEGE CONNECT VIEW ══════════════════════════════════╗ -->
+<div id="collegeConnectView" style="display:none;flex:1;overflow-y:auto;padding:28px">
+  <div style="max-width:900px;margin:0 auto">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#1a0a3e,#0d1f4a,#0a2818);border-radius:24px;padding:48px 44px;margin-bottom:28px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-60px;right:-40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,180,0,.2),transparent 70%)"></div>
+      <div style="position:absolute;bottom:-40px;left:100px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,176,.15),transparent 70%)"></div>
+      <div style="position:relative;z-index:1">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,180,0,.15);border:1px solid rgba(255,180,0,.3);border-radius:20px;padding:6px 14px;margin-bottom:16px">
+          <i class="fas fa-university" style="color:#f59e0b;font-size:12px"></i>
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:#f59e0b;letter-spacing:.5px">FOR COLLEGES & INSTITUTIONS</span>
+        </div>
+        <h1 style="font-size:32px;font-weight:900;color:white;letter-spacing:-.7px;margin-bottom:12px;line-height:1.2">Partner with JobSettle<br><span style="background:linear-gradient(135deg,#f59e0b,#00e5b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Place your students in top companies</span></h1>
+        <p style="font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;max-width:560px">Get your students exclusive access to 2,400+ curated jobs, AI-powered interview prep, and real-time campus placement database. Zero cost to colleges.</p>
+        <div style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border-radius:10px;padding:10px 16px"><i class="fas fa-briefcase" style="color:#f59e0b;font-size:14px"></i><span style="font-size:13px;font-weight:700;color:white">2,400+ Jobs</span></div>
+          <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border-radius:10px;padding:10px 16px"><i class="fas fa-university" style="color:#00e5b0;font-size:14px"></i><span style="font-size:13px;font-weight:700;color:white">50+ College Partners</span></div>
+          <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border-radius:10px;padding:10px 16px"><i class="fas fa-users" style="color:#7c5cfc;font-size:14px"></i><span style="font-size:13px;font-weight:700;color:white">10,000+ Students</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits Grid -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='#f59e0b';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-bolt" style="color:white;font-size:20px"></i></div>
+        <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:6px">Instant Job Access</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">Your students get exclusive first access to all new job listings before public posting</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='var(--mint)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--mint),var(--mint2));display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-robot" style="color:white;font-size:20px"></i></div>
+        <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:6px">AI Interview Prep</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">Free AI-powered mock interviews, resume review and rejection analysis for all students</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='var(--violet)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-chart-line" style="color:white;font-size:20px"></i></div>
+        <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:6px">Placement Analytics</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">Real-time dashboard showing student placement rates, top recruiters, and salary trends</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--coral),var(--coral2));display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-building" style="color:white;font-size:20px"></i></div>
+        <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:6px">Campus Drive Hosting</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">We help organize and promote campus drives directly on JobSettle with 10K+ student reach</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='var(--sky)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--sky),#1a9ed4);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-graduation-cap" style="color:white;font-size:20px"></i></div>
+        <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:6px">Workshops & Webinars</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">Free monthly webinars on resume building, DSA, system design and interview strategies</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor='#22c55e';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><i class="fas fa-gift" style="color:white;font-size:20px"></i></div>
+        <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:6px">100% Free</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">No fees for colleges. We earn only when students get jobs through premium subscriptions</div>
+      </div>
+    </div>
+
+    <!-- Partner Request Form -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:22px;overflow:hidden;margin-bottom:28px">
+      <div style="background:linear-gradient(135deg,#f59e0b15,#f59e0b05);border-bottom:2px solid var(--bd);padding:20px 26px">
+        <div style="font-size:18px;font-weight:900;color:var(--dark);letter-spacing:-.4px">Apply for Partnership</div>
+        <div style="font-size:13px;color:var(--t3);margin-top:3px">Fill the form and our team will reach out within 24 hours</div>
+      </div>
+      <div style="padding:26px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div><label class="fl">College / Institution Name *</label><input class="fi" id="cc_college" placeholder="IIT Bombay" style="margin-bottom:0"/></div>
+          <div><label class="fl">City & State *</label><input class="fi" id="cc_city" placeholder="Mumbai, Maharashtra" style="margin-bottom:0"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div><label class="fl">Placement Officer Name *</label><input class="fi" id="cc_name" placeholder="Dr. Rajesh Kumar" style="margin-bottom:0"/></div>
+          <div><label class="fl">Official Email *</label><input class="fi" id="cc_email" type="email" placeholder="placement@college.ac.in" style="margin-bottom:0"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div><label class="fl">Phone</label><input class="fi" id="cc_phone" placeholder="+91 98765 43210" style="margin-bottom:0"/></div>
+          <div><label class="fl">Approx. Students</label><input class="fi" id="cc_students" placeholder="5000" type="number" style="margin-bottom:0"/></div>
+        </div>
+        <label class="fl">What do you need most?</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+          <span class="badge-opt on" onclick="this.classList.toggle('on')">Job Listings Access</span>
+          <span class="badge-opt" onclick="this.classList.toggle('on')">Campus Drive</span>
+          <span class="badge-opt" onclick="this.classList.toggle('on')">Mock Interviews</span>
+          <span class="badge-opt" onclick="this.classList.toggle('on')">Resume Workshop</span>
+          <span class="badge-opt" onclick="this.classList.toggle('on')">Placement Analytics</span>
+          <span class="badge-opt" onclick="this.classList.toggle('on')">Webinars</span>
+        </div>
+        <label class="fl">Message (optional)</label>
+        <textarea class="fi" id="cc_message" rows="3" placeholder="Tell us about your college and what you're looking for..." style="margin-bottom:18px"></textarea>
+        <button onclick="submitCollegePartnership()" style="width:100%;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:12px;font-family:var(--font);font-size:15px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 18px rgba(245,158,11,.35)"><i class="fas fa-paper-plane" style="margin-right:8px"></i>Submit Partnership Request</button>
+      </div>
+    </div>
+
+    <!-- Existing Partners -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:22px;padding:24px">
+      <div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:18px">Our Partner Colleges</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px" id="partnerCollegesGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ╔═ CAMPUS AMBASSADOR VIEW ════════════════════════════════╗ -->
+<div id="ambassadorView" style="display:none;flex:1;overflow-y:auto;padding:28px">
+  <div style="max-width:900px;margin:0 auto">
+    <!-- Hero -->
+    <div style="background:linear-gradient(135deg,#1a0533,#0d1535,#001a0d);border-radius:24px;padding:48px 44px;margin-bottom:28px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-80px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,252,.3),transparent 70%)"></div>
+      <div style="position:absolute;bottom:-60px;left:60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,176,.2),transparent 70%)"></div>
+      <div style="position:relative;z-index:1">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,252,.2);border:1px solid rgba(124,92,252,.4);border-radius:20px;padding:6px 14px;margin-bottom:16px">
+          <i class="fas fa-star" style="color:#a78bfa;font-size:11px"></i>
+          <span style="font-family:var(--mono);font-size:11px;font-weight:700;color:#a78bfa;letter-spacing:.5px">CAMPUS AMBASSADOR PROGRAM</span>
+        </div>
+        <h1 style="font-size:32px;font-weight:900;color:white;letter-spacing:-.7px;margin-bottom:12px;line-height:1.2">Represent JobSettle<br><span style="background:linear-gradient(135deg,#a78bfa,#00e5b0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Earn ₹500 per referral</span></h1>
+        <p style="font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;max-width:520px">Be the go-to person for job opportunities in your college. Help your friends get placed, earn money, build leadership experience, and get a verified certificate.</p>
+        <!-- Earnings calculator -->
+        <div style="background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:20px 24px;margin-top:24px;max-width:440px">
+          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.6);margin-bottom:10px">Earnings Calculator</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <input type="range" id="ambCalcSlider" min="1" max="50" value="10" style="flex:1;accent-color:#a78bfa" oninput="updateAmbCalc(this.value)"/>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:28px;font-weight:900;color:#a78bfa;letter-spacing:-1px" id="ambCalcEarnings">₹5,000</div>
+              <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4)" id="ambCalcReferrals">10 referrals/month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Perks -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px">
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:18px;text-align:center">
+        <div style="font-size:28px;font-weight:900;color:var(--violet2);margin-bottom:6px">₹500</div>
+        <div style="font-size:12px;font-weight:700;color:var(--dark)">Per Referral</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">Paid monthly</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:18px;text-align:center">
+        <div style="font-size:28px;font-weight:900;color:var(--mint2);margin-bottom:6px">Pro</div>
+        <div style="font-size:12px;font-weight:700;color:var(--dark)">Plan Free</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">Worth ₹399/mo</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:18px;text-align:center">
+        <div style="font-size:28px;font-weight:900;color:#f59e0b;margin-bottom:6px"><i class="fas fa-certificate" style="font-size:24px"></i></div>
+        <div style="font-size:12px;font-weight:700;color:var(--dark)">Certificate</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">LinkedIn verified</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:18px;text-align:center">
+        <div style="font-size:28px;font-weight:900;color:var(--coral);margin-bottom:6px"><i class="fas fa-medal" style="font-size:24px"></i></div>
+        <div style="font-size:12px;font-weight:700;color:var(--dark)">Internship</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">Priority access</div>
+      </div>
+    </div>
+
+    <!-- Application Form -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:22px;overflow:hidden;margin-bottom:28px">
+      <div style="background:linear-gradient(135deg,rgba(124,92,252,.08),rgba(0,229,176,.05));border-bottom:2px solid var(--bd);padding:20px 26px">
+        <div style="font-size:18px;font-weight:900;color:var(--dark);letter-spacing:-.4px">Apply Now — It takes 2 minutes</div>
+        <div style="font-size:13px;color:var(--t3);margin-top:3px">We'll review and get back within 48 hours</div>
+      </div>
+      <div style="padding:26px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div><label class="fl">Full Name *</label><input class="fi" id="amb_name" style="margin-bottom:0" placeholder="Rahul Sharma"/></div>
+          <div><label class="fl">Email *</label><input class="fi" id="amb_email" type="email" style="margin-bottom:0" placeholder="rahul@college.edu"/></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div><label class="fl">College *</label><input class="fi" id="amb_college" style="margin-bottom:0" placeholder="IIT Bombay"/></div>
+          <div><label class="fl">Current Year</label>
+            <select class="fi" id="amb_year" style="cursor:pointer;margin-bottom:0">
+              <option>1st Year</option><option>2nd Year</option><option selected>3rd Year</option><option>4th Year</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div><label class="fl">Branch / Department</label><input class="fi" id="amb_branch" style="margin-bottom:0" placeholder="CSE, ECE, IT..."/></div>
+          <div><label class="fl">WhatsApp Number</label><input class="fi" id="amb_phone" style="margin-bottom:0" placeholder="+91 98765 43210"/></div>
+        </div>
+        <label class="fl">LinkedIn Profile</label>
+        <input class="fi" id="amb_linkedin" placeholder="https://linkedin.com/in/yourname"/>
+        <label class="fl">How many students can you reach in your college?</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+          <span class="badge-opt on" onclick="document.querySelectorAll('.amb-reach').forEach(x=>x.classList.remove('on'));this.classList.add('on')" style="cursor:pointer" class="amb-reach">50-100</span>
+          <span class="badge-opt" onclick="document.querySelectorAll('.amb-reach').forEach(x=>x.classList.remove('on'));this.classList.add('on')" style="cursor:pointer" class="amb-reach">100-300</span>
+          <span class="badge-opt" onclick="document.querySelectorAll('.amb-reach').forEach(x=>x.classList.remove('on'));this.classList.add('on')" style="cursor:pointer" class="amb-reach">300-500</span>
+          <span class="badge-opt" onclick="document.querySelectorAll('.amb-reach').forEach(x=>x.classList.remove('on'));this.classList.add('on')" style="cursor:pointer" class="amb-reach">500+</span>
+        </div>
+        <label class="fl">Why do you want to be a JobSettle Ambassador?</label>
+        <textarea class="fi" id="amb_why" rows="3" placeholder="I want to help my batchmates find great jobs and develop my leadership skills..." style="margin-bottom:18px"></textarea>
+        <button onclick="submitAmbassadorApp()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:12px;font-family:var(--font);font-size:15px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 18px rgba(124,92,252,.4)"><i class="fas fa-user-tie" style="margin-right:8px"></i>Apply to Become Ambassador</button>
+      </div>
+    </div>
+
+    <!-- Current Ambassadors Leaderboard -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:22px;padding:24px">
+      <div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:18px"><i class="fas fa-trophy" style="color:#f59e0b;margin-right:8px"></i>Top Ambassadors This Month</div>
+      <div id="publicAmbLeaderboard" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- JOB DETAIL PANEL (Jobright-style) -->
+<div id="jobDetailOverlay" style="display:none;position:fixed;inset:0;z-index:3000;display:none">
+  <!-- Backdrop -->
+  <div onclick="closeJobDetail()" style="position:absolute;inset:0;background:rgba(6,7,15,.5);backdrop-filter:blur(6px)"></div>
+  <!-- Panel -->
+  <div id="jobDetailPanel" style="position:absolute;right:0;top:0;bottom:0;width:100%;max-width:720px;background:white;overflow-y:auto;box-shadow:-20px 0 60px rgba(0,0,0,.15);display:flex;flex-direction:column">
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:2px solid var(--bd);position:sticky;top:0;background:white;z-index:10">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="closeJobDetail()" style="width:32px;height:32px;border-radius:8px;background:var(--bg);border:1.5px solid var(--bd);cursor:pointer;font-size:13px;color:var(--t2)"><i class="fas fa-times"></i></button>
+        <span id="jdTopTitle" style="font-size:13px;font-weight:700;color:var(--t2)"></span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button id="jdSaveBtn" onclick="jdToggleSave()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--bd);border-radius:9px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer"><i class="far fa-heart"></i> Save</button>
+        <button onclick="jdShare()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--bd);border-radius:9px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer"><i class="fas fa-share-alt"></i> Share</button>
+        <button onclick="jdApply()" style="display:flex;align-items:center;gap:7px;padding:8px 18px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:9px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,229,176,.3)"><i class="fas fa-bolt" style="font-size:11px"></i>APPLY WITH AUTOFILL</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div style="padding:24px 26px;flex:1">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:22px">
+        <div id="jdLogo" style="flex-shrink:0"></div>
+        <div style="flex:1">
+          <h1 id="jdTitle" style="font-size:22px;font-weight:900;color:var(--dark);letter-spacing:-.5px;margin-bottom:6px;line-height:1.25"></h1>
+          <div id="jdCompanyMeta" style="font-size:13.5px;color:var(--t2);margin-bottom:10px"></div>
+          <div id="jdTags" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+        </div>
+        <!-- Match ring -->
+        <div style="text-align:center;flex-shrink:0">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#f0f0f8" stroke-width="7"/>
+            <circle id="jdMatchRing" cx="40" cy="40" r="32" fill="none" stroke="#00e5b0" stroke-width="7" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset .8s ease"/>
+          </svg>
+          <div style="margin-top:-52px;text-align:center">
+            <div id="jdMatchPct" style="font-size:18px;font-weight:900;color:var(--dark)"></div>
+            <div id="jdMatchLabel" style="font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.5px;color:var(--t3)"></div>
+          </div>
+          <div style="margin-top:36px"></div>
+        </div>
+      </div>
+
+      <!-- Match breakdown -->
+      <div id="jdMatchBreakdown" style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      </div>
+
+      <!-- Apply CTA -->
+      <div id="jdApplyBanner" style="background:linear-gradient(135deg,#eafff8,#d0fdf0);border:2px solid rgba(0,212,164,.2);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div style="font-size:13.5px;font-weight:800;color:var(--dark)">Apply directly on company site</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:2px">1 click autofill • Your profile pre-filled</div>
+        </div>
+        <button id="jdCareerBtn" style="padding:9px 18px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:9px;font-family:var(--font);font-size:12.5px;font-weight:800;color:white;cursor:pointer;white-space:nowrap">Open Careers ↗</button>
+      </div>
+
+      <!-- Overview tabs -->
+      <div style="display:flex;gap:0;border-bottom:2px solid var(--bd);margin-bottom:20px">
+        <div onclick="jdTab('overview',this)" class="jd-tab jd-tab-on" style="padding:10px 18px;font-size:13.5px;font-weight:800;cursor:pointer;border-bottom:2.5px solid var(--mint2);margin-bottom:-2px;color:var(--mint2)">Overview</div>
+        <div onclick="jdTab('company',this)" class="jd-tab" style="padding:10px 18px;font-size:13.5px;font-weight:800;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-2px;color:var(--t3)">Company</div>
+      </div>
+
+      <!-- Overview tab content -->
+      <div id="jdOverviewTab">
+        <!-- Qualification -->
+        <div style="margin-bottom:22px">
+          <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:4px;display:flex;align-items:center;gap:8px"><i class="fas fa-check-circle" style="color:var(--mint2);font-size:14px"></i>Qualification</div>
+          <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Skills that match your profile are highlighted</div>
+          <div id="jdSkillTags" style="display:flex;flex-wrap:wrap;gap:7px"></div>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom:22px">
+          <div style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:10px;display:flex;align-items:center;gap:8px"><i class="fas fa-clipboard-list" style="color:var(--violet);font-size:14px"></i>Job Description</div>
+          <div id="jdDescription" style="font-size:13.5px;color:var(--t2);line-height:1.8"></div>
+        </div>
+
+        <!-- AI Match tip -->
+        <div style="background:linear-gradient(135deg,var(--violet3),#ede8ff);border:1.5px solid rgba(124,92,252,.2);border-radius:13px;padding:16px;margin-bottom:22px">
+          <div style="font-size:13px;font-weight:800;color:var(--violet2);margin-bottom:6px"><i class="fas fa-robot" style="margin-right:6px"></i>JobSettle AI says</div>
+          <div id="jdAiTip" style="font-size:13px;color:var(--t2);line-height:1.65"></div>
+          <button onclick="showInterviewPrepView();closeJobDetail()" style="margin-top:10px;padding:7px 16px;background:var(--violet);color:white;border:none;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;cursor:pointer">Prep with AI →</button>
+        </div>
+      </div>
+
+      <!-- Company tab content -->
+      <div id="jdCompanyTab" style="display:none">
+        <div id="jdCompanyInfo"></div>
+      </div>
+
+    </div>
+
+    <!-- Bottom apply bar -->
+    <div style="padding:16px 22px;border-top:2px solid var(--bd);background:white;display:flex;gap:10px;position:sticky;bottom:0">
+      <button id="jdSaveBtn2" onclick="jdToggleSave()" style="flex:1;padding:12px;border:2px solid var(--bd);border-radius:11px;background:white;font-family:var(--font);font-size:13.5px;font-weight:800;color:var(--t2);cursor:pointer"><i class="far fa-heart" style="margin-right:6px"></i>Save</button>
+      <button onclick="jdApply()" style="flex:2;padding:12px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:11px;font-family:var(--font);font-size:13.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,229,176,.3)"><i class="fas fa-bolt" style="margin-right:6px;font-size:12px"></i>APPLY WITH AUTOFILL</button>
+    </div>
+  </div>
+</div>
+
+<!-- APPLY MODAL (simple) -->
 <div class="modal-bg" id="modalBg" onclick="mbgClick(event)">
   <div class="modal">
     <div class="mhdr">
@@ -2641,18 +2942,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
       <div class="sv" id="sv">
         <div style="font-size:60px;margin-bottom:18px"><i class="fas fa-trophy" style="font-size:56px;color:#f59e0b"></i></div>
         <div style="font-size:26px;font-weight:900;color:var(--dark);letter-spacing:-.5px;margin-bottom:10px">Application Sent!</div>
-        <div style="font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:30px;max-width:360px;margin-left:auto;margin-right:auto">Now prepare for the interview with JobSettle AI — real-time answers, completely undetectable on screen share.</div>
-        <button class="btn btn-violet" style="width:100%;justify-content:center;font-size:15px;margin-bottom:12px;padding:14px" onclick="closeModal()"> Open JobSettle AI →</button>
+        <div style="font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:30px;max-width:360px;margin-left:auto;margin-right:auto">Opening company careers page now. Prepare for interview with JobSettle AI!</div>
+        <button class="btn btn-violet" style="width:100%;justify-content:center;font-size:15px;margin-bottom:12px;padding:14px" onclick="showInterviewPrepView();closeModal()"><i class="fas fa-robot"></i> Open JobSettle AI →</button>
         <button class="btn btn-glass" style="width:100%;justify-content:center" onclick="closeModal()">Back to Jobs</button>
       </div>
       <div id="fv">
-        <!-- Career Page Banner -->
         <div id="careerLinkBanner" style="display:none;align-items:center;gap:12px;background:linear-gradient(135deg,#eafff8,#d0fdf0);border:2px solid rgba(0,212,164,.25);border-radius:13px;padding:14px 16px;margin-bottom:16px">
           <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--mint),var(--mint2));border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-external-link-alt" style="color:white;font-size:16px"></i></div>
-          <div style="flex:1"><div style="font-size:13.5px;font-weight:800;color:var(--dark);margin-bottom:2px">Direct Application</div><div style="font-size:12px;color:var(--t2)">After submitting, you'll be taken to the company's official careers page</div></div>
+          <div style="flex:1"><div style="font-size:13.5px;font-weight:800;color:var(--dark);margin-bottom:2px">Direct Application</div><div style="font-size:12px;color:var(--t2)">You'll be taken to the company's official careers page</div></div>
           <button id="careerLinkBtn" style="padding:8px 16px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:9px;font-family:var(--font);font-size:12px;font-weight:800;color:white;cursor:pointer;white-space:nowrap;flex-shrink:0">Open Careers ↗</button>
         </div>
-        <div class="ai-tip-box"><span class="ai-tip-ico"></span><div class="ai-tip-txt"><strong>JobSettle AI Tip:</strong> After applying, use JobSettle AI for real-time interview prep. Completely invisible on screen share. <a href="#" style="color:var(--violet);font-weight:900">Try free →</a></div></div>
+        <div class="ai-tip-box"><span class="ai-tip-ico"></span><div class="ai-tip-txt"><strong>JobSettle AI Tip:</strong> After applying, use JobSettle AI for real-time interview prep. <a href="#" style="color:var(--violet);font-weight:900">Try free →</a></div></div>
         <label class="fl">Full Name *</label><input class="fi" id="apN" placeholder="Rahul Sharma"/>
         <label class="fl">Email *</label><input class="fi" type="email" id="apE" placeholder="rahul@email.com"/>
         <div class="frow2" style="gap:12px"><div><label class="fl">Phone</label><input class="fi" placeholder="+91 98765..." style="margin-bottom:0"/></div><div><label class="fl">Experience</label><select class="fi" style="cursor:pointer;margin-bottom:0"><option>Fresher</option><option>1–2 yrs</option><option>2–4 yrs</option><option>4–7 yrs</option><option>7+ yrs</option></select></div></div>
@@ -3278,7 +3578,8 @@ const PAGE_META={
   campus_db:{title:'Campus Placement Database',sub:'Real OA questions & interview experiences from top colleges',search:false,filter:false},
   callback:{title:'Will I Get a Call Back?',sub:'AI predicts your shortlist probability from JD + profile',search:false,filter:false},
   rejection:{title:'Rejection Analyzer',sub:'Find out exactly why you were rejected and what to fix',search:false,filter:false},
-  emergency:{title:'Interview Tomorrow — SOS Prep',sub:'Emergency prep plan tailored to your company',search:false,filter:false},
+  collegeConnect:{title:'College Connect',sub:'Partner with JobSettle — free for all colleges',search:false,filter:false},
+  ambassador:{title:'Campus Ambassador Program',sub:'Represent JobSettle · Earn ₹500 per referral',search:false,filter:false},
   profile:{title:'My Profile',sub:'Edit your info, skills and experience',search:false,filter:false},
   resume:{title:'Resume',sub:'Upload and manage your resume',search:false,filter:false},
   settings:{title:'Settings',sub:'Manage your account preferences',search:false,filter:false},
@@ -3294,12 +3595,118 @@ function hideAllViews(){
   ['jobsView','trackerView','profileView','resumeView','settingsView',
    'savedJobsView','appliedView','interviewPrepView','alertsView',
    'salaryView','companiesView','referralView',
-   'mockView','leaderboardView','resumeBuilderView','communityView','newsView','campusDBView','callbackView','rejectionView','emergencyPrepView'
+   'mockView','leaderboardView','resumeBuilderView','communityView','newsView','campusDBView','callbackView','rejectionView','emergencyPrepView',
+   'collegeConnectView','ambassadorView'
   ].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none'})
 }
 function showJobsView(){hideAllViews();setPage('jobs');document.getElementById('jobsView').style.display='grid'}
 function showTracker(){hideAllViews();setPage('tracker');document.getElementById('trackerView').style.display='block';renderTracker()}
 function showProfile(){hideAllViews();setPage('profile');document.getElementById('profileView').style.display='block';loadProfileData()}
+function showCollegeConnectView(){
+  hideAllViews()
+  setPage('collegeConnect')
+  document.getElementById('collegeConnectView').style.display='block'
+  renderPartnerColleges()
+}
+
+function showAmbassadorView(){
+  hideAllViews()
+  setPage('ambassador')
+  document.getElementById('ambassadorView').style.display='block'
+  renderPublicLeaderboard()
+}
+
+function updateAmbCalc(val){
+  document.getElementById('ambCalcEarnings').textContent='₹'+(val*500).toLocaleString()
+  document.getElementById('ambCalcReferrals').textContent=val+' referrals/month'
+}
+
+var PARTNER_COLLEGES = [
+  {name:'IIT Bombay',type:'IIT',city:'Mumbai',color:'#7c5cfc'},
+  {name:'NIT Trichy',type:'NIT',city:'Trichy',color:'#00b88a'},
+  {name:'BITS Pilani',type:'BITS',city:'Pilani',color:'#2fc0f0'},
+  {name:'VIT Vellore',type:'Private',city:'Vellore',color:'#f59e0b'},
+  {name:'DTU Delhi',type:'Govt.',city:'Delhi',color:'#f43f5e'},
+  {name:'IIIT Hyderabad',type:'IIIT',city:'Hyderabad',color:'#ff3daf'},
+  {name:'Jadavpur Univ.',type:'Govt.',city:'Kolkata',color:'#3b82f6'},
+  {name:'JIS University',type:'Private',city:'Kolkata',color:'#7c5cfc'},
+]
+
+function renderPartnerColleges(){
+  var el=document.getElementById('partnerCollegesGrid'); if(!el) return
+  el.innerHTML=PARTNER_COLLEGES.map(function(c){
+    return '<div style="padding:16px;border:1.5px solid var(--bd);border-radius:14px;text-align:center;transition:all .2s" onmouseover="this.style.borderColor=\''+c.color+'\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'var(--bd)\';this.style.transform=\'none\'">'
+      +'<div style="width:44px;height:44px;border-radius:12px;background:'+c.color+'18;display:flex;align-items:center;justify-content:center;margin:0 auto 10px"><span style="font-size:16px;font-weight:900;color:'+c.color+'">'+c.name[0]+'</span></div>'
+      +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:2px">'+c.name+'</div>'
+      +'<div style="font-size:10px;font-family:var(--mono);color:'+c.color+';background:'+c.color+'12;padding:2px 8px;border-radius:5px;display:inline-block">'+c.type+'</div>'
+      +'</div>'
+  }).join('')
+}
+
+var PUBLIC_AMBASSADORS = [
+  {name:'Arjun N.',college:'IIT Bombay',referrals:31,avatar:null},
+  {name:'Soumyadip D.',college:'JIS University',referrals:24,avatar:null},
+  {name:'Priya S.',college:'NIT Trichy',referrals:18,avatar:null},
+  {name:'Sneha K.',college:'BITS Pilani',referrals:9,avatar:null},
+  {name:'Rahul M.',college:'VIT Vellore',referrals:6,avatar:null},
+]
+
+function renderPublicLeaderboard(){
+  var el=document.getElementById('publicAmbLeaderboard'); if(!el) return
+  var medals=['<i class="fas fa-medal" style="color:#f59e0b;font-size:20px"></i>','<i class="fas fa-medal" style="color:#94a3b8;font-size:20px"></i>','<i class="fas fa-medal" style="color:#cd7f32;font-size:20px"></i>']
+  el.innerHTML=PUBLIC_AMBASSADORS.map(function(a,i){
+    var c=['var(--violet2)','var(--t2)','var(--t2)','var(--t2)','var(--t2)'][i]
+    return '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border-radius:14px">'
+      +'<div style="width:36px;text-align:center">'+(i<3?medals[i]:'<span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--t3)">#'+(i+1)+'</span>')+'</div>'
+      +'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--mint));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:white;flex-shrink:0">'+a.name[0]+'</div>'
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--dark)">'+a.name+'</div><div style="font-size:12px;color:var(--t3)">'+a.college+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:20px;font-weight:900;color:'+c+'">'+a.referrals+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3)">referrals</div></div>'
+      +'<div style="text-align:right"><div style="font-size:14px;font-weight:800;color:var(--mint2)">₹'+(a.referrals*500).toLocaleString()+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3)">earned</div></div>'
+      +'</div>'
+  }).join('')
+}
+
+function submitCollegePartnership(){
+  var college=document.getElementById('cc_college').value.trim()
+  var name=document.getElementById('cc_name').value.trim()
+  var email=document.getElementById('cc_email').value.trim()
+  if(!college||!name||!email){toast('Please fill required fields',1);return}
+  var btn=event.target
+  btn.innerHTML='<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Submitting...'
+  btn.disabled=true
+  setTimeout(function(){
+    // Save locally
+    var req={id:Date.now(),college,name,email,city:document.getElementById('cc_city').value,phone:document.getElementById('cc_phone').value,students:document.getElementById('cc_students').value,message:document.getElementById('cc_message').value,submitted:new Date().toISOString()}
+    var reqs=JSON.parse(localStorage.getItem('js_college_requests')||'[]')
+    reqs.push(req); localStorage.setItem('js_college_requests',JSON.stringify(reqs))
+    btn.innerHTML='<i class="fas fa-check" style="margin-right:8px"></i>Request Submitted!'
+    btn.style.background='linear-gradient(135deg,#22c55e,#16a34a)'
+    ;['cc_college','cc_city','cc_name','cc_email','cc_phone','cc_students','cc_message'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=''})
+    toast('Partnership request sent! Our team will contact you within 24 hours.')
+    setTimeout(function(){btn.innerHTML='<i class="fas fa-paper-plane" style="margin-right:8px"></i>Submit Partnership Request';btn.style.background='linear-gradient(135deg,#f59e0b,#d97706)';btn.disabled=false},4000)
+  },1500)
+}
+
+function submitAmbassadorApp(){
+  var name=document.getElementById('amb_name').value.trim()
+  var email=document.getElementById('amb_email').value.trim()
+  var college=document.getElementById('amb_college').value.trim()
+  if(!name||!email||!college){toast('Please fill required fields',1);return}
+  var btn=event.target
+  btn.innerHTML='<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Submitting...'
+  btn.disabled=true
+  setTimeout(function(){
+    var app={id:Date.now(),name,email,college,year:document.getElementById('amb_year').value,branch:document.getElementById('amb_branch').value,phone:document.getElementById('amb_phone').value,linkedin:document.getElementById('amb_linkedin').value,why:document.getElementById('amb_why').value,submitted:new Date().toISOString(),status:'pending'}
+    var apps=JSON.parse(localStorage.getItem('js_amb_applications')||'[]')
+    apps.push(app); localStorage.setItem('js_amb_applications',JSON.stringify(apps))
+    btn.innerHTML='<i class="fas fa-check" style="margin-right:8px"></i>Application Submitted!'
+    btn.style.background='linear-gradient(135deg,#22c55e,#16a34a)'
+    ;['amb_name','amb_email','amb_college','amb_branch','amb_phone','amb_linkedin','amb_why'].forEach(id=>{var el=document.getElementById(id);if(el)el.value=''})
+    toast('Ambassador application submitted! We\'ll review and contact you within 48 hours.')
+    setTimeout(function(){btn.innerHTML='<i class="fas fa-user-tie" style="margin-right:8px"></i>Apply to Become Ambassador';btn.style.background='linear-gradient(135deg,var(--violet),var(--violet2))';btn.disabled=false},4000)
+  },1500)
+}
+
 function showResume(){
   hideAllViews();setPage('resume');
   document.getElementById('resumeView').style.display='block';
@@ -4028,28 +4435,252 @@ function delT(id){
 
 // MODAL
 let curJobId=null
-function openApply(id){
-  const j=cachedJobs.find(j=>String(j.id)===String(id));if(!j)return
-  curJobId=String(id)
-  document.getElementById('mLogo').innerHTML=getLogo(j.logo_key||j.logoKey,j.company)
-  document.getElementById('mTitle').textContent=j.title
-  document.getElementById('mMeta').textContent=j.company+' · '+j.location+(j.salary?' · '+j.salary:'')
-  document.getElementById('sv').classList.remove('on')
-  document.getElementById('fv').style.display='block'
-  document.getElementById('mFoot').style.display='flex'
-  if(user){document.getElementById('apN').value=user.name;document.getElementById('apE').value=user.email}
+// ── JOB DETAIL PANEL (Jobright-style) ──────────────────────────
+var jdJobId = null
 
-  // Show career link if available
-  const careerBanner=document.getElementById('careerLinkBanner')
-  const careerBtn=document.getElementById('careerLinkBtn')
+function openApply(id){
+  const j = cachedJobs.find(j=>String(j.id)===String(id))
+  if(!j) return
+  jdJobId = String(id)
+
+  // Show panel
+  const overlay = document.getElementById('jobDetailOverlay')
+  overlay.style.display = 'block'
+  setTimeout(()=>overlay.style.display='block',10)
+
+  // Top title
+  document.getElementById('jdTopTitle').textContent = j.title
+
+  // Logo
+  document.getElementById('jdLogo').innerHTML = getLogo(j.logo_key||j.logoKey, j.company)
+
+  // Title & meta
+  document.getElementById('jdTitle').textContent = j.title
+  document.getElementById('jdCompanyMeta').innerHTML = `
+    <strong style="color:var(--dark)">${j.company}</strong>
+    <span style="color:var(--t3);margin:0 6px">·</span>${j.location}
+    <span style="color:var(--t3);margin:0 6px">·</span>${j.type||'Full-time'}
+    ${j.salary?`<span style="color:var(--t3);margin:0 6px">·</span><span style="color:var(--mint2);font-weight:800">${j.salary}</span>`:''}
+  `
+
+  // Tags
+  const b = j.badges||{}
+  const tags = []
+  if(b.new) tags.push({l:'New',c:'#7c5cfc',bg:'#ede8ff'})
+  if(b.hot||b.urgent) tags.push({l:'Hot',c:'#f43f5e',bg:'#ffe8ea'})
+  if(b.featured) tags.push({l:'Featured',c:'#b45309',bg:'#fff4d0'})
+  if(j.location?.toLowerCase().includes('remote')) tags.push({l:'Remote',c:'#2fc0f0',bg:'#e0f6ff'})
+  if(b.campus) tags.push({l:'Campus',c:'#00b88a',bg:'#d4fdf3'})
+  const expLabel = j.exp?.startsWith('0')?'Entry Level':j.exp?.startsWith('1')?'Entry / Mid':'Mid Level'
+  tags.push({l:expLabel,c:'var(--t2)',bg:'var(--bg)'})
+  document.getElementById('jdTags').innerHTML = tags.map(t=>`<span style="padding:4px 11px;background:${t.bg};color:${t.c};border-radius:7px;font-size:12px;font-weight:700">${t.l}</span>`).join('')
+
+  // Match ring
+  const match = j.match_score||82
+  const mc = match>=90?'#00e5b0':match>=80?'#ffb400':'#2fc0f0'
+  const ml = match>=90?'STRONG MATCH':match>=80?'GOOD MATCH':'FAIR MATCH'
+  const circumference = 201
+  const offset = circumference - (match/100)*circumference
+  document.getElementById('jdMatchRing').style.strokeDashoffset = offset
+  document.getElementById('jdMatchRing').style.stroke = mc
+  document.getElementById('jdMatchPct').textContent = match+'%'
+  document.getElementById('jdMatchPct').style.color = mc
+  document.getElementById('jdMatchLabel').textContent = ml
+
+  // Match breakdown bars
+  const expMatch = Math.min(99, match + Math.floor(Math.random()*8)-4)
+  const skillMatch = Math.min(99, match - Math.floor(Math.random()*12))
+  const indMatch = Math.min(99, match + Math.floor(Math.random()*6))
+  document.getElementById('jdMatchBreakdown').innerHTML = [
+    {l:'Experience',v:expMatch,c:'#7c5cfc'},
+    {l:'Skill',v:skillMatch,c:'#00e5b0'},
+    {l:'Industry Exp.',v:indMatch,c:'#2fc0f0'}
+  ].map(m=>`
+    <div style="text-align:center">
+      <div style="font-size:20px;font-weight:900;color:${m.c};letter-spacing:-1px">${m.v}%</div>
+      <div style="font-size:11px;color:var(--t3);font-family:var(--mono);margin:4px 0 6px">${m.l}</div>
+      <div style="height:5px;background:var(--bd);border-radius:3px"><div style="height:100%;width:${m.v}%;background:${m.c};border-radius:3px"></div></div>
+    </div>`).join('')
+
+  // Career link
   if(j.apply_link){
-    careerBanner.style.display='flex'
-    careerBtn.onclick=()=>window.open(j.apply_link,'_blank')
-    careerBtn.textContent='Open '+j.company+' Careers ↗'
+    document.getElementById('jdApplyBanner').style.display='flex'
+    document.getElementById('jdCareerBtn').onclick = ()=>window.open(j.apply_link,'_blank')
+    document.getElementById('jdCareerBtn').textContent = 'Open '+j.company+' Careers ↗'
   } else {
-    careerBanner.style.display='none'
+    document.getElementById('jdApplyBanner').style.display='none'
   }
-  document.getElementById('modalBg').classList.add('open')
+
+  // Skills
+  const userSkills = ['C++','Python','React','FastAPI','Docker','Git','Machine Learning','JavaScript','Node.js','SQL']
+  const skills = j.skills||['Python','React','Node.js','SQL','Docker','Git','AWS','TypeScript']
+  document.getElementById('jdSkillTags').innerHTML = skills.map(s=>{
+    const match2 = userSkills.some(us=>us.toLowerCase()===s.toLowerCase()||s.toLowerCase().includes(us.toLowerCase()))
+    const thumbIcon = match2 ? '<i class="fas fa-thumbs-up" style="font-size:10px"><\\/i> ' : ''
+    const bg = match2 ? 'var(--mint3)' : 'var(--bg)'
+    const color = match2 ? 'var(--mint2)' : 'var(--t2)'
+    const border = match2 ? 'var(--mint4)' : 'var(--bd)'
+    return '<span style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:'+bg+';color:'+color+';border:1.5px solid '+border+'">'+thumbIcon+s+'</span>'
+  }).join('')
+
+  // Description — render with bullet points
+  const desc = j.description || `${j.company} is looking for a talented ${j.title} to join their growing team.\n\nResponsibilities:\n• Build and maintain scalable systems\n• Collaborate with cross-functional teams\n• Write clean, well-tested code\n• Participate in code reviews\n\nRequirements:\n• ${j.exp||'0-2 years'} of relevant experience\n• Strong problem-solving skills\n• ${(j.skills||['Python','React']).slice(0,3).join(', ')} proficiency\n\nBenefits:\n• Competitive salary ${j.salary?'('+j.salary+')':''}\n• Health insurance\n• Work from ${j.location?.includes('Remote')?'anywhere':'our '+j.location+' office'}`
+
+  const descHtml = desc.split('\n').map(line=>{
+    if(!line.trim()) return '<div style="height:8px"></div>'
+    if(line.startsWith('•') || line.startsWith('-')){
+      return `<div style="display:flex;gap:8px;margin-bottom:6px"><span style="color:var(--mint2);flex-shrink:0;margin-top:2px">•</span><span>${line.replace(/^[•\-]\s*/,'')}</span></div>`
+    }
+    if(line.endsWith(':') && line.length < 40){
+      return `<div style="font-size:14px;font-weight:800;color:var(--dark);margin:14px 0 8px">${line}</div>`
+    }
+    return `<div style="margin-bottom:8px">${line}</div>`
+  }).join('')
+  document.getElementById('jdDescription').innerHTML = descHtml
+
+  // AI tip
+  const tips = [
+    `Your C++ and Python skills are a strong match. Emphasize your ${j.company==='Google'?'distributed systems':'system design'} experience. Apply within 24 hours — early applicants get 3x more callbacks.`,
+    `This role matches your profile well. Highlight your project impact with metrics. The ${j.type||'full-time'} role at ${j.company} gets 50+ applications — make your resume stand out.`,
+    `Good match! Focus your cover letter on ${(j.skills||['Python','React'])[0]} and ${(j.skills||['Python','React'])[1]||'system design'}. ${j.location?.includes('Remote')?'Remote roles get more applicants — apply fast!':'Bangalore roles fill quickly — apply today.'}`
+  ]
+  document.getElementById('jdAiTip').textContent = tips[Math.floor(Math.random()*tips.length)]
+
+  // Company info
+  document.getElementById('jdCompanyInfo').innerHTML = `
+    <div style="padding:20px;background:var(--bg);border-radius:14px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+        ${getLogo(j.logo_key||j.logoKey, j.company)}
+        <div>
+          <div style="font-size:17px;font-weight:900;color:var(--dark)">${j.company}</div>
+          <div style="font-size:12px;color:var(--t3);font-family:var(--mono);margin-top:2px">Technology · Software</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="padding:12px;background:white;border-radius:10px;border:1.5px solid var(--bd)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;margin-bottom:4px">EMPLOYEES</div>
+          <div style="font-size:13px;font-weight:700;color:var(--dark)">51–500</div>
+        </div>
+        <div style="padding:12px;background:white;border-radius:10px;border:1.5px solid var(--bd)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;margin-bottom:4px">STAGE</div>
+          <div style="font-size:13px;font-weight:700;color:var(--dark)">Growth Stage</div>
+        </div>
+        <div style="padding:12px;background:white;border-radius:10px;border:1.5px solid var(--bd)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;margin-bottom:4px">LOCATION</div>
+          <div style="font-size:13px;font-weight:700;color:var(--dark)">${j.location||'Remote'}</div>
+        </div>
+        <div style="padding:12px;background:white;border-radius:10px;border:1.5px solid var(--bd)">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--t3);letter-spacing:1px;margin-bottom:4px">SALARY</div>
+          <div style="font-size:13px;font-weight:700;color:var(--mint2)">${j.salary||'Competitive'}</div>
+        </div>
+      </div>
+    </div>`
+
+  // Save btn state
+  const isSaved = saved.includes(jdJobId)
+  ;['jdSaveBtn','jdSaveBtn2'].forEach(id=>{
+    const el = document.getElementById(id)
+    if(el){
+      el.innerHTML = isSaved?'<i class="fas fa-heart" style="color:#f43f5e;margin-right:6px"></i>Saved':'<i class="far fa-heart" style="margin-right:6px"></i>Save'
+      el.style.borderColor = isSaved?'#f43f5e':'var(--bd)'
+    }
+  })
+
+  // Set modal data too (for submitApp compatibility)
+  curJobId = jdJobId
+  document.getElementById('mTitle').textContent = j.title
+  document.getElementById('mMeta').textContent = j.company+' · '+j.location
+  document.getElementById('mLogo').innerHTML = getLogo(j.logo_key||j.logoKey, j.company)
+  if(j.apply_link){
+    document.getElementById('careerLinkBanner').style.display='flex'
+    document.getElementById('careerLinkBtn').onclick=()=>window.open(j.apply_link,'_blank')
+  }
+  if(user){ document.getElementById('apN').value=user.name; document.getElementById('apE').value=user.email }
+}
+
+function closeJobDetail(){
+  document.getElementById('jobDetailOverlay').style.display='none'
+}
+
+function jdTab(tab, el){
+  document.querySelectorAll('.jd-tab').forEach(t=>{
+    t.style.borderBottomColor='transparent'
+    t.style.color='var(--t3)'
+  })
+  el.style.borderBottomColor='var(--mint2)'
+  el.style.color='var(--mint2)'
+  document.getElementById('jdOverviewTab').style.display = tab==='overview'?'block':'none'
+  document.getElementById('jdCompanyTab').style.display = tab==='company'?'block':'none'
+}
+
+function jdShare(){
+  const j = cachedJobs.find(j=>String(j.id)===String(jdJobId))
+  if(!j) return
+  const text = `${j.title} at ${j.company} — ${j.location} ${j.salary?'· '+j.salary:''}\n\nFound on JobSettle — India's Smartest Job Portal\n${window.location.href}`
+  if(navigator.share){
+    navigator.share({title:j.title+' at '+j.company, text, url:window.location.href})
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text)
+    toast('Job link copied to clipboard!')
+  } else {
+    // Fallback: show share options
+    const opts = [
+      {label:'WhatsApp', url:'https://wa.me/?text='+encodeURIComponent(text)},
+      {label:'LinkedIn', url:'https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(window.location.href)},
+      {label:'Twitter', url:'https://twitter.com/intent/tweet?text='+encodeURIComponent(j.title+' at '+j.company+' on JobSettle')},
+      {label:'Copy Link', url:null}
+    ]
+    const menu = document.createElement('div')
+    menu.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5)'
+    menu.innerHTML='<div style="background:white;border-radius:20px;padding:24px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.3)">'
+      +'<div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:16px">Share Job</div>'
+      +'<div style="font-size:13px;font-weight:700;color:var(--t2);margin-bottom:16px;padding:12px;background:var(--bg);border-radius:10px">'+j.title+' at '+j.company+'</div>'
+      +opts.map(o=>'<button onclick="'+(o.url?'window.open(\''+o.url+'\',\'_blank\')':"navigator.clipboard.writeText('"+text.replace(/'/g,"\\'")+"');toast('Copied!')")+';this.closest(\'[style*=fixed]\').remove()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;margin-bottom:8px;background:var(--bg);border:1.5px solid var(--bd);border-radius:10px;font-family:var(--font);font-size:13px;font-weight:700;color:var(--dark);cursor:pointer">'+o.label+'</button>').join('')
+      +'<button onclick="this.closest(\'[style*=fixed]\').remove()" style="width:100%;padding:10px;background:none;border:none;font-family:var(--font);font-size:13px;color:var(--t3);cursor:pointer">Cancel</button>'
+      +'</div>'
+    document.body.appendChild(menu)
+    menu.onclick = e=>{ if(e.target===menu) menu.remove() }
+  }
+}
+
+function jdToggleSave(){
+  if(!jdJobId) return
+  const idx = saved.indexOf(jdJobId)
+  if(idx>-1){ saved.splice(idx,1) } else { saved.push(jdJobId) }
+  localStorage.setItem('js_saved', JSON.stringify(saved))
+  const isSaved = saved.includes(jdJobId)
+  ;['jdSaveBtn','jdSaveBtn2'].forEach(id=>{
+    const el=document.getElementById(id)
+    if(el){
+      el.innerHTML=isSaved?'<i class="fas fa-heart" style="color:#f43f5e;margin-right:6px"></i>Saved':'<i class="far fa-heart" style="margin-right:6px"></i>Save'
+      el.style.borderColor=isSaved?'#f43f5e':'var(--bd)'
+    }
+  })
+  updateCounts(); renderJobs()
+  toast(isSaved?'Job saved!':'Removed from saved')
+}
+
+function jdApply(){
+  const j = cachedJobs.find(j=>String(j.id)===String(jdJobId))
+  if(!j) return
+  closeJobDetail()
+  // Open career page directly
+  if(j.apply_link) window.open(j.apply_link,'_blank')
+  // Track application
+  if(!applied.includes(jdJobId)){
+    applied.push(jdJobId)
+    localStorage.setItem('js_applied',JSON.stringify(applied))
+    if(!tracker.find(t=>t.title===j.title&&t.company===j.company)){
+      const entry={id:'t'+Date.now(),title:j.title,company:j.company,salary:j.salary,stage:'applied',logo_key:j.logo_key||j.logoKey,notes:'',added_at:new Date().toISOString()}
+      tracker.unshift(entry);localStorage.setItem('js_tracker',JSON.stringify(tracker))
+    }
+    const allApps=JSON.parse(localStorage.getItem('js_all_apps')||'[]')
+    allApps.push({job_id:jdJobId,job_title:j.title,company:j.company,name:user?.name,email:user?.email,applied_at:new Date().toISOString()})
+    localStorage.setItem('js_all_apps',JSON.stringify(allApps))
+    if(j) saveApplicationToSupabase({jobId:jdJobId,jobTitle:j.title,company:j.company})
+    updateCounts()
+  }
+  toast('Application tracked! Opening '+j.company+' careers...')
 }
 function closeModal(){document.getElementById('modalBg').classList.remove('open')}
 function mbgClick(e){if(e.target===document.getElementById('modalBg'))closeModal()}
@@ -4153,26 +4784,26 @@ function renderCBHistory(){
 // ═══ REJECTION ANALYZER ═══
 // Icon lookup — avoids HTML tags inside JS strings (breaks HTML parser)
 var ICONS = {
-  code:'<i class="fas fa-laptop-code"></i>',
-  target:'<i class="fas fa-crosshairs"></i>',
-  design:'<i class="fas fa-drafting-compass"></i>',
-  mic:'<i class="fas fa-microphone"></i>',
-  sleep:'<i class="fas fa-moon"></i>',
-  time:'<i class="fas fa-clock"></i>',
-  skill:'<i class="fas fa-tools"></i>',
-  culture:'<i class="fas fa-handshake"></i>',
-  compete:'<i class="fas fa-chart-bar"></i>',
-  resume:'<i class="fas fa-file-alt"></i>',
-  study:'<i class="fas fa-book"></i>',
-  repeat:'<i class="fas fa-redo"></i>',
-  keyword:'<i class="fas fa-key"></i>',
-  impact:'<i class="fas fa-chart-line"></i>',
-  star:'<i class="fas fa-star"></i>',
-  retry:'<i class="fas fa-sync"></i>',
-  offer:'<i class="fas fa-pen"></i>',
-  search:'<i class="fas fa-search"></i>'
+  code:'fa-laptop-code',
+  target:'fa-crosshairs',
+  design:'fa-drafting-compass',
+  mic:'fa-microphone',
+  sleep:'fa-moon',
+  time:'fa-clock',
+  skill:'fa-tools',
+  culture:'fa-handshake',
+  compete:'fa-chart-bar',
+  resume:'fa-file-alt',
+  study:'fa-book',
+  repeat:'fa-redo',
+  keyword:'fa-key',
+  impact:'fa-chart-line',
+  star:'fa-star',
+  retry:'fa-sync',
+  offer:'fa-pen',
+  search:'fa-search'
 }
-function ico(k){return ICONS[k]||'<i class="fas fa-circle"></i>'}
+function ico(k){var cls=ICONS[k]||'fa-circle';return '<i class="fas '+cls+'"><\/i>'}
 
 function analyzeRejection(){
   const email=document.getElementById('rej_email').value.trim()
