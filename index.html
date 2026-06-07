@@ -3025,18 +3025,27 @@ const LOGOS={
   zepto:`<svg viewBox="0 0 24 24" width="28" height="28"><rect width="24" height="24" rx="12" fill="#8b5cf6"/><text x="12" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="900" font-family="Arial">Z</text></svg>`,
 }
 const COLORS={google:'#4285f4',amazon:'#ff9900',microsoft:'#00a4ef',flipkart:'#2874f0',swiggy:'#ff5200',tcs:'#6c2fa0',razorpay:'#2d89ef',zepto:'#8b5cf6'}
-function getLogo(key,company){return LOGOS[key]||`<svg viewBox="0 0 24 24" width="28" height="28"><rect width="24" height="24" rx="6" fill="${COLORS[key]||'#6366f1'}"/><text x="12" y="17" text-anchor="middle" fill="white" font-size="13" font-weight="900" font-family="Arial">${(company||'?')[0]}</text></svg>`}
+function getLogo(key, company, logoUrl){
+  var co = (company||'?')[0]
+  var color = COLORS[key]||'#6366f1'
+  var fallback = '<svg viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="10" fill="'+color+'"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="16" font-weight="900" font-family="Arial">'+co+'</text></svg>'
+  var imgStyle = 'width:40px;height:40px;border-radius:10px;object-fit:contain;background:white;padding:4px;border:1.5px solid var(--bd)'
 
-const FALLBACK_JOBS=[
-  {id:'j1',title:'Senior Software Engineer',company:'Google',logo_key:'google',location:'Bangalore',salary:'₹40–70 LPA',exp:'3-7',type:'Full-time',category:'sde',badges:{featured:true,new:true},match_score:97,posted_at:new Date(Date.now()-2*36e5).toISOString()},
-  {id:'j2',title:'SDE-2 Backend Engineer',company:'Amazon',logo_key:'amazon',location:'Hyderabad',salary:'₹35–55 LPA',exp:'2-5',type:'Full-time',category:'sde',badges:{urgent:true},match_score:93,posted_at:new Date(Date.now()-24*36e5).toISOString()},
-  {id:'j3',title:'Frontend Engineer — React',company:'Microsoft',logo_key:'microsoft',location:'Remote',salary:'₹30–50 LPA',exp:'2-4',type:'Full-time',category:'frontend',badges:{remote:true,new:true},match_score:88,posted_at:new Date(Date.now()-3*36e5).toISOString()},
-  {id:'j4',title:'Data Scientist — ML',company:'Flipkart',logo_key:'flipkart',location:'Bangalore',salary:'₹25–45 LPA',exp:'1-4',type:'Full-time',category:'ml',badges:{featured:true},match_score:85,posted_at:new Date(Date.now()-48*36e5).toISOString()},
-  {id:'j5',title:'Software Engineer — Fresher',company:'Swiggy',logo_key:'swiggy',location:'Mumbai',salary:'₹8–18 LPA',exp:'0-1',type:'Full-time',category:'sde',badges:{fresher:true,new:true},match_score:79,posted_at:new Date(Date.now()-24*36e5).toISOString()},
-  {id:'j6',title:'Graduate Engineer Trainee',company:'TCS',logo_key:'tcs',location:'Pan India',salary:'₹3.5–7 LPA',exp:'0-1',type:'Full-time',category:'sde',badges:{campus:true,new:true},match_score:91,posted_at:new Date(Date.now()-5*864e5).toISOString()},
-  {id:'j7',title:'DevOps / SRE Engineer',company:'Razorpay',logo_key:'razorpay',location:'Bangalore',salary:'₹20–40 LPA',exp:'2-5',type:'Full-time',category:'devops',badges:{new:true},match_score:82,posted_at:new Date(Date.now()-6*36e5).toISOString()},
-  {id:'j8',title:'Product Manager',company:'Zepto',logo_key:'zepto',location:'Mumbai',salary:'₹18–35 LPA',exp:'2-5',type:'Full-time',category:'pm',badges:{new:true},match_score:76,posted_at:new Date(Date.now()-12*36e5).toISOString()},
-]
+  // Direct URL from Supabase Storage
+  if(logoUrl && logoUrl.startsWith('http')){
+    return '<img src="'+logoUrl+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
+  }
+  // Clearbit stored URL
+  if(key && key.startsWith('clearbit:')){
+    var cbUrl = 'https://logo.clearbit.com/'+key.replace('clearbit:','')
+    return '<img src="'+cbUrl+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
+  }
+  // Known logo
+  if(key && LOGOS[key]) return LOGOS[key]
+  // Auto Clearbit by company name
+  var cbDomain = (company||'').toLowerCase().replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')+'.com'
+  return '<img src="https://logo.clearbit.com/'+cbDomain+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
+}
 
 function ta(iso){const d=Date.now()-new Date(iso).getTime(),m=Math.floor(d/6e4),h=Math.floor(m/60),dd=Math.floor(h/24);if(dd>0)return dd+'d ago';if(h>0)return h+'h ago';if(m>0)return m+'m ago';return 'Just now'}
 
@@ -3141,6 +3150,7 @@ async function loadJobsFromSupabase(){
       title: j.title,
       company: j.company,
       logo_key: (j.company||'').toLowerCase().replace(/\s+/g,''),
+      logo_url: j.logo||null, // URL from Supabase Storage
       location: j.location||'Remote',
       salary: j.salary||'Competitive',
       exp: j.experience||'0-2 years',
@@ -3410,7 +3420,7 @@ function renderJobs(){
     const ml=match>=90?'STRONG MATCH':match>=80?'GOOD MATCH':'FAIR MATCH'
     const R=30,C=2*Math.PI*R,off=C-(match/100)*C
     const expLbl=j.exp?.startsWith('0')?'Entry, Fresher':j.exp?.startsWith('1')?'Entry, Mid Level':'Mid Level'
-    const logo=getLogo(j.logo_key||j.logoKey,j.company)
+    const logo=getLogo(j.logo_key||j.logoKey,j.company,j.logo_url)
     const b=j.badges||{}
     const ticks=[b.featured?'Culture & Values':null,j.location?.includes('Remote')?'Remote Friendly':null,b.campus?'Campus Program':null,'Full-time Role'].filter(Boolean).slice(0,2)
     return `<div class="jcard ${b.featured?'hot':''} au" style="animation-delay:${i*.05}s">
@@ -3460,7 +3470,7 @@ function renderSaved(){
   const p=document.getElementById('savedPanel')
   const sj=cachedJobs.filter(j=>saved.includes(String(j.id)))
   if(!sj.length){p.innerHTML='<div style="text-align:center;padding:14px 0;font-family:var(--mono);font-size:11px;color:var(--t3)">No saved jobs yet.</div>';return}
-  p.innerHTML=sj.slice(0,4).map(j=>`<div class="sj-row" onclick="openApply('${j.id}')"><div class="sj-logo">${getLogo(j.logo_key||j.logoKey,j.company)}</div><div style="flex:1;min-width:0"><div class="sj-title">${j.title}</div><div class="sj-meta">${j.company}</div></div><div class="sj-sal">${j.salary}</div></div>`).join('')
+  p.innerHTML=sj.slice(0,4).map(j=>`<div class="sj-row" onclick="openApply('${j.id}')"><div class="sj-logo">${getLogo(j.logo_key||j.logoKey,j.company,j.logo_url)}</div><div style="flex:1;min-width:0"><div class="sj-title">${j.title}</div><div class="sj-meta">${j.company}</div></div><div class="sj-sal">${j.salary}</div></div>`).join('')
 }
 function updateCounts(){
   document.getElementById('sbCount').textContent=saved.length
@@ -4192,7 +4202,7 @@ function renderJobCard(j,i){
   const ml=match>=90?'STRONG MATCH':match>=80?'GOOD MATCH':'FAIR MATCH'
   const R=30,C=2*Math.PI*R,off=C-(match/100)*C
   const expLbl=j.exp?.startsWith('0')?'Entry, Fresher':j.exp?.startsWith('1')?'Entry, Mid Level':'Mid Level'
-  const logo=getLogo(j.logo_key||j.logoKey,j.company)
+  const logo=getLogo(j.logo_key||j.logoKey,j.company,j.logo_url)
   const b=j.badges||{}
   const ticks=[b.featured?'Culture & Values':null,j.location?.includes('Remote')?'Remote Friendly':null,'Full-time Role'].filter(Boolean).slice(0,2)
   return `<div class="jcard ${b.featured?'hot':''}" style="margin-bottom:12px">
@@ -4371,7 +4381,7 @@ function openApply(id){
   document.getElementById('jdTopTitle').textContent = j.title
 
   // Logo
-  document.getElementById('jdLogo').innerHTML = getLogo(j.logo_key||j.logoKey, j.company)
+  document.getElementById('jdLogo').innerHTML = getLogo(j.logo_key||j.logoKey, j.company, j.logo_url)
 
   // Title & meta
   document.getElementById('jdTitle').textContent = j.title
@@ -4469,7 +4479,7 @@ function openApply(id){
   document.getElementById('jdCompanyInfo').innerHTML = `
     <div style="padding:20px;background:var(--bg);border-radius:14px;margin-bottom:16px">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-        ${getLogo(j.logo_key||j.logoKey, j.company)}
+        ${getLogo(j.logo_key||j.logoKey, j.company, j.logo_url)}
         <div>
           <div style="font-size:17px;font-weight:900;color:var(--dark)">${j.company}</div>
           <div style="font-size:12px;color:var(--t3);font-family:var(--mono);margin-top:2px">Technology · Software</div>
@@ -4509,7 +4519,7 @@ function openApply(id){
   curJobId = jdJobId
   document.getElementById('mTitle').textContent = j.title
   document.getElementById('mMeta').textContent = j.company+' · '+j.location
-  document.getElementById('mLogo').innerHTML = getLogo(j.logo_key||j.logoKey, j.company)
+  document.getElementById('mLogo').innerHTML = getLogo(j.logo_key||j.logoKey, j.company, j.logo_url)
   if(j.apply_link){
     document.getElementById('careerLinkBanner').style.display='flex'
     document.getElementById('careerLinkBtn').onclick=()=>window.open(j.apply_link,'_blank')

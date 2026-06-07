@@ -1021,8 +1021,9 @@ function saveJob(status){
       job_type:job.type, match_score:job.match_score,
       apply_link:job.apply_link, description:job.description,
       skills:JSON.stringify(job.skills), badges:JSON.stringify(job.badges),
+      // Logo: use URL if uploaded to storage, skip if base64 (too large)
+      logo: (logoBase64 && !logoBase64.startsWith('data:')) ? logoBase64 : null,
       active:true, created_at:new Date().toISOString()
-      // Note: logo stored in localStorage only (base64 too large for free Supabase)
     }
     sbPush('jobs', sbJob).then(function(res){
       if(res && res.length > 0){
@@ -1228,24 +1229,58 @@ var _logoClearbitTimer = null
 function previewLogo(inp){
   if(!inp.files[0]) return
   var file = inp.files[0]
-  // Check file size (max 500KB for base64 storage)
-  if(file.size > 500*1024){
-    aToast('Image too large! Use under 500KB', 1)
-    return
-  }
-  var r = new FileReader()
-  r.onload = function(e){
-    logoBase64 = e.target.result
+  if(file.size > 2*1024*1024){ aToast('Image too large! Max 2MB', 1); return }
+
+  // Show preview immediately
+  var reader = new FileReader()
+  reader.onload = function(e){
+    logoBase64 = e.target.result // keep base64 as fallback
     var img = document.getElementById('logoPreviewImg')
     var icon = document.getElementById('logoPlaceholderIcon')
     var txt = document.getElementById('logoPlaceholderText')
-    if(img){ img.src = logoBase64; img.style.display = 'block' }
-    if(icon) icon.style.display = 'none'
-    if(txt) txt.style.display = 'none'
-    aToast('Logo uploaded!')
+    if(img){ img.src = e.target.result; img.style.display='block' }
+    if(icon) icon.style.display='none'
+    if(txt) txt.style.display='none'
   }
-  r.onerror = function(){ aToast('Failed to read image', 1) }
-  r.readAsDataURL(file)
+  reader.readAsDataURL(file)
+
+  // Upload to Supabase Storage
+  uploadLogoToStorage(file)
+}
+
+async function uploadLogoToStorage(file){
+  try {
+    aToast('Uploading logo...')
+    var ext = file.name.split('.').pop().toLowerCase()||'png'
+    var fileName = 'logo_'+Date.now()+'.'+ext
+    
+    var r = await fetch(SB_URL+'/storage/v1/object/logos/'+fileName, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer '+SB_KEY,
+        'Content-Type': file.type||'image/png',
+        'x-upsert': 'true'
+      },
+      body: file
+    })
+    
+    if(r.ok){
+      // Get public URL
+      var publicUrl = SB_URL+'/storage/v1/object/public/logos/'+fileName
+      logoBase64 = publicUrl // store URL instead of base64
+      aToast('Logo uploaded!')
+      console.log('Logo URL:', publicUrl)
+    } else {
+      var err = await r.text()
+      console.warn('Storage upload failed:', r.status, err)
+      // Keep base64 fallback - still works locally
+      aToast('Logo saved locally')
+    }
+  } catch(e){
+    console.warn('Logo upload error:', e.message)
+    aToast('Logo saved locally')
+  }
 }
 
 function clearLogo(){
