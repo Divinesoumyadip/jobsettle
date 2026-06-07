@@ -241,6 +241,7 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
         <div class="adm-search"><i class="fas fa-search"></i><input placeholder="Search jobs, users..." oninput="globalSearch(this.value)"/></div>
         <button class="btn btn-mint btn-sm" onclick="showPage('add-job',null)"><i class="fas fa-plus"></i>Add Job</button>
         <button class="btn btn-violet btn-sm" onclick="syncFromSupabase()"><i class="fas fa-sync-alt"></i>Sync DB</button>
+        <button class="btn btn-gold btn-sm" onclick="testSupabase()"><i class="fas fa-vial"></i>Test DB</button>
         <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:13px;cursor:pointer;flex-shrink:0">A</div>
       </div>
     </div>
@@ -1332,6 +1333,49 @@ function updateAmbStats(){
   var e3=document.getElementById('statAmbEarned');if(e3)e3.textContent='₹'+(totalRefs*500).toLocaleString()
   var e4=document.getElementById('statAmbColleges');if(e4)e4.textContent=new Set(all.map(a=>a.college)).size
   var e5=document.getElementById('sbAmbCount');if(e5)e5.textContent=all.length
+}
+
+// ── TEST SUPABASE CONNECTION ──────────────────────────────────
+async function testSupabase(){
+  aToast('Testing Supabase connection...')
+  
+  // Test 1: Can we read?
+  var readTest = await sbSelect('jobs','select=count&limit=1')
+  console.log('Read test:', readTest)
+  
+  // Test 2: Can we write?
+  var testJob = {
+    title:'TEST JOB - DELETE ME',
+    company:'JobSettle Test',
+    category:'sde',
+    location:'Remote',
+    salary:'Test',
+    experience:'0-1 years',
+    job_type:'Full-time',
+    match_score:90,
+    apply_link:'https://jobsettle.in',
+    description:'This is a test job - please delete from Supabase dashboard',
+    skills:'["Test"]',
+    badges:'{}',
+    active:true,
+    created_at:new Date().toISOString()
+  }
+  
+  var res = await sbApi('POST','jobs',testJob)
+  console.log('Write test result:', res)
+  
+  if(res && res.length > 0){
+    aToast('Supabase WORKING! Test job inserted. ID: '+res[0].id)
+    // Delete the test job
+    setTimeout(async function(){
+      await sbDelete('jobs', res[0].id)
+      aToast('Test job cleaned up. Supabase is fully working!')
+    }, 3000)
+  } else if(res === null){
+    aToast('Supabase write FAILED. Check console for error.', 1)
+  } else {
+    aToast('Supabase returned empty. Check RLS policies.', 1)
+  }
 }
 
 // ── GLOBAL SEARCH ─────────────────────────────────────────────
