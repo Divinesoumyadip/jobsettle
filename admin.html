@@ -1022,6 +1022,7 @@ function saveJob(status){
       apply_link:job.apply_link, description:job.description,
       skills:JSON.stringify(job.skills), badges:JSON.stringify(job.badges),
       active:true, created_at:new Date().toISOString()
+      // Note: logo stored in localStorage only (base64 too large for free Supabase)
     }
     sbPush('jobs', sbJob).then(function(res){
       if(res && res.length > 0){
@@ -1220,7 +1221,86 @@ function exportApps(){
   var a=document.createElement('a'); a.href='data:text/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(apps,null,2)); a.download='jobsettle-apps.json'; a.click(); aToast('Applications exported!')
 }
 
-// ── COLLEGE CONNECT ───────────────────────────────────────────
+// ── LOGO UPLOAD ───────────────────────────────────────────────
+var logoBase64 = null
+var _logoClearbitTimer = null
+
+function previewLogo(inp){
+  if(!inp.files[0]) return
+  var file = inp.files[0]
+  // Check file size (max 500KB for base64 storage)
+  if(file.size > 500*1024){
+    aToast('Image too large! Use under 500KB', 1)
+    return
+  }
+  var r = new FileReader()
+  r.onload = function(e){
+    logoBase64 = e.target.result
+    var img = document.getElementById('logoPreviewImg')
+    var icon = document.getElementById('logoPlaceholderIcon')
+    var txt = document.getElementById('logoPlaceholderText')
+    if(img){ img.src = logoBase64; img.style.display = 'block' }
+    if(icon) icon.style.display = 'none'
+    if(txt) txt.style.display = 'none'
+    aToast('Logo uploaded!')
+  }
+  r.onerror = function(){ aToast('Failed to read image', 1) }
+  r.readAsDataURL(file)
+}
+
+function clearLogo(){
+  logoBase64 = null
+  var img = document.getElementById('logoPreviewImg')
+  var icon = document.getElementById('logoPlaceholderIcon')
+  var txt = document.getElementById('logoPlaceholderText')
+  var inp = document.getElementById('logoFileInput')
+  if(img){ img.src=''; img.style.display='none' }
+  if(icon) icon.style.display='block'
+  if(txt) txt.style.display='block'
+  if(inp) inp.value=''
+}
+
+function fetchLogoClearbit(){
+  clearTimeout(_logoClearbitTimer)
+  _logoClearbitTimer = setTimeout(function(){
+    var company = (document.getElementById('jCompany')||{}).value||''
+    company = company.trim()
+    if(!company || company.length < 2) return
+    if(logoBase64 && !logoBase64.startsWith('clearbit:')) return // user uploaded, don't override
+    var domain = company.toLowerCase()
+      .replace(/\s+inc\.?$/i,'').replace(/\s+ltd\.?$/i,'')
+      .replace(/\s+limited$/i,'').replace(/\s+pvt\.?$/i,'')
+      .replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')
+    var url = 'https://logo.clearbit.com/'+domain+'.com'
+    var img = document.getElementById('logoPreviewImg')
+    var icon = document.getElementById('logoPlaceholderIcon')
+    var txt = document.getElementById('logoPlaceholderText')
+    if(!img) return
+    var testImg = new Image()
+    testImg.onload = function(){
+      img.src = url; img.style.display='block'
+      if(icon) icon.style.display='none'
+      if(txt) txt.style.display='none'
+      logoBase64 = 'clearbit:'+domain+'.com'
+    }
+    testImg.onerror = function(){
+      // Try without .com
+      var url2 = 'https://logo.clearbit.com/'+domain+'.in'
+      var t2 = new Image()
+      t2.onload = function(){
+        img.src=url2; img.style.display='block'
+        if(icon) icon.style.display='none'
+        if(txt) txt.style.display='none'
+        logoBase64='clearbit:'+domain+'.in'
+      }
+      t2.onerror = function(){} // No logo found
+      t2.src = url2
+    }
+    testImg.src = url
+  }, 700)
+}
+
+
 var colleges = JSON.parse(localStorage.getItem('js_admin_colleges')||'[]')
 var DEMO_COLLEGES = [
   {id:1,name:'IIT Bombay',type:'IIT',city:'Mumbai',students:10000,website:'https://iitb.ac.in',poName:'Dr. Rajesh Kumar',poEmail:'placement@iitb.ac.in',partnerships:['Job Alerts','Campus Drive'],active:true},
