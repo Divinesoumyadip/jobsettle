@@ -488,6 +488,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 .trk-modal-hdr{padding:22px 26px 18px;border-bottom:2px solid var(--bg);display:flex;align-items:center;justify-content:space-between}
 .trk-modal-body{padding:22px 26px 26px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -2787,8 +2788,207 @@ function doLogout(){
   showScreen('landing');toast('Logged out')
 }
 // ═══ SUPABASE REAL-TIME BACKEND ═══════════════════════════════
-const SUPABASE_URL = 'https://vwxwxmolihuddjididcu.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3eHd4bW9saWh1ZGRqaWRpZGN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTcwNjU2MDAsImV4cCI6MjAzMjY0MTYwMH0.placeholder'
+const SUPABASE_URL = 'https://eidnnyfkwtaaeezszktv.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpZG5ueWZrd3RhYWVlenN6a3R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MjA2MDcsImV4cCI6MjA5NjM5NjYwN30.St4CuGM7LvdhYBiQ97ylaQq5eS1i-rLZtXk4Sx7O1WM'
+
+// Init Supabase client (uses official SDK if available, else falls back to fetch)
+var supa = null
+try {
+  if(window.supabase) {
+    supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth:{ persistSession:true, detectSessionInUrl:false }
+    })
+    console.log('Supabase SDK ready')
+  }
+} catch(e){ console.warn('Supabase SDK not loaded, using fetch fallback') }
+
+// Unified query function — SDK preferred, fetch fallback
+async function sbFrom(table, query){
+  // SDK path
+  if(supa){
+    try {
+      var q = supa.from(table).select('*')
+      if(query && query.eq) q = q.eq(query.eq[0], query.eq[1])
+      if(query && query.order) q = q.order(query.order, {ascending:false})
+      if(query && query.limit) q = q.limit(query.limit)
+      const {data, error} = await q
+      if(error) throw error
+      return data
+    } catch(e){ console.warn('SDK query failed:', e.message) }
+  }
+  // Fetch fallback
+  try {
+    var qs = 'select=*'
+    if(query && query.order) qs += '&order='+query.order+'.desc'
+    if(query && query.limit) qs += '&limit='+query.limit
+    if(query && query.eq) qs += '&'+query.eq[0]+'=eq.'+query.eq[1]
+    const r = await fetch(SUPABASE_URL+'/rest/v1/'+table+'?'+qs, {
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    })
+    if(!r.ok) throw new Error('HTTP '+r.status)
+    return await r.json()
+  } catch(e){ console.warn('Fetch fallback failed:', e.message); return null }
+}
+
+async function sbInsert(table, data){
+  if(supa){
+    try {
+      const {data:res, error} = await supa.from(table).insert(data).select()
+      if(error) throw error
+      return res
+    } catch(e){ console.warn('SDK insert failed:', e.message) }
+  }
+  try {
+    const r = await fetch(SUPABASE_URL+'/rest/v1/'+table, {
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+      body:JSON.stringify(data)
+    })
+    return r.ok ? await r.json() : null
+  } catch(e){ return null }
+}
+
+async function loadJobsFromSupabase(){
+  const data = await sbFrom('jobs', {order:'created_at', limit:200, eq:['active','true']})
+  if(data && data.length){
+    return data.map(function(j){return{
+      id:String(j.id), title:j.title, company:j.company,
+      logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
+      location:j.location||'Remote', salary:j.salary||'Competitive',
+      exp:j.experience||'0-2 years', type:j.job_type||'Full-time',
+      category:(j.category||'sde').toLowerCase(),
+      badges:typeof j.badges==='string'?JSON.parse(j.badges||'{}'):j.badges||{},
+      match_score:j.match_score||82,
+      apply_link:j.apply_link||'',
+      description:j.description||'',
+      skills:typeof j.skills==='string'?JSON.parse(j.skills||'[]'):j.skills||[],
+      posted_at:j.created_at
+    }})
+  }
+  return null
+}
+
+async function saveUserToSupabase(u){
+  await sbInsert('users', {
+    email:u.email, name:u.name, plan:u.plan||'free',
+    created_at:new Date().toISOString()
+  })
+}
+
+async function saveApplicationToSupabase(app){
+  await sbInsert('applications', {
+    user_email:user?.email, user_name:user?.name,
+    job_id:String(app.jobId), job_title:app.jobTitle,
+    company:app.company, applied_at:new Date().toISOString()
+  })
+}
+
+// ── TRUE REAL-TIME: Supabase Realtime subscription ─────────────
+var realtimeChannel = null
+function subscribeToJobUpdates(){
+  if(!supa){ console.log('No SDK — polling fallback'); startPollingFallback(); return }
+  try {
+    realtimeChannel = supa
+      .channel('jobs-live')
+      .on('postgres_changes', {event:'INSERT', schema:'public', table:'jobs'},
+        function(payload){
+          var j = payload.new
+          if(!j || cachedJobs.find(function(x){return String(x.id)===String(j.id)})) return
+          var newJob = {
+            id:String(j.id), title:j.title, company:j.company,
+            logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
+            location:j.location||'Remote', salary:j.salary||'Competitive',
+            exp:j.experience||'0-2 years', type:j.job_type||'Full-time',
+            category:(j.category||'sde').toLowerCase(),
+            badges:{new:true}, match_score:j.match_score||82,
+            apply_link:j.apply_link||'', posted_at:j.created_at
+          }
+          cachedJobs.unshift(newJob)
+          localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+          renderJobs(); updateCounts(); updateCatCounts()
+          // Flash LIVE badge
+          var dot = document.getElementById('liveStatusDot')
+          var txt = document.getElementById('liveStatusTxt')
+          if(dot){ dot.style.background='#ff5f6d'; dot.style.boxShadow='0 0 8px #ff5f6d' }
+          if(txt) txt.textContent = 'NEW JOB!'
+          setTimeout(function(){
+            if(dot){ dot.style.background='var(--mint2)'; dot.style.boxShadow='' }
+            if(txt) txt.textContent = 'LIVE'
+          }, 4000)
+          toast('New job posted live: '+j.title+' at '+j.company)
+        }
+      )
+      .on('postgres_changes', {event:'UPDATE', schema:'public', table:'jobs'},
+        function(payload){
+          var j = payload.new
+          var idx = cachedJobs.findIndex(function(x){return String(x.id)===String(j.id)})
+          if(idx > -1){
+            cachedJobs[idx].active = j.active
+            if(!j.active){ cachedJobs.splice(idx,1) }
+            localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+            renderJobs()
+          }
+        }
+      )
+      .on('postgres_changes', {event:'DELETE', schema:'public', table:'jobs'},
+        function(payload){
+          cachedJobs = cachedJobs.filter(function(x){return String(x.id)!==String(payload.old.id)})
+          localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+          renderJobs(); updateCounts()
+        }
+      )
+      .subscribe(function(status){
+        var txt = document.getElementById('liveStatusTxt')
+        var badge = document.getElementById('liveStatusBadge')
+        if(status === 'SUBSCRIBED'){
+          if(txt) txt.textContent = 'LIVE'
+          if(badge){ badge.style.background='rgba(0,229,176,.12)'; badge.style.borderColor='rgba(0,229,176,.3)' }
+          console.log('Supabase Realtime connected!')
+        } else if(status === 'CHANNEL_ERROR'){
+          if(txt) txt.textContent = 'LOCAL'
+          if(badge){ badge.style.background='rgba(255,180,0,.1)'; badge.style.borderColor='rgba(255,180,0,.3)' }
+          startPollingFallback()
+        }
+      })
+  } catch(e){
+    console.warn('Realtime subscription failed:', e)
+    startPollingFallback()
+  }
+}
+
+// Polling fallback when Supabase Realtime not available (local file)
+var pollingInterval = null
+function startPollingFallback(){
+  if(pollingInterval) return
+  var txt = document.getElementById('liveStatusTxt')
+  var badge = document.getElementById('liveStatusBadge')
+  if(txt) txt.textContent = 'SYNC'
+  if(badge){ badge.style.background='rgba(47,192,240,.1)'; badge.style.borderColor='rgba(47,192,240,.3)' }
+  // Poll every 30 seconds
+  pollingInterval = setInterval(async function(){
+    var fresh = await loadJobsFromSupabase()
+    if(fresh && fresh.length && fresh.length !== cachedJobs.length){
+      cachedJobs = fresh
+      localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+      renderJobs(); updateCounts(); updateCatCounts()
+      toast('Jobs updated from server')
+    }
+  }, 30000)
+}
+
+function updateCatCounts(){
+  var cats = ['sde','frontend','ml','devops','pm','design','campus','remote']
+  cats.forEach(function(cat){
+    var el = document.getElementById('cnt-'+cat)
+    if(!el) return
+    var count = cat==='remote'
+      ? cachedJobs.filter(function(j){return j.location&&j.location.toLowerCase().includes('remote')}).length
+      : cachedJobs.filter(function(j){return j.category===cat}).length
+    el.textContent = count||''
+    el.style.color = count ? 'rgba(0,229,176,.7)' : 'rgba(255,255,255,.2)'
+    el.style.fontWeight = count ? '800' : '400'
+  })
+}
 
 async function sbFetch(path, opts){
   try {
