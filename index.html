@@ -3992,70 +3992,118 @@ function raGoToStep2(){
 
 async function raGenerateResume(){
   var btn = document.getElementById('raGenerateBtn')
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>AI is rewriting your resume...'
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Claude AI rewriting your resume...'
   btn.disabled = true
-  
+
   var j = raCurrentJob
-  var resumeData = window.RESUME_DATA || {}
+  var resumeData = JSON.parse(localStorage.getItem('js_resume_data')||'null') || window.RESUME_DATA || {}
   var selectedKeywords = [...document.querySelectorAll('.ra-kw-cb:checked')].map(function(cb){ return cb.value })
   var enhanceSections = {
     skills: document.getElementById('raSkillsCb')?.checked,
     experience: document.getElementById('raExpCb')?.checked,
     summary: document.getElementById('raSummaryCb')?.checked,
-    projects: document.getElementById('raProjCb')?.checked,
+    projects: document.getElementById('raProjCb')?.checked
   }
-  
+
+  var resumeContext = buildResumeContext(resumeData)
+
+  var prompt = 'You are an expert resume writer and ATS optimization specialist.\n\n'
+    + 'TASK: Rewrite this candidate resume to perfectly match the job. Make it ATS-friendly.\n\n'
+    + '=== JOB ===\n'
+    + 'Title: '+j.title+'\nCompany: '+j.company+'\n'
+    + 'Description: '+(j.description||'').substring(0,600)+'\n'
+    + 'Required Skills: '+(j.skills||[]).join(', ')+'\n\n'
+    + '=== ADD THESE MISSING KEYWORDS NATURALLY ===\n'
+    + selectedKeywords.join(', ')+'\n\n'
+    + '=== CANDIDATE RESUME ===\n'
+    + resumeContext+'\n\n'
+    + '=== INSTRUCTIONS ===\n'
+    + '1. Keep ALL real info - never fabricate\n'
+    + '2. Add missing keywords naturally in context\n'
+    + '3. Use strong action verbs (Engineered, Architected, Built, Led)\n'
+    + '4. Add quantified metrics where possible\n'
+    + (enhanceSections.summary ? '5. Write 2-3 line summary targeting '+j.title+' at '+j.company+'\n' : '')
+    + (enhanceSections.skills ? '6. Reorganize skills by relevance to job\n' : '')
+    + (enhanceSections.experience ? '7. Rewrite experience bullets with STAR format, include '+selectedKeywords.slice(0,2).join(', ')+'\n' : '')
+    + (enhanceSections.projects ? '8. Emphasize most relevant projects for '+j.title+'\n' : '')
+    + '\nReturn ONLY the rewritten resume text with clear sections. No explanation.'
+
   try {
-    var prompt = `You are a professional resume writer. Rewrite this resume to better match the job.
-
-JOB: ${j.title} at ${j.company}
-JOB DESCRIPTION: ${(j.description||'').substring(0,500)}
-MISSING KEYWORDS TO ADD: ${selectedKeywords.join(', ')}
-
-CURRENT RESUME:
-Name: ${resumeData.name||user?.name||''}
-Skills: ${(resumeData.skills||[]).join(', ')}
-Experience: ${(resumeData.experience||[]).map(function(e){ return e.title+' at '+e.company }).join('; ')}
-
-Rewrite to:
-1. Add missing keywords naturally in skills and experience
-2. Tailor summary for ${j.title} role
-3. Highlight relevant experience
-4. Keep it ATS-friendly
-5. Return clean resume text with sections: SUMMARY, SKILLS, EXPERIENCE, PROJECTS, EDUCATION
-
-Return the improved resume text only.`
-
     var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role:'user', content: prompt }]
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        messages:[{role:'user',content:prompt}]
       })
     })
     var data = await resp.json()
-    raRewrittenText = data.content?.[0]?.text || generateFallbackResume(j, selectedKeywords)
+    raRewrittenText = data.content?.[0]?.text || generateFallbackResume(j, selectedKeywords, resumeData)
   } catch(e){
-    raRewrittenText = generateFallbackResume(j, selectedKeywords)
+    raRewrittenText = generateFallbackResume(j, selectedKeywords, resumeData)
   }
-  
+
   document.getElementById('raRewrittenContent').textContent = raRewrittenText
   raShowStep(3)
   btn.innerHTML = '<i class="fas fa-robot" style="margin-right:8px"></i>Generate My New Resume with AI'
   btn.disabled = false
+  saveAIHistory('resume_rewrite',{job:j.title,company:j.company},{status:'done'})
 }
 
-function generateFallbackResume(j, keywords){
-  var name = window.RESUME_DATA?.name || user?.name || 'Your Name'
-  var email = user?.email || 'email@example.com'
-  return name+'\n'+email+'\n\n'
-    +'SUMMARY\n'+'Results-driven software engineer seeking '+j.title+' role at '+j.company+'. Experienced in '+keywords.slice(0,3).join(', ')+' with strong problem-solving skills.\n\n'
-    +'SKILLS\n'+(JSON.parse(localStorage.getItem('js_skills')||'[]').concat(keywords)).join(' • ')+'\n\n'
-    +'EXPERIENCE\n'+'Software Engineer | Previous Company | 2022-Present\n• Developed scalable systems using '+keywords.slice(0,2).join(' and ')+'\n• Improved performance by 40% through optimization\n• Collaborated with cross-functional teams\n\n'
-    +'EDUCATION\nB.Tech Computer Science | University | 2022'
+function buildResumeContext(rd){
+  if(!rd||!rd.name) return 'No resume found. Complete your profile in the Resume section first.'
+  var lines = [
+    'NAME: '+(rd.name||''),
+    'EMAIL: '+(rd.email||''),
+    'PHONE: '+(rd.phone||''),
+    'LOCATION: '+(rd.location||''),
+    rd.linkedin?'LINKEDIN: '+rd.linkedin:'',
+    rd.github?'GITHUB: '+rd.github:'',
+    ''
+  ]
+  if(rd.achievements&&rd.achievements.length){
+    lines.push('ACHIEVEMENTS:')
+    rd.achievements.forEach(function(a){lines.push('• '+a)})
+    lines.push('')
+  }
+  if(rd.skills&&rd.skills.length){
+    lines.push('SKILLS: '+(rd.skills||[]).join(', '))
+    lines.push('')
+  }
+  if(rd.experience&&rd.experience.length){
+    lines.push('EXPERIENCE:')
+    rd.experience.forEach(function(e){
+      lines.push((e.role||e.title||'')+' | '+(e.org||e.company||'')+' | '+(e.loc||''))
+      if(e.desc) lines.push(e.desc)
+    })
+    lines.push('')
+  }
+  if(rd.projects&&rd.projects.length){
+    lines.push('PROJECTS:')
+    rd.projects.forEach(function(p){
+      lines.push('• '+p.name)
+      if(p.bullets) p.bullets.slice(0,3).forEach(function(b){lines.push('  - '+b)})
+    })
+    lines.push('')
+  }
+  if(rd.education&&rd.education.length){
+    lines.push('EDUCATION:')
+    rd.education.forEach(function(e){
+      lines.push((e.degree||'')+(e.school?' | '+e.school:'')+(e.cgpa?' CGPA:'+e.cgpa:'')+(e.year?' '+e.year:''))
+    })
+  }
+  return lines.filter(Boolean).join('\n')
 }
+
+function generateFallbackResume(j, keywords, rd){
+  rd = rd||window.RESUME_DATA||{}
+  var name = rd.name||user?.name||'Your Name'
+  var email = rd.email||user?.email||'email@example.com'
+  var skills = (rd.skills||[]).concat(keywords).join(' • ')
+  return name+'\n'+email+'\n\nSUMMARY\nResults-driven engineer seeking '+j.title+' at '+j.company+'. Experienced in '+keywords.slice(0,3).join(', ')+'.\n\nSKILLS\n'+skills+'\n\nEXPERIENCE\nSoftware Engineer | Previous Company | 2022-Present\n• Built scalable systems using '+keywords.slice(0,2).join(' and ')+'\n• Improved performance by 40%\n\nEDUCATION\nB.Tech Computer Science | University | 2022'
+}
+
 
 function raCopyResume(){
   navigator.clipboard.writeText(raRewrittenText).then(function(){
@@ -4064,90 +4112,146 @@ function raCopyResume(){
 }
 
 function raDownloadLatex(){
-  var name = window.RESUME_DATA?.name || user?.name || 'Your Name'
-  var email = user?.email || 'email@example.com'
-  var skills = JSON.parse(localStorage.getItem('js_skills')||'[]').join(', ')
-  var j = raCurrentJob
-  
-  var latex = `\\documentclass[letterpaper,11pt]{article}
-\\usepackage{latexsym}
-\\usepackage[empty]{fullpage}
-\\usepackage{titlesec}
-\\usepackage{marvosym}
-\\usepackage[usenames,dvipsnames]{color}
-\\usepackage{verbatim}
-\\usepackage{enumitem}
-\\usepackage[hidelinks]{hyperref}
-\\usepackage{fancyhdr}
-\\usepackage[english]{babel}
-\\usepackage{tabularx}
-\\input{glyphtounicode}
+  var rd = JSON.parse(localStorage.getItem('js_resume_data')||'null') || window.RESUME_DATA || {}
+  var j = raCurrentJob || {}
+  var name = rd.name || user?.name || 'Your Name'
+  var email = rd.email || user?.email || 'email@example.com'
+  var phone = rd.phone || ''
+  var linkedin = rd.linkedin || 'linkedin.com/in/yourprofile'
+  var github = rd.github || 'github.com/yourgithub'
+  var portfolio = rd.portfolio || ''
 
-\\pagestyle{fancy}
-\\fancyhf{}
-\\fancyfoot{}
-\\renewcommand{\\headrulewidth}{0pt}
-\\renewcommand{\\footrulewidth}{0pt}
+  // Build skills grouped
+  var allSkills = rd.skills || []
+  var skillsLine = allSkills.join(', ')
 
-\\addtolength{\\oddsidemargin}{-0.5in}
-\\addtolength{\\evensidemargin}{-0.5in}
-\\addtolength{\\textwidth}{1in}
-\\addtolength{\\topmargin}{-.5in}
-\\addtolength{\\textheight}{1.0in}
+  // Build experience entries
+  var expLatex = ''
+  if(rd.experience && rd.experience.length){
+    rd.experience.forEach(function(e){
+      expLatex += '  \\\\resumeSubheading\n'
+        +'    {'+escLatex(e.role||e.title||'Engineer')+'}{'+escLatex(e.period||'2022 -- Present')+'}\n'
+        +'    {'+escLatex(e.org||e.company||'Company')+'}{'+escLatex(e.loc||'India')+'}\n'
+        +'    \\\\resumeItemListStart\n'
+      if(e.desc){
+        var bullets = e.desc.split('.').filter(function(s){return s.trim().length>10}).slice(0,3)
+        bullets.forEach(function(b){
+          expLatex += '      \\\\resumeItem{'+escLatex(b.trim())+'}\n'
+        })
+      }
+      expLatex += '    \\\\resumeItemListEnd\n'
+    })
+  }
 
-\\urlstyle{same}
-\\raggedbottom
-\\raggedright
-\\setlength{\\tabcolsep}{0in}
+  // Build projects
+  var projLatex = ''
+  if(rd.projects && rd.projects.length){
+    rd.projects.slice(0,3).forEach(function(p){
+      projLatex += '    \\\\resumeProjectHeading\n'
+        +'        {\\\\textbf{'+escLatex(p.name||'Project')+'} $|$ \\\\emph{'+escLatex((p.tech||allSkills.slice(0,3).join(', ')))+'}}{}\\n'
+        +'        \\\\resumeItemListStart\\n'
+      if(p.bullets){
+        p.bullets.slice(0,3).forEach(function(b){
+          projLatex += '          \\\\resumeItem{'+escLatex(b)+'}\n'
+        })
+      }
+      projLatex += '        \\\\resumeItemListEnd\n'
+    })
+  }
 
-\\titleformat{\\section}{\\vspace{-4pt}\\scshape\\raggedright\\large}{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
+  // Build education
+  var eduLatex = ''
+  if(rd.education && rd.education.length){
+    rd.education.forEach(function(e){
+      eduLatex += '    \\\\resumeSubheading\n'
+        +'      {'+escLatex(e.school||'University')+'}{'+escLatex(e.loc||'India')+'}\n'
+        +'      {'+escLatex(e.degree||'B.Tech')+(e.cgpa?' $|$ CGPA: '+e.cgpa:'')+'}{'+escLatex(e.year||'2022')+'}\n'
+    })
+  }
 
-\\pdfgentounicode=1
+  // Build achievements
+  var achLatex = ''
+  if(rd.achievements && rd.achievements.length){
+    rd.achievements.slice(0,5).forEach(function(a){
+      achLatex += '      \\\\resumeItem{'+escLatex(a)+'}\n'
+    })
+  }
 
-\\begin{document}
+  var linkedinDisplay = linkedin.replace('https://','').replace('http://','')
+  var githubDisplay = github.replace('https://','').replace('http://','')
 
-\\begin{center}
-    {\\Huge \\scshape ${name}} \\\\ \\vspace{1pt}
-    \\small ${email} $|$
-    \\href{https://linkedin.com/in/yourprofile}{linkedin.com/in/yourprofile} $|$
-    \\href{https://github.com/yourgithub}{github.com/yourgithub}
-\\end{center}
+  var latex = '% Generated by JobSettle Resume Analyzer\n'
+    + '% Paste at overleaf.com and compile\n'
+    + '\\\\documentclass[letterpaper,11pt]{article}\n'
+    + '\\\\usepackage{latexsym}\n'
+    + '\\\\usepackage[empty]{fullpage}\n'
+    + '\\\\usepackage{titlesec}\n'
+    + '\\\\usepackage{marvosym}\n'
+    + '\\\\usepackage[usenames,dvipsnames]{color}\n'
+    + '\\\\usepackage{verbatim}\n'
+    + '\\\\usepackage{enumitem}\n'
+    + '\\\\usepackage[hidelinks]{hyperref}\n'
+    + '\\\\usepackage{fancyhdr}\n'
+    + '\\\\usepackage[english]{babel}\n'
+    + '\\\\usepackage{tabularx}\n'
+    + '\\\\input{glyphtounicode}\n\n'
+    + '\\\\pagestyle{fancy}\\n\\\\fancyhf{}\\n\\\\fancyfoot{}\\n'
+    + '\\\\renewcommand{\\\\headrulewidth}{0pt}\\n'
+    + '\\\\addtolength{\\\\oddsidemargin}{-0.5in}\\n'
+    + '\\\\addtolength{\\\\textwidth}{1in}\\n'
+    + '\\\\addtolength{\\\\topmargin}{-.5in}\\n'
+    + '\\\\addtolength{\\\\textheight}{1.0in}\\n'
+    + '\\\\urlstyle{same}\\n\\\\raggedbottom\\n\\\\raggedright\\n'
+    + '\\\\setlength{\\\\tabcolsep}{0in}\\n'
+    + '\\\\titleformat{\\\\section}{\\\\vspace{-4pt}\\\\scshape\\\\raggedright\\\\large}{}{0em}{}[\\\\color{black}\\\\titlerule \\\\vspace{-5pt}]\\n'
+    + '\\\\pdfgentounicode=1\\n\n'
+    + '% Custom commands\\n'
+    + '\\\\newcommand{\\\\resumeItem}[1]{\\\\item\\\\small{#1 \\\\vspace{-2pt}}}\\n'
+    + '\\\\newcommand{\\\\resumeSubheading}[4]{\\\\vspace{-2pt}\\\\item\\\\begin{tabular*}{0.97\\\\textwidth}[t]{l@{\\\\extracolsep{\\\\fill}}r}\\\\textbf{#1} & #2 \\\\\\\\ \\\\textit{\\\\small#3} & \\\\textit{\\\\small #4} \\\\\\\\ \\\\end{tabular*}\\\\vspace{-7pt}}\\n'
+    + '\\\\newcommand{\\\\resumeProjectHeading}[2]{\\\\item\\\\begin{tabular*}{0.97\\\\textwidth}{l@{\\\\extracolsep{\\\\fill}}r}\\\\small#1 & #2 \\\\\\\\ \\\\end{tabular*}\\\\vspace{-7pt}}\\n'
+    + '\\\\newcommand{\\\\resumeItemListStart}{\\\\begin{itemize}}\\n'
+    + '\\\\newcommand{\\\\resumeItemListEnd}{\\\\end{itemize}\\\\vspace{-5pt}}\\n\n'
+    + '\\\\begin{document}\\n\n'
+    + '\\\\begin{center}\\n'
+    + '  {\\\\Huge \\\\scshape '+escLatex(name)+'} \\\\\\\\ \\\\vspace{1pt}\\n'
+    + '  \\\\small '+escLatex(phone)+' $|$\\n'
+    + '  \\\\href{mailto:'+email+'}{'+escLatex(email)+'} $|$\\n'
+    + '  \\\\href{'+linkedin+'}{'+escLatex(linkedinDisplay)+'} $|$\\n'
+    + '  \\\\href{'+github+'}{'+escLatex(githubDisplay)+'}\\n'
+    + '\\\\end{center}\\n\n'
+    + (achLatex ? '\\\\section{Achievements}\\n  \\\\resumeItemListStart\\n'+achLatex+'  \\\\resumeItemListEnd\\n\n' : '')
+    + (expLatex ? '\\\\section{Experience}\\n  \\\\begin{itemize}[leftmargin=0.15in, label={}]\\n'+expLatex+'  \\\\end{itemize}\\n\n' : '')
+    + (projLatex ? '\\\\section{Projects}\\n  \\\\begin{itemize}[leftmargin=0.15in, label={}]\\n'+projLatex+'  \\\\end{itemize}\\n\n' : '')
+    + '\\\\section{Technical Skills}\\n'
+    + '\\\\begin{itemize}[leftmargin=0.15in, label={}]\\n'
+    + '\\\\small{\\\\item{\\\\textbf{Skills}{: '+escLatex(skillsLine)+'}}}\\n'
+    + '\\\\end{itemize}\\n\n'
+    + (eduLatex ? '\\\\section{Education}\\n  \\\\begin{itemize}[leftmargin=0.15in, label={}]\\n'+eduLatex+'  \\\\end{itemize}\\n\n' : '')
+    + '\\\\end{document}'
 
-\\section{Summary}
-Results-driven engineer targeting ${j?.title||'Software Engineer'} at ${j?.company||'Top Company'}. ${raRewrittenText.substring(0,150)}...
-
-\\section{Skills}
-\\begin{itemize}[leftmargin=0.15in, label={}]
-\\small{\\item{
-  \\textbf{Languages}{: ${skills}} \\\\
-  \\textbf{Frameworks}{: React, Node.js, Django, Spring Boot} \\\\
-  \\textbf{Tools}{: Git, Docker, AWS, Kubernetes, PostgreSQL}
-}}
-\\end{itemize}
-
-\\section{Experience}
-  \\resumeSubheading
-    {Software Engineer}{Jan 2023 -- Present}
-    {Previous Company}{City, Country}
-    \\resumeItemListStart
-      \\resumeItem{Developed scalable backend systems serving millions of users}
-      \\resumeItem{Improved system performance by 40\\% through optimization}
-    \\resumeItemListEnd
-
-\\section{Education}
-  \\resumeSubheading
-    {B.Tech in Computer Science}{2019 -- 2023}
-    {Your University}{City, Country}
-
-\\end{document}`
-
+  var fname = (name.replace(/\s+/g,'_')+'_'+((j.company||'Resume').replace(/\s+/g,'_'))+'.tex')
   var blob = new Blob([latex], {type:'text/plain'})
   var a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = (name.replace(/\s/g,'_')+'_'+((j?.company||'Resume').replace(/\s/g,'_'))+'.tex')
+  a.download = fname
   a.click()
-  toast('LaTeX file downloaded! Open at overleaf.com')
+  toast('LaTeX downloaded! Open at overleaf.com to compile PDF')
 }
+
+function escLatex(str){
+  if(!str) return ''
+  return String(str)
+    .replace(/&/g,'\\\\&')
+    .replace(/%/g,'\\\\%')
+    .replace(/\$/g,'\\\\$')
+    .replace(/#/g,'\\\\#')
+    .replace(/_/g,'\\\\_')
+    .replace(/\{/g,'\\\\{')
+    .replace(/\}/g,'\\\\}')
+    .replace(/~/g,'\\\\textasciitilde{}')
+    .replace(/\^/g,'\\\\textasciicircum{}')
+}
+
 
 function raDownloadPDF(){
   // Generate PDF using browser print
