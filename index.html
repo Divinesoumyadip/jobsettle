@@ -3255,6 +3255,7 @@ let curFil='all', sbCol=window.innerWidth<600, cachedJobs=[]
 let saved=JSON.parse(localStorage.getItem('js_saved')||'[]')
 let applied=JSON.parse(localStorage.getItem('js_applied')||'[]')
 let tracker=JSON.parse(localStorage.getItem('js_tracker')||'[]')
+let hidden=JSON.parse(localStorage.getItem('js_hidden')||'[]')
 let userSkills=JSON.parse(localStorage.getItem('js_skills')||'[]')
 let userPlan=localStorage.getItem('js_plan')||'free'
 let user=null
@@ -4738,6 +4739,7 @@ function updateLiveStatus(state){
 function renderJobs(){
   const q=(document.getElementById('dsearch')?.value||'').toLowerCase()
   let jobs=cachedJobs.filter(j=>{
+    if(hidden.includes(String(j.id)))return false
     if(q&&!j.title?.toLowerCase().includes(q)&&!j.company?.toLowerCase().includes(q))return false
     const b=j.badges||{}
     if(curFil==='featured')return b.featured
@@ -4777,9 +4779,9 @@ function renderJobs(){
         <div class="jcr4">
           <span class="jc-apps"><i class="fas fa-users" style="font-size:10px;margin-right:4px;color:var(--t3)"></i>Less than 25 applicants</span>
           <div class="jc-acts">
-            <button class="jc-skip" onclick="event.stopPropagation()"><i class="fas fa-ban"></i></button>
+            <button class="jc-skip" onclick="event.stopPropagation();skipJob('${j.id}',this)" title="Hide this job"><i class="fas fa-ban"></i></button>
             <button class="jc-save ${isSaved?'on':''}" onclick="event.stopPropagation();toggleSave('${j.id}',this)"><i class="${isSaved?'fas':'far'} fa-heart"></i></button>
-            <button class="jc-ai" onclick="event.stopPropagation();toast('JobSettle AI opened for ${j.company}!')">ASK AI</button>
+            <button class="jc-ai" onclick="event.stopPropagation();openAskAI('${j.id}','${(j.title||'').replace(/'/g,'\\\'').replace(/"/g,'')}','${(j.company||'').replace(/'/g,'\\\'').replace(/"/g,'')}')"><i class="fas fa-robot" style="font-size:11px"></i>ASK AI</button>
             <button class="jc-apply" onclick="event.stopPropagation();openApply('${j.id}')">APPLY WITH AUTOFILL</button>
           </div>
         </div>
@@ -4824,6 +4826,51 @@ function toggleSave(id,btn){
   localStorage.setItem('js_saved',JSON.stringify(saved));updateCounts();renderSaved()
   // Sync to Supabase
   saveSavedJobToSupabase(sid, isSaving)
+}
+function openAskAI(id,title,company){
+  // Navigate to Interview Prep view with the job pre-filled
+  if(userPlan==='free'){showPaidFeatureWall('Interview Prep AI');return}
+  hideAllViews()
+  setPage('interview')
+  const view=document.getElementById('interviewPrepView')
+  view.style.display='block'
+  // Show a job-context banner at top of prep view
+  const existingBanner=document.getElementById('aiJobContextBanner')
+  if(existingBanner)existingBanner.remove()
+  const banner=document.createElement('div')
+  banner.id='aiJobContextBanner'
+  banner.style.cssText='background:linear-gradient(135deg,var(--violet3),#f0eaff);border:2px solid var(--violet3);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px'
+  banner.innerHTML=`<div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:16px"></i></div><div style="flex:1"><div style="font-size:13.5px;font-weight:800;color:var(--dark);margin-bottom:2px">Prepping for: <span style="color:var(--violet2)">${title}</span> at <span style="color:var(--violet2)">${company}</span></div><div style="font-size:12px;color:var(--t2)">AI is ready to help you ace this interview. Practice questions below.</div></div><button onclick="document.getElementById('aiJobContextBanner').remove()" style="width:28px;height:28px;border:none;background:transparent;cursor:pointer;color:var(--t3);font-size:16px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Dismiss">&times;</button>`
+  const prepContainer=view.querySelector('div')
+  if(prepContainer)prepContainer.insertBefore(banner,prepContainer.firstChild)
+  // Set nav highlight
+  const navLinks=document.querySelectorAll('.dsb-lnk')
+  navLinks.forEach(l=>l.classList.remove('act'))
+  navLinks.forEach(l=>{if(l.textContent.includes('Interview'))l.classList.add('act')})
+  toast('AI Prep opened for '+company+' — '+title)
+}
+function skipJob(id,btn){
+  const sid=String(id)
+  if(hidden.includes(sid))return
+  hidden.push(sid)
+  localStorage.setItem('js_hidden',JSON.stringify(hidden))
+  // Animate card out then re-render
+  const card=btn.closest('.jcard')
+  if(card){
+    card.style.transition='all .3s ease'
+    card.style.opacity='0'
+    card.style.transform='translateX(40px) scale(0.95)'
+    card.style.maxHeight=card.offsetHeight+'px'
+    setTimeout(()=>{
+      card.style.maxHeight='0'
+      card.style.padding='0'
+      card.style.margin='0'
+      card.style.overflow='hidden'
+      card.style.borderWidth='0'
+    },250)
+    setTimeout(()=>{card.remove()},550)
+  }
+  toast('Job hidden — won\'t appear again')
 }
 function renderSaved(){
   const p=document.getElementById('savedPanel')
