@@ -2243,13 +2243,36 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 <div id="campusDBView" style="display:none">
   <div style="max-width:1100px;margin:0 auto;padding:24px 28px">
 
-    <!-- Header -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <!-- Header with LIVE badge -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
       <div>
-        <h2 style="font-size:22px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px"><i class="fas fa-university" style="margin-right:8px"></i>Campus Placement Database</h2>
-        <p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real placement data, OA questions & interview experiences from Indian colleges</p>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <h2 style="font-size:22px;font-weight:900;color:var(--dark);letter-spacing:-.4px"><i class="fas fa-university" style="margin-right:8px;color:var(--mint2)"></i>Campus Placement Database</h2>
+          <span style="display:flex;align-items:center;gap:5px;background:var(--mint3);border:1px solid var(--mint4);border-radius:20px;padding:3px 10px;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--mint2)"><span style="width:6px;height:6px;border-radius:50%;background:var(--mint2);animation:pulse 1.5s infinite"></span>LIVE</span>
+        </div>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real placement data from Indian colleges — updated in real-time by students</p>
       </div>
       <button onclick="showAddPlacementModal()" style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-plus"></i> Share Your Experience</button>
+    </div>
+
+    <!-- Stats Bar -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:16px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:var(--mint2)" id="cpStatTotal">6+</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">TOTAL REPORTS</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:16px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:var(--violet2)" id="cpStatColleges">6+</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">COLLEGES</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:16px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:#f59e0b" id="cpStatCompanies">6+</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">COMPANIES</div>
+      </div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:16px;text-align:center">
+        <div style="font-size:26px;font-weight:900;color:var(--coral)" id="cpStatAvgPkg">₹28 LPA</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">AVG PACKAGE</div>
+      </div>
     </div>
 
     <!-- Search + Filters -->
@@ -2274,11 +2297,25 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
       </select>
       <select id="campusCollege" style="padding:9px 14px;border:1.5px solid var(--bd);border-radius:10px;font-family:var(--font);font-size:13px;color:var(--t2);background:white;cursor:pointer;outline:none" onchange="filterCampusDB()">
         <option value="">All Colleges</option>
-        <option>IIT Bombay</option><option>IIT Delhi</option><option>IIT Madras</option>
-        <option>NIT Trichy</option><option>NIT Warangal</option><option>BITS Pilani</option>
-        <option>VIT Vellore</option><option>SRM Chennai</option><option>DTU Delhi</option>
-        <option>IIIT Hyderabad</option>
+        <option>IIT Bombay</option><option>IIT Delhi</option><option>IIT Madras</option><option>IIT Kanpur</option><option>IIT Kharagpur</option><option>IIT Roorkee</option><option>IIT Guwahati</option><option>IIT Hyderabad</option><option>IIT BHU Varanasi</option>
+        <option>NIT Trichy</option><option>NIT Warangal</option><option>NIT Surathkal</option><option>NIT Rourkela</option><option>NIT Calicut</option><option>NIT Allahabad (MNNIT)</option><option>NIT Durgapur</option>
+        <option>BITS Pilani</option><option>BITS Goa</option><option>BITS Hyderabad</option>
+        <option>IIIT Hyderabad</option><option>IIIT Allahabad</option><option>IIIT Bangalore</option><option>IIIT Delhi</option>
+        <option>VIT Vellore</option><option>SRM Institute of Science and Technology</option><option>Manipal Institute of Technology</option>
+        <option>DTU Delhi</option><option>Jadavpur University</option><option>IIEST Shibpur</option>
+        <option>Thapar Institute of Engineering</option><option>DAIICT Gandhinagar</option><option>KIIT</option>
+        <option>JIS University</option><option>Heritage Institute of Technology</option>
       </select>
+    </div>
+    <!-- College type filter -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button onclick="filterByType('')" class="cp-type-btn cp-type-on" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--mint4);background:var(--mint3);font-family:var(--font);font-size:12px;font-weight:700;color:var(--mint2);cursor:pointer">All</button>
+      <button onclick="filterByType('IIT')" class="cp-type-btn" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--bd);background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">IIT</button>
+      <button onclick="filterByType('NIT')" class="cp-type-btn" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--bd);background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">NIT</button>
+      <button onclick="filterByType('IIIT')" class="cp-type-btn" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--bd);background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">IIIT</button>
+      <button onclick="filterByType('BITS')" class="cp-type-btn" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--bd);background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">BITS</button>
+      <button onclick="filterByType('Private')" class="cp-type-btn" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--bd);background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">Private</button>
+      <button onclick="filterByType('State')" class="cp-type-btn" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--bd);background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">State Govt.</button>
     </div>
 
     <!-- Stats Row -->
@@ -4146,7 +4183,82 @@ function showJobMenu(e, jobId, title, company, applyLink){
 }
 
 
-// ── COMMUNITY POSTS ───────────────────────────────────────────
+// ── COLLEGE AUTOCOMPLETE FROM SUPABASE ───────────────────────
+var allColleges = []
+
+async function loadCollegesFromSupabase(){
+  try {
+    var data = await sbApi('GET','colleges',null,'select=name,city,state,type,rank&order=rank.asc&limit=200')
+    if(data && data.length){
+      allColleges = data
+      console.log('Loaded '+data.length+' colleges from Supabase')
+      setupCollegeAutocomplete()
+    }
+  } catch(e){
+    console.warn('College load failed:', e.message)
+  }
+}
+
+function setupCollegeAutocomplete(){
+  var input = document.getElementById('cp_college')
+  if(!input) return
+  
+  input.addEventListener('input', function(){
+    var q = this.value.toLowerCase()
+    if(q.length < 2){ hideCollegeSuggestions(); return }
+    
+    var matches = allColleges.filter(function(c){
+      return c.name.toLowerCase().includes(q) || 
+             (c.city||'').toLowerCase().includes(q) ||
+             (c.state||'').toLowerCase().includes(q)
+    }).slice(0,8)
+    
+    showCollegeSuggestions(matches, input)
+  })
+  
+  input.addEventListener('blur', function(){
+    setTimeout(hideCollegeSuggestions, 200)
+  })
+}
+
+function showCollegeSuggestions(colleges, input){
+  var existing = document.getElementById('collegeSuggestions')
+  if(existing) existing.remove()
+  
+  if(!colleges.length) return
+  
+  var rect = input.getBoundingClientRect()
+  var div = document.createElement('div')
+  div.id = 'collegeSuggestions'
+  div.style.cssText = 'position:fixed;z-index:99999;background:white;border:2px solid var(--bd);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);max-height:280px;overflow-y:auto;width:'+input.offsetWidth+'px;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px'
+  
+  var typeColors = {IIT:'#7c5cfc',NIT:'#00b88a',IIIT:'#2fc0f0',BITS:'#f59e0b',Private:'#f43f5e',State:'#3b82f6',Deemed:'#8b5cf6','NIT-like':'#00b88a'}
+  
+  div.innerHTML = colleges.map(function(c){
+    var tc = typeColors[c.type]||'#6b7280'
+    return '<div onclick="selectCollege(\''+c.name+'\')" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'transparent\'">'
+      +'<div style="width:28px;height:28px;border-radius:8px;background:'+tc+'18;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:10px;font-weight:900;color:'+tc+'">'+c.type.substring(0,1)+'</span></div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.name+'</div>'
+      +'<div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+(c.city||'')+', '+(c.state||'')+' · <span style="color:'+tc+'">'+c.type+'</span>'+(c.rank?' · #'+c.rank:'')+' NIRF</div>'
+      +'</div></div>'
+  }).join('')
+  
+  document.body.appendChild(div)
+}
+
+function selectCollege(name){
+  var input = document.getElementById('cp_college')
+  if(input) input.value = name
+  hideCollegeSuggestions()
+}
+
+function hideCollegeSuggestions(){
+  var el = document.getElementById('collegeSuggestions')
+  if(el) el.remove()
+}
+
+
 var communityPostsCache = []
 
 async function loadCommunityPosts(){
@@ -4406,6 +4518,8 @@ async function enterDash(){
   toast('Welcome, '+user.name.split(' ')[0]+'!')
   subscribeToCommunity()
   setTimeout(updateLeaderboardEntry, 3000)
+  // Load all colleges for autocomplete
+  loadCollegesFromSupabase()
 }
 
 function updateLiveStatus(state){
@@ -4905,13 +5019,77 @@ function initCampusDB() {
   if (!stored.length) localStorage.setItem(CAMPUS_DB_KEY, JSON.stringify(campusPlacements))
 }
 
-function showCampusDBView() {
+async function showCampusDBView() {
   hideAllViews()
   setPage('campus_db')
   document.getElementById('campusDBView').style.display = 'block'
   initCampusDB()
   renderCampusDB(campusPlacements)
+  // Load real data from Supabase
+  await loadCampusFromSupabase()
+  // Subscribe to real-time updates
+  subscribeToCampusUpdates()
 }
+
+async function loadCampusFromSupabase(){
+  try {
+    var data = await sbApi('GET','campus_placements',null,'select=*&verified=eq.true&order=created_at.desc&limit=200')
+    if(data && data.length > 0){
+      // Merge with seed data
+      var sbEntries = data.map(function(p){
+        return {
+          id: p.id, college: p.college, company: p.company,
+          role: p.role, package: parseFloat(p.package)||0,
+          year: p.year||new Date().getFullYear(),
+          type: p.package > 15 ? 'product' : 'service',
+          batch: p.batch||'',
+          oa: p.oa_questions||'', interview: p.interview_rounds||'',
+          tips: p.tips||'', postedBy: p.user_name||'Anonymous',
+          postedAt: p.created_at, likes: p.likes||0, verified: p.verified||false
+        }
+      })
+      // Combine real + seed (deduplicate by id)
+      var allIds = new Set(sbEntries.map(function(e){ return String(e.id) }))
+      var seedFiltered = SEED_PLACEMENTS.filter(function(s){ return !allIds.has(String(s.id)) })
+      campusPlacements = [...sbEntries, ...seedFiltered]
+      localStorage.setItem(CAMPUS_DB_KEY, JSON.stringify(campusPlacements))
+      renderCampusDB(campusPlacements)
+      updateCampusStats()
+    }
+  } catch(e){ console.warn('Campus load failed:', e.message) }
+}
+
+function subscribeToCampusUpdates(){
+  if(!supa) return
+  supa.channel('public:campus_placements')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'campus_placements'},function(payload){
+      var p = payload.new
+      if(!p || !p.verified) return
+      var entry = {
+        id:p.id, college:p.college, company:p.company, role:p.role,
+        package:parseFloat(p.package)||0, year:p.year||new Date().getFullYear(),
+        type:p.package>15?'product':'service', oa:p.oa_questions||'',
+        interview:p.interview_rounds||'', tips:p.tips||'',
+        postedBy:p.user_name||'Anonymous', postedAt:p.created_at,
+        likes:0, verified:true
+      }
+      campusPlacements.unshift(entry)
+      renderCampusDB(campusPlacements)
+      updateCampusStats()
+      toast('New placement report added: '+p.company+' @ '+p.college)
+    })
+    .subscribe()
+}
+
+function updateCampusStats(){
+  var el1=document.getElementById('cpStatTotal'); if(el1) el1.textContent=campusPlacements.length+'+'
+  var el2=document.getElementById('cpStatColleges'); if(el2) el2.textContent=new Set(campusPlacements.map(function(p){return p.college})).size+'+'
+  var el3=document.getElementById('cpStatCompanies'); if(el3) el3.textContent=new Set(campusPlacements.map(function(p){return p.company})).size+'+'
+  var packages=campusPlacements.filter(function(p){return p.package>0}).map(function(p){return p.package})
+  var avgPkg=packages.length?Math.round(packages.reduce(function(a,b){return a+b},0)/packages.length):0
+  var el4=document.getElementById('cpStatAvgPkg'); if(el4) el4.textContent='₹'+avgPkg+' LPA'
+}
+
 
 function showCallbackView(){hideAllViews();setPage("callback");document.getElementById("callbackView").style.display="block";renderCBHistory()}
 function showRejectionView(){hideAllViews();setPage("rejection");document.getElementById("rejectionView").style.display="block"}
@@ -5114,9 +5292,107 @@ function generateEmergencyPlan(){
 function requestExpert(){toast('Expert request sent! We will WhatsApp you within 30 minutes')}
 function renderCampusDB(data) {
   const list = document.getElementById('campusDBList')
-  document.getElementById('cpStatCompanies').textContent = [...new Set(data.map(d=>d.company))].length
-  document.getElementById('cpStatColleges').textContent = [...new Set(data.map(d=>d.college))].length
-  document.getElementById('cpStatReports').textContent = data.length
+
+  // Update stats
+  var el1=document.getElementById('cpStatTotal'); if(el1) el1.textContent=data.length+'+'
+  var el2=document.getElementById('cpStatColleges'); if(el2) el2.textContent=[...new Set(data.map(d=>d.college))].length+'+'
+  var el3=document.getElementById('cpStatCompanies'); if(el3) el3.textContent=[...new Set(data.map(d=>d.company))].length+'+'
+  var pkgs=data.filter(d=>d.package>0).map(d=>d.package)
+  var avgPkg=pkgs.length?Math.round(pkgs.reduce((a,b)=>a+b,0)/pkgs.length):28
+  var el4=document.getElementById('cpStatAvgPkg'); if(el4) el4.textContent='₹'+avgPkg+' LPA'
+
+  if (!data.length) {
+    list.innerHTML = `<div style="text-align:center;padding:60px;font-family:var(--mono);font-size:12px;color:var(--t3)"><i class="fas fa-university" style="font-size:36px;display:block;margin-bottom:12px;opacity:.2"></i>No records found.<br/>Be the first to share!</div>`
+    return
+  }
+
+  list.innerHTML = data.map(p => {
+    const pkg = Number(p.package)
+    const pkgColor = pkg >= 30 ? 'var(--mint2)' : pkg >= 15 ? 'var(--gold)' : 'var(--t2)'
+    const typeColors = {product:'var(--mint3)',service:'var(--b3)',startup:'var(--violet3)',mnc:'var(--y3)'}
+    const typeText = {product:'Product',service:'Service',startup:'Startup',mnc:'MNC'}
+    // Get logo
+    var logoHtml = getLogo((p.company||'').toLowerCase().replace(/\s+/g,''), p.company, null)
+    return `<div style="background:white;border:2px solid var(--bd);border-radius:20px;overflow:hidden;transition:transform .2s,box-shadow .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,.08)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <!-- Card Header -->
+      <div style="padding:18px 22px;border-bottom:2px solid var(--bg);display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="flex-shrink:0">${logoHtml}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span style="font-size:17px;font-weight:900;color:var(--dark);letter-spacing:-.3px">${p.company}</span>
+            ${p.verified?'<span style="font-family:var(--mono);font-size:9px;background:var(--mint3);color:var(--mint2);padding:2px 8px;border-radius:5px;font-weight:700"><i class="fas fa-check-circle" style="margin-right:3px"></i>VERIFIED</span>':'<span style="font-family:var(--mono);font-size:9px;background:var(--gold3);color:#b45309;padding:2px 8px;border-radius:5px;font-weight:700">UNVERIFIED</span>'}
+            <span style="font-family:var(--mono);font-size:9px;background:${typeColors[p.type]||'var(--bg)'};color:var(--t2);padding:2px 8px;border-radius:5px;font-weight:700">${typeText[p.type]||p.type||'COMPANY'}</span>
+          </div>
+          <div style="font-size:13px;color:var(--t3);font-weight:600">${p.role} · ${p.college} · ${p.batch||p.year+' Batch'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:26px;font-weight:900;letter-spacing:-1px;color:${pkgColor}">₹${p.package} LPA</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px">${p.year} Placement</div>
+        </div>
+      </div>
+
+      <!-- Accordion sections -->
+      <div style="padding:0 22px">
+        <!-- OA Section -->
+        <div style="border-bottom:1px solid var(--bg)">
+          <div onclick="toggleCampusSection(this)" style="padding:14px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:8px;background:var(--violet3);display:flex;align-items:center;justify-content:center"><i class="fas fa-code" style="color:var(--violet2);font-size:12px"></i></div>
+              <span style="font-size:14px;font-weight:800;color:var(--dark)">OA Questions</span>
+              <span style="font-family:var(--mono);font-size:9px;background:var(--violet3);color:var(--violet2);padding:2px 7px;border-radius:5px;font-weight:700">TAP TO SEE</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <button onclick="event.stopPropagation();copyText('${(p.oa||'').replace(/'/g,'').replace(/\n/g,'\\n').substring(0,100)}...')" style="padding:3px 8px;border:1.5px solid var(--violet);border-radius:6px;background:var(--violet3);font-family:var(--font);font-size:10px;font-weight:700;color:var(--violet2);cursor:pointer"><i class="fas fa-copy" style="margin-right:3px"></i>Copy</button>
+              <i class="fas fa-chevron-down" style="color:var(--t3);font-size:12px;transition:transform .2s"></i>
+            </div>
+          </div>
+          <div class="campus-section-body" style="display:none;padding:0 0 16px">
+            <div style="background:var(--bg);border-radius:11px;padding:14px 16px;font-size:13.5px;color:var(--t2);line-height:1.8;white-space:pre-line">${p.oa||'No OA data available'}</div>
+          </div>
+        </div>
+
+        <!-- Interview Section -->
+        <div style="border-bottom:1px solid var(--bg)">
+          <div onclick="toggleCampusSection(this)" style="padding:14px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:8px;background:var(--mint3);display:flex;align-items:center;justify-content:center"><i class="fas fa-microphone" style="color:var(--mint2);font-size:12px"></i></div>
+              <span style="font-size:14px;font-weight:800;color:var(--dark)">Interview Rounds</span>
+            </div>
+            <i class="fas fa-chevron-down" style="color:var(--t3);font-size:12px;transition:transform .2s"></i>
+          </div>
+          <div class="campus-section-body" style="display:none;padding:0 0 16px">
+            <div style="background:var(--bg);border-radius:11px;padding:14px 16px;font-size:13.5px;color:var(--t2);line-height:1.8;white-space:pre-line">${p.interview||'No interview data available'}</div>
+          </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div>
+          <div onclick="toggleCampusSection(this)" style="padding:14px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:28px;height:28px;border-radius:8px;background:var(--y3);display:flex;align-items:center;justify-content:center"><i class="fas fa-lightbulb" style="color:#f59e0b;font-size:12px"></i></div>
+              <span style="font-size:14px;font-weight:800;color:var(--dark)">Tips for You</span>
+            </div>
+            <i class="fas fa-chevron-down" style="color:var(--t3);font-size:12px;transition:transform .2s"></i>
+          </div>
+          <div class="campus-section-body" style="display:none;padding:0 0 16px">
+            <div style="background:var(--y3);border:1.5px solid #ffe080;border-radius:11px;padding:14px 16px;font-size:13.5px;color:var(--t2);line-height:1.8">${p.tips||'No tips available'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:12px 22px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--t3)">
+          <i class="fas fa-user-circle" style="margin-right:4px"></i>${p.postedBy||'Anonymous'} · ${new Date(p.postedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="likePlacement('${p.id}',this)" style="display:flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--bd);border-radius:7px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer" id="like-${p.id}"><i class="far fa-thumbs-up" style="font-size:11px"></i> ${p.likes||0} Helpful</button>
+          <button onclick="campusAskAI('${(p.company||'').replace(/'/g,'')}','${(p.role||'').replace(/'/g,'')}')" style="display:flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--violet);border-radius:7px;background:var(--violet3);font-family:var(--font);font-size:12px;font-weight:700;color:var(--violet2);cursor:pointer"><i class="fas fa-robot" style="font-size:11px"></i> Prep with AI</button>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
 
   if (!data.length) {
     list.innerHTML = `<div style="text-align:center;padding:60px;font-family:var(--mono);font-size:12px;color:var(--t3)"><i class="fas fa-university" style="font-size:36px;display:block;margin-bottom:12px;opacity:.2"></i>No records found.<br/>Be the first to share!</div>`
@@ -5198,14 +5474,45 @@ function renderCampusDB(data) {
         <div style="font-family:var(--mono);font-size:10px;color:var(--t3)">Shared by ${p.postedBy} · ${new Date(p.postedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
         <div style="display:flex;gap:8px">
           <button onclick="likePlacement('${p.id}',this)" style="display:flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--bd);border-radius:7px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer"><i class="far fa-thumbs-up" style="font-size:11px"></i> ${p.likes||0} Helpful</button>
-          <button onclick="toast('Link copied!')" style="display:flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--bd);border-radius:7px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer"><i class="fas fa-share" style="font-size:11px"></i> Share</button>
-        </div>
-      </div>
-    </div>`
-  }).join('')
+
+
+function copyText(text){
+  navigator.clipboard.writeText(text).then(function(){
+    toast('Copied to clipboard!')
+  }).catch(function(){
+    toast('Copy failed')
+  })
 }
 
-function toggleCampusSection(header) {
+function campusAskAI(company, role){
+  if(!checkAIAccess('Interview Prep AI')) return
+  // Pre-fill interview prep with company
+  showInterviewPrepView()
+  setTimeout(function(){
+    var companyEl = document.getElementById('ip_company')
+    if(companyEl){ companyEl.value = company; companyEl.dispatchEvent(new Event('change')) }
+  }, 500)
+  toast('Preparing AI interview plan for '+company+'...')
+}
+
+async function likePlacement(id, btn){
+  // Update locally
+  var p = campusPlacements.find(function(x){ return String(x.id)===String(id) })
+  if(!p) return
+  p.likes = (p.likes||0) + 1
+  btn.innerHTML = '<i class="fas fa-thumbs-up" style="font-size:11px;color:var(--mint2)"></i> '+p.likes+' Helpful'
+  btn.style.borderColor = 'var(--mint4)'
+  btn.style.color = 'var(--mint2)'
+  btn.disabled = true
+  
+  // Update in Supabase
+  try {
+    await sbApi('PATCH','campus_placements',{likes:p.likes},'id=eq.'+id)
+  } catch(e){}
+  
+  localStorage.setItem(CAMPUS_DB_KEY, JSON.stringify(campusPlacements))
+}
+
   const body = header.nextElementSibling
   const icon = header.querySelector('i')
   const isOpen = body.style.display !== 'none'
@@ -5213,7 +5520,31 @@ function toggleCampusSection(header) {
   icon.style.transform = isOpen ? 'none' : 'rotate(180deg)'
 }
 
-function filterCampusDB() {
+function filterByType(type){
+  document.querySelectorAll('.cp-type-btn').forEach(function(b){
+    b.style.background='white'; b.style.borderColor='var(--bd)'; b.style.color='var(--t2)'
+  })
+  event.target.style.background='var(--mint3)'
+  event.target.style.borderColor='var(--mint4)'
+  event.target.style.color='var(--mint2)'
+  
+  var filtered = campusPlacements
+  if(type){
+    filtered = campusPlacements.filter(function(p){
+      var college = allColleges.find(function(c){ return c.name===p.college })
+      return college && college.type===type
+    })
+    if(!filtered.length){
+      // Fallback - filter by college name prefix
+      filtered = campusPlacements.filter(function(p){
+        return (p.college||'').startsWith(type)
+      })
+    }
+  }
+  renderCampusDB(filtered)
+}
+
+
   const q = (document.getElementById('campusSearch')?.value||'').toLowerCase()
   const yr = document.getElementById('campusYear')?.value||''
   const tp = document.getElementById('campusType')?.value||''
@@ -5233,7 +5564,7 @@ function likePlacement(id, btn) {
   if (!p) return
   p.likes = (p.likes||0) + 1
   localStorage.setItem(CAMPUS_DB_KEY, JSON.stringify(campusPlacements))
-  btn.innerHTML = `<i class="fas fa-thumbs-up" style="font-size:11px;color:var(--mint2)"></i> ${p.likes} Helpful`
+  btn.innerHTML = '<i class="fas fa-thumbs-up" style="font-size:11px;color:var(--mint2)"></i> '+p.likes+' Helpful'
   btn.style.borderColor = 'var(--mint4)'
   btn.style.color = 'var(--mint2)'
 }
@@ -5277,26 +5608,27 @@ function handleIntUpload(inp) {
 }
 
 function showFilePreview(type, file, dataUrl) {
-  const zone = document.getElementById(type + '_upload_zone')
+  const zone = document.getElementById(type + '_drop_zone')
   const preview = document.getElementById(type + '_file_preview')
   zone.style.display = 'none'
   preview.style.display = 'block'
-
   const isImage = file.type.startsWith('image/')
-  preview.innerHTML = `
-    <div style="border:2px solid var(--mint4);border-radius:11px;overflow:hidden;background:var(--mint3)">
-      ${isImage ? `<img src="${dataUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;background:#f0f0f0"/>` : ''}
-      <div style="padding:10px 14px;display:flex;align-items:center;gap:10px">
-        <i class="fas fa-${isImage ? 'image' : 'file-pdf'}" style="color:var(--mint2);font-size:18px;flex-shrink:0"></i>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${file.name}</div>
-          <div style="font-size:11px;color:var(--mint2);margin-top:2px">${(file.size/1024).toFixed(0)} KB · Uploaded</div>
-        </div>
-        <button onclick="removeFile('${type}')" style="padding:5px 12px;border:1.5px solid var(--mint4);border-radius:7px;background:white;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer">Remove</button>
-      </div>
-    </div>`
+  const sizeKb = (file.size/1024).toFixed(1)
+  var imgHtml = isImage ? '<img src="'+dataUrl+'" style="width:100%;max-height:200px;object-fit:contain;display:block;background:#f0f0f0"/>' : ''
+  var iconClass = isImage ? 'image' : 'file-pdf'
+  preview.innerHTML = '<div style="border:2px solid var(--mint4);border-radius:11px;overflow:hidden;background:var(--mint3)">'
+    + imgHtml
+    + '<div style="padding:10px 14px;display:flex;align-items:center;gap:10px">'
+    + '<i class="fas fa-'+iconClass+'" style="color:var(--mint2);font-size:18px;flex-shrink:0"></i>'
+    + '<div style="flex:1;min-width:0">'
+    + '<div style="font-size:13px;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+file.name+'</div>'
+    + '<div style="font-size:11px;color:var(--mint2);margin-top:2px">'+sizeKb+' KB — Ready to upload</div>'
+    + '</div>'
+    + '<button onclick="clearFilePreview(''+type+'')" style="flex-shrink:0;padding:4px 10px;border:1px solid var(--mint4);border-radius:6px;background:white;font-size:11px;font-weight:700;color:var(--t2);cursor:pointer;font-family:var(--font)">Remove</button>'
+    + '</div></div>'
+  if (type === 'oa') { window._oaFileData = dataUrl; window._oaFileName = file.name; window._oaFileType = file.type }
+  else { window._intFileData = dataUrl; window._intFileName = file.name; window._intFileType = file.type }
 }
-
 function removeFile(type) {
   document.getElementById(type + '_upload_zone').style.display = 'block'
   document.getElementById(type + '_file_preview').style.display = 'none'
