@@ -3625,7 +3625,56 @@ function updateCatCounts(){
 }
 
 
-// ═══ REAL BACKEND FOR ALL FEATURES ════════════════════════════
+// ── JOB OPTIONS MENU (3 dots) ─────────────────────────────────
+function showJobMenu(e, jobId, title, company, applyLink){
+  e.stopPropagation()
+  // Remove existing menu
+  var existing = document.getElementById('jobContextMenu')
+  if(existing){ existing.remove(); return }
+
+  var menu = document.createElement('div')
+  menu.id = 'jobContextMenu'
+  menu.style.cssText = 'position:fixed;z-index:9000;background:white;border:2px solid var(--bd);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.12);min-width:200px;overflow:hidden;animation:fadeIn .15s ease'
+
+  var options = [
+    {icon:'fas fa-external-link-alt', label:'Open Job Page', color:'var(--mint2)', action: function(){ if(applyLink) window.open(applyLink,'_blank'); else toast('No link available') }},
+    {icon:'fas fa-heart', label:'Save Job', color:'var(--coral)', action: function(){ var btn=document.querySelector('[data-job="'+jobId+'"] .jc-save'); if(btn) btn.click(); else { saved.push(String(jobId)); localStorage.setItem('js_saved',JSON.stringify(saved)); updateCounts(); toast('Job saved!') } }},
+    {icon:'fas fa-share-alt', label:'Share Job', color:'var(--violet2)', action: function(){ var text=title+' at '+company+'\n'+window.location.href; if(navigator.clipboard){ navigator.clipboard.writeText(text); toast('Link copied!') } }},
+    {icon:'fas fa-robot', label:'Ask AI About This', color:'var(--violet2)', action: function(){ showInterviewPrepView(); toast('Use AI to prep for '+company) }},
+    {icon:'fas fa-bell', label:'Set Alert for '+company, color:'#f59e0b', action: function(){ saveJobAlert([company],[],[]); toast('Alert set for '+company+' jobs!') }},
+    {icon:'fas fa-flag', label:'Report Job', color:'var(--t3)', action: function(){ toast('Thanks for reporting. We\'ll review this job.') }},
+  ]
+
+  menu.innerHTML = options.map(function(opt, i){
+    return '<div class="job-menu-item" style="display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--dark);transition:background .15s;border-bottom:'+(i<options.length-1?'1px solid var(--bd)':'none')+'" onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'transparent\'" onclick="document.getElementById(\'jobContextMenu\').remove();('+opt.action.toString()+')()">'
+      +'<i class="'+opt.icon+'" style="color:'+opt.color+';width:16px;text-align:center;font-size:13px"></i>'
+      +opt.label+'</div>'
+  }).join('')
+
+  // Position near button
+  var rect = e.target.closest('button').getBoundingClientRect()
+  var top = rect.bottom + 4
+  var left = rect.left - 160
+
+  // Keep in viewport
+  if(left < 10) left = 10
+  if(top + 280 > window.innerHeight) top = rect.top - 280
+
+  menu.style.top = top+'px'
+  menu.style.left = left+'px'
+
+  document.body.appendChild(menu)
+
+  // Close on outside click
+  setTimeout(function(){
+    document.addEventListener('click', function closeMenu(){
+      var m = document.getElementById('jobContextMenu')
+      if(m) m.remove()
+      document.removeEventListener('click', closeMenu)
+    })
+  }, 100)
+}
+
 
 // ── COMMUNITY POSTS ───────────────────────────────────────────
 var communityPostsCache = []
@@ -3932,7 +3981,7 @@ function renderJobs(){
     const ticks=[b.featured?'Culture & Values':null,j.location?.includes('Remote')?'Remote Friendly':null,b.campus?'Campus Program':null,'Full-time Role'].filter(Boolean).slice(0,2)
     return `<div class="jcard ${b.featured?'hot':''} au" style="animation-delay:${i*.05}s">
       <div class="jcard-body">
-        <div class="jcr1"><span class="jc-ago">${ta(j.posted_at||j.postedAt)}</span>${b.new||b.featured?'<span class="jc-early">Be an early applicant</span>':''}<button class="jc-more" onclick="event.stopPropagation()"><i class="fas fa-ellipsis-h"></i></button></div>
+        <div class="jcr1"><span class="jc-ago">${ta(j.posted_at||j.postedAt)}</span>${b.new||b.featured?'<span class="jc-early">Be an early applicant</span>':''}<button class="jc-more" onclick="event.stopPropagation();showJobMenu(event,'${j.id}','${(j.title||'').replace(/'/g,'').replace(/"/g,'')}','${(j.company||'').replace(/'/g,'').replace(/"/g,'')}','${j.apply_link||''}')" title="More options"><i class="fas fa-ellipsis-h"></i></button></div>
         <div class="jcr2"><div class="jc-logo">${logo}</div><div><div class="jc-title">${j.title}</div><div class="jc-co"><strong>${j.company}</strong> / ${j.location} · ${j.type}</div></div></div>
         <div class="jcr3">
           <div class="jcd"><i class="fas fa-map-marker-alt" style="color:var(--coral)"></i>${j.location}</div>
@@ -4846,7 +4895,7 @@ function renderJobCard(j,i){
   const ticks=[b.featured?'Culture & Values':null,j.location?.includes('Remote')?'Remote Friendly':null,'Full-time Role'].filter(Boolean).slice(0,2)
   return `<div class="jcard ${b.featured?'hot':''}" style="margin-bottom:12px">
     <div class="jcard-body">
-      <div class="jcr1"><span class="jc-ago">${ta(j.posted_at||j.postedAt)}</span>${b.new||b.featured?'<span class="jc-early">Be an early applicant</span>':''}<button class="jc-more" onclick="event.stopPropagation()"><i class="fas fa-ellipsis-h"></i></button></div>
+      <div class="jcr1"><span class="jc-ago">${ta(j.posted_at||j.postedAt)}</span>${b.new||b.featured?'<span class="jc-early">Be an early applicant</span>':''}<button class="jc-more" onclick="event.stopPropagation();showJobMenu(event,'${j.id}','${(j.title||'').replace(/'/g,'').replace(/"/g,'')}','${(j.company||'').replace(/'/g,'').replace(/"/g,'')}','${j.apply_link||''}')" title="More options"><i class="fas fa-ellipsis-h"></i></button></div>
       <div class="jcr2"><div class="jc-logo">${logo}</div><div><div class="jc-title">${j.title}</div><div class="jc-co"><strong>${j.company}</strong> / ${j.location} · ${j.type}</div></div></div>
       <div class="jcr3">
         <div class="jcd"><i class="fas fa-map-marker-alt" style="color:var(--coral)"></i>${j.location}</div>
