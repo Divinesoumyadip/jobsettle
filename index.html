@@ -3054,6 +3054,20 @@ let applied=JSON.parse(localStorage.getItem('js_applied')||'[]')
 let tracker=JSON.parse(localStorage.getItem('js_tracker')||'[]')
 let curFil='all', sbCol=window.innerWidth<600, cachedJobs=[]
 
+// ── FALLBACK JOBS (shown when Supabase is empty/offline) ───────
+const FALLBACK_JOBS=[
+  {id:'j1',title:'Senior Software Engineer',company:'Google',logo_key:'google',location:'Bangalore',salary:'₹40-70 LPA',exp:'3-7',type:'Full-time',category:'sde',badges:{featured:true,new:true},match_score:97,apply_link:'https://careers.google.com',description:'Build scalable systems at Google. Work on products used by billions.',skills:['C++','Python','Distributed Systems','Go','Kubernetes'],posted_at:new Date(Date.now()-2*36e5).toISOString()},
+  {id:'j2',title:'SDE-1 Backend Engineer',company:'Amazon',logo_key:'amazon',location:'Hyderabad',salary:'₹28-45 LPA',exp:'0-2',type:'Full-time',category:'sde',badges:{hot:true,new:true},match_score:93,apply_link:'https://amazon.jobs',description:'Join Amazon and work on world-class e-commerce and cloud infrastructure.',skills:['Java','Python','AWS','Docker','SQL'],posted_at:new Date(Date.now()-4*36e5).toISOString()},
+  {id:'j3',title:'Frontend Engineer — React',company:'Microsoft',logo_key:'microsoft',location:'Hyderabad',salary:'₹30-50 LPA',exp:'2-4',type:'Full-time',category:'frontend',badges:{new:true},match_score:88,apply_link:'https://careers.microsoft.com',description:'Build next-generation web experiences at Microsoft.',skills:['React','TypeScript','Azure','GraphQL','CSS'],posted_at:new Date(Date.now()-6*36e5).toISOString()},
+  {id:'j4',title:'Data Scientist — ML Platform',company:'Flipkart',logo_key:'flipkart',location:'Bangalore',salary:'₹25-45 LPA',exp:'1-4',type:'Full-time',category:'ml',badges:{featured:true},match_score:85,apply_link:'https://www.flipkartcareers.com',description:'Build ML models that power India\'s largest e-commerce platform.',skills:['Python','TensorFlow','Spark','SQL','MLflow'],posted_at:new Date(Date.now()-8*36e5).toISOString()},
+  {id:'j5',title:'Software Engineer — Fresher',company:'Swiggy',logo_key:'swiggy',location:'Bangalore',salary:'₹8-18 LPA',exp:'0-1',type:'Full-time',category:'sde',badges:{new:true},match_score:79,apply_link:'https://careers.swiggy.com',description:'Start your career at Swiggy and build food-tech at scale.',skills:['Python','Java','MySQL','Redis','Kafka'],posted_at:new Date(Date.now()-10*36e5).toISOString()},
+  {id:'j6',title:'Graduate Engineer Trainee',company:'TCS',logo_key:'tcs',location:'Pan India',salary:'₹3.5-7 LPA',exp:'0-1',type:'Full-time',category:'sde',badges:{campus:true,new:true},match_score:91,apply_link:'https://ibegin.tcs.com',description:'Begin your IT career with TCS. Training provided for freshers.',skills:['Java','C','SQL','Communication','Problem Solving'],posted_at:new Date(Date.now()-12*36e5).toISOString()},
+  {id:'j7',title:'DevOps / SRE Engineer',company:'Razorpay',logo_key:'razorpay',location:'Bangalore',salary:'₹20-40 LPA',exp:'2-5',type:'Full-time',category:'devops',badges:{new:true},match_score:82,apply_link:'https://razorpay.com/jobs',description:'Own infrastructure reliability at India\'s leading payments company.',skills:['Kubernetes','Docker','Terraform','AWS','Python'],posted_at:new Date(Date.now()-14*36e5).toISOString()},
+  {id:'j8',title:'Product Manager — Growth',company:'Zepto',logo_key:'zepto',location:'Mumbai',salary:'₹18-35 LPA',exp:'2-5',type:'Full-time',category:'pm',badges:{new:true},match_score:76,apply_link:'https://www.zeptonow.com/careers',description:'Drive growth for India\'s fastest growing quick commerce startup.',skills:['Product Strategy','Analytics','SQL','A/B Testing','User Research'],posted_at:new Date(Date.now()-16*36e5).toISOString()},
+  {id:'j9',title:'UI/UX Designer',company:'Meesho',logo_key:'meesho',location:'Bangalore',salary:'₹15-30 LPA',exp:'2-5',type:'Full-time',category:'design',badges:{},match_score:74,apply_link:'https://meesho.io/jobs',description:'Design beautiful experiences for 150M+ users on Meesho.',skills:['Figma','User Research','Prototyping','Design Systems','Accessibility'],posted_at:new Date(Date.now()-18*36e5).toISOString()},
+  {id:'j10',title:'ML Engineer — AI Platform',company:'Anthropic',logo_key:'anthropic',location:'Remote',salary:'₹50-100 LPA',exp:'3-8',type:'Full-time',category:'ml',badges:{featured:true,remote:true},match_score:89,apply_link:'https://www.anthropic.com/careers',description:'Build the future of AI safety at Anthropic.',skills:['Python','PyTorch','LLMs','RLHF','Distributed Training'],posted_at:new Date(Date.now()-20*36e5).toISOString()},
+]
+
 const LOGOS={
   google:`<svg viewBox="0 0 24 24" width="28" height="28"><path d="M21.8 10.2H12v3.6h5.6c-.5 2.4-2.7 4.2-5.6 4.2a6.2 6.2 0 110-12.4c1.6 0 3 .6 4.1 1.6l2.6-2.6A10 10 0 002 12a10 10 0 0010 10c5.5 0 10-4.5 10-10 0-.7-.1-1.3-.2-1.8z" fill="#4285f4"/></svg>`,
   amazon:`<svg viewBox="0 0 24 24" width="28" height="28"><rect width="24" height="24" rx="4" fill="#ff9900"/><text x="12" y="16" text-anchor="middle" fill="white" font-size="9" font-weight="900" font-family="Arial">AMZ</text></svg>`,
@@ -3804,40 +3818,67 @@ async function enterDash(){
   document.getElementById('dsAv').textContent=user.initial
   if(sbCol)document.getElementById('dsb').classList.add('col')
 
-  // Show loading
   document.getElementById('jCount').textContent='...'
   updateLiveStatus('loading')
 
-  // Always load FALLBACK first so UI isn't empty
-  cachedJobs = JSON.parse(localStorage.getItem('js_jobs_data')||'null') || FALLBACK_JOBS
-  showJobsView(); renderJobs(); updateCounts(); updateCatCounts()
+  // Clear any test/dummy jobs from localStorage
+  var stored = JSON.parse(localStorage.getItem('js_jobs_data')||'null')
+  var hasTestJobs = stored && stored.some(function(j){
+    return !j.title || j.title.length < 3 || 
+           j.company === 'aaaa' || j.company === 'vbcn' ||
+           j.title === 'aaaaaaaaaaaaa' || j.title === 'nbvh' ||
+           /^[a-z]{1,4}$/.test(j.title||'')
+  })
+  if(hasTestJobs){
+    console.log('Clearing test jobs from localStorage')
+    localStorage.removeItem('js_jobs_data')
+    stored = null
+  }
 
-  // Then try Supabase (async, non-blocking)
+  // Always try Supabase FIRST
   try {
     const remoteJobs = await loadJobsFromSupabase()
     if(remoteJobs && remoteJobs.length){
-      cachedJobs = remoteJobs
-      localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
-      renderJobs(); updateCounts(); updateCatCounts()
-      updateLiveStatus('live')
-      toast('Loaded '+remoteJobs.length+' live jobs!')
-      subscribeToJobUpdates()
+      // Filter out test/dummy jobs from Supabase too
+      var cleanJobs = remoteJobs.filter(function(j){
+        return j.title && j.title.length >= 3 &&
+               j.company && j.company.length >= 2 &&
+               !/^[a-z]{1,5}$/.test(j.title||'') &&
+               j.title !== 'aaaaaaaaaaaaa' &&
+               j.company !== 'aaaa'
+      })
+      if(cleanJobs.length > 0){
+        cachedJobs = cleanJobs
+        localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+        updateLiveStatus('live')
+        subscribeToJobUpdates()
+        toast('Loaded '+cleanJobs.length+' live jobs!')
+      } else {
+        // Supabase has only test jobs — use FALLBACK
+        cachedJobs = FALLBACK_JOBS
+        updateLiveStatus('local')
+      }
     } else {
+      // No jobs in Supabase yet — use FALLBACK
+      cachedJobs = stored || FALLBACK_JOBS
       updateLiveStatus('local')
     }
   } catch(e){
+    cachedJobs = stored || FALLBACK_JOBS
     updateLiveStatus('local')
   }
 
-  // Save user
+  await loadUserDataFromSupabase(user.id)
   saveUserToSupabase(user)
 
+  showJobsView()
+  renderJobs()
+  updateCounts()
+  updateCatCounts()
   showScreen('dashboard')
   initPlan()
   toast('Welcome, '+user.name.split(' ')[0]+'!')
-  // Subscribe to realtime community
   subscribeToCommunity()
-  // Update leaderboard
   setTimeout(updateLeaderboardEntry, 3000)
 }
 
