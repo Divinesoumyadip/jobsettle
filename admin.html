@@ -213,6 +213,8 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
       <div class="adm-sb-sec">Moderation</div>
       <div class="adm-lnk" onclick="showPage('community-mod',this)"><i class="fas fa-comments"></i>Community Posts<span class="cnt" id="sbCommCount" style="background:rgba(255,95,109,.2);color:var(--coral)">0</span></div>
       <div class="adm-lnk" onclick="showPage('campus-mod',this)"><i class="fas fa-university"></i>Campus Reports<span class="cnt" id="sbCampusModCount" style="background:rgba(255,95,109,.2);color:var(--coral)">0</span></div>
+      <div class="adm-lnk" onclick="showPage('referrals-mod',this)"><i class="fas fa-gift"></i>Referrals<span class="cnt" id="sbRefCount" style="background:rgba(255,180,0,.2);color:var(--gold)">0</span></div>
+      <div class="adm-lnk" onclick="showPage('ambassador-mod',this)"><i class="fas fa-user-tie"></i>Ambassador Apps<span class="cnt" id="sbAmbModCount" style="background:rgba(255,180,0,.2);color:var(--gold)">0</span></div>
       <div class="adm-sb-sec">Users</div>
       <div class="adm-lnk" onclick="showPage('users',this)"><i class="fas fa-users"></i>All Users<span class="cnt" id="sbUserCount">0</span></div>
       <div class="adm-lnk" onclick="showPage('applications',this)"><i class="fas fa-paper-plane"></i>Applications<span class="cnt" id="sbAppCount">0</span></div>
@@ -523,7 +525,43 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
         </div>
       </div>
 
-      <!-- ╔═ ANALYTICS ════════════════════════╗ -->
+      <!-- ╔═ REFERRALS MODERATION ═══════════════╗ -->
+      <div id="page-referrals-mod" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-gift" style="color:var(--gold)"></i>Pending Referrals</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-mint btn-sm" onclick="loadPendingReferrals()"><i class="fas fa-sync"></i>Refresh</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportReferrals()"><i class="fas fa-download"></i>Export CSV</button>
+            </div>
+          </div>
+          <!-- Stats -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 18px;border-bottom:1px solid var(--bd)">
+            <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--dark)" id="refStatTotal">0</div><div style="font-family:var(--mono);font-size:9px;color:var(--t3)">TOTAL</div></div>
+            <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:#f59e0b" id="refStatPending">0</div><div style="font-family:var(--mono);font-size:9px;color:var(--t3)">PENDING</div></div>
+            <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--mint2)" id="refStatApproved">0</div><div style="font-family:var(--mono);font-size:9px;color:var(--t3)">APPROVED</div></div>
+            <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--violet2)" id="refStatPayout">₹0</div><div style="font-family:var(--mono);font-size:9px;color:var(--t3)">PAID OUT</div></div>
+          </div>
+          <div id="referralsList" style="padding:16px">
+            <div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">Click Refresh to load referrals</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ AMBASSADOR APPLICATIONS ════════════╗ -->
+      <div id="page-ambassador-mod" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-user-tie" style="color:var(--violet2)"></i>Ambassador Applications</div>
+            <button class="btn btn-mint btn-sm" onclick="loadAmbassadorApps()"><i class="fas fa-sync"></i>Refresh</button>
+          </div>
+          <div id="ambassadorAppsList" style="padding:16px">
+            <div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">Click Refresh to load applications</div>
+          </div>
+        </div>
+      </div>
+
+
       <div id="page-analytics" style="display:none">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           <div class="adm-section">
@@ -905,6 +943,8 @@ function showPage(id, lnkEl){
   if(id==='ambassadors'){ renderAmbassadors(); updateAmbStats() }
   if(id==='community-mod'){ loadPendingPosts() }
   if(id==='campus-mod'){ loadPendingCampus() }
+  if(id==='referrals-mod'){ loadPendingReferrals() }
+  if(id==='ambassador-mod'){ loadAmbassadorApps() }
 }
 
 // ── DASHBOARD ────────────────────────────────────────────────
@@ -1618,6 +1658,151 @@ async function rejectCampus(id, btn){
   btn.closest('[style*=padding:16px]').remove()
   aToast('Campus report rejected')
   loadPendingCampus()
+}
+
+// ── REFERRAL MODERATION ───────────────────────────────────────
+async function loadPendingReferrals(){
+  aToast('Loading referrals...')
+  var data = await sbSelect('referrals','select=*&order=created_at.desc')
+  var el = document.getElementById('referralsList')
+  if(!el) return
+
+  var all = data||[]
+  var pending = all.filter(function(r){ return r.status==='pending' })
+  var approved = all.filter(function(r){ return r.status==='approved' })
+
+  var e1=document.getElementById('refStatTotal'); if(e1) e1.textContent=all.length
+  var e2=document.getElementById('refStatPending'); if(e2) e2.textContent=pending.length
+  var e3=document.getElementById('refStatApproved'); if(e3) e3.textContent=approved.length
+  var e4=document.getElementById('refStatPayout'); if(e4) e4.textContent='₹'+(approved.length*500).toLocaleString()
+  var sb=document.getElementById('sbRefCount'); if(sb) sb.textContent=pending.length
+
+  if(!all.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3);font-family:var(--mono)">No referrals yet</div>'
+    return
+  }
+
+  el.innerHTML = all.map(function(r){
+    var isPending = r.status==='pending'
+    var isApproved = r.status==='approved'
+    var statusColor = isApproved?'var(--mint2)':isPending?'#f59e0b':'var(--coral)'
+    var statusBg = isApproved?'var(--mint3)':isPending?'var(--gold3)':'var(--coral3)'
+    return '<div style="padding:16px;border:1.5px solid var(--bd);border-radius:14px;margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">'
+      +'<div style="flex:1;min-width:200px">'
+      +'<div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px"><i class="fas fa-user-plus" style="color:var(--mint2);margin-right:6px"></i>'+r.referred_email+'</div>'
+      +'<div style="font-size:11px;color:var(--t3);font-family:var(--mono)">Referred by user: '+r.referrer_id.substring(0,8)+'... · '+new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+'</div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span style="font-family:var(--mono);font-size:10px;background:'+statusBg+';color:'+statusColor+';padding:4px 10px;border-radius:6px;font-weight:700">'+r.status.toUpperCase()+'</span>'
+      +(isPending?
+        '<button class="btn btn-mint btn-sm" onclick="approveReferral(\''+r.id+'\',\''+r.referrer_id+'\',this)"><i class="fas fa-check"></i>Approve ₹500</button>'
+        +'<button class="btn btn-coral btn-sm" onclick="rejectReferral(\''+r.id+'\',this)"><i class="fas fa-times"></i>Reject</button>'
+        :(isApproved?'<span style="font-size:12px;font-weight:700;color:var(--mint2)">₹500 paid</span>':''))
+      +'</div></div>'
+  }).join('')
+}
+
+async function approveReferral(id, referrerId, btn){
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'
+  await sbUpdate('referrals', id, {
+    status:'approved',
+    approved_at:new Date().toISOString()
+  })
+
+  // Check if referrer now has 10 conversions → give them free Pro
+  var allRefs = await sbSelect('referrals',
+    'select=*&referrer_id=eq.'+referrerId+'&status=eq.approved')
+  var convertedCount = (allRefs||[]).length
+
+  if(convertedCount >= 10){
+    // Unlock Pro for referrer
+    await sbUpdate('profiles', referrerId, {
+      plan:'pro',
+      plan_expires: new Date(Date.now() + 365*24*60*60*1000).toISOString()
+    })
+    aToast('🎉 Referrer has reached 10 conversions — Pro plan activated for them!')
+  } else {
+    aToast('Referral approved! Referrer now has '+convertedCount+'/10 conversions.')
+  }
+  loadPendingReferrals()
+}
+
+async function rejectReferral(id, btn){
+  if(!confirm('Reject this referral?')) return
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'
+  await sbUpdate('referrals', id, {status:'rejected'})
+  aToast('Referral rejected')
+  loadPendingReferrals()
+}
+
+function exportReferrals(){
+  sbSelect('referrals','select=*&order=created_at.desc').then(function(data){
+    if(!data||!data.length){ aToast('No data to export'); return }
+    var csv = 'Referred Email,Referrer ID,Status,Date\n'
+    data.forEach(function(r){
+      csv += r.referred_email+','+r.referrer_id+','+r.status+','+new Date(r.created_at).toLocaleDateString('en-IN')+'\n'
+    })
+    var a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+    a.download='referrals.csv'; a.click()
+    aToast('Exported!')
+  })
+}
+
+// ── AMBASSADOR APPLICATIONS ───────────────────────────────────
+async function loadAmbassadorApps(){
+  aToast('Loading ambassador applications...')
+  var data = await sbSelect('ambassadors','select=*&order=submitted_at.desc')
+  var el = document.getElementById('ambassadorAppsList')
+  if(!el) return
+
+  var all = data||[]
+  var pending = all.filter(function(a){ return a.status==='pending' })
+  var sb = document.getElementById('sbAmbModCount'); if(sb) sb.textContent=pending.length
+
+  if(!all.length){
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--t3);font-family:var(--mono)">No applications yet</div>'
+    return
+  }
+
+  el.innerHTML = all.map(function(a){
+    var isPending = a.status==='pending'
+    var isActive = a.status==='active'
+    return '<div style="padding:16px;border:1.5px solid var(--bd);border-radius:14px;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">'
+      +(a.avatar?'<img src="'+a.avatar+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover"/>'
+        :'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--mint));display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:16px">'+(a.name||'?')[0]+'</div>')
+      +'<div style="flex:1"><div style="font-size:15px;font-weight:900;color:var(--dark)">'+a.name+'</div>'
+      +'<div style="font-size:12px;color:var(--t3)">'+a.college+' · '+a.year+' · '+a.email+'</div>'
+      +(a.phone?'<div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+a.phone+'</div>':'')
+      +'</div>'
+      +'<span style="font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:6px;font-weight:700;background:'+(isActive?'var(--mint3)':'var(--gold3)')+';color:'+(isActive?'var(--mint2)':'#b45309')+'">'+a.status.toUpperCase()+'</span>'
+      +'</div>'
+      +(a.why?'<div style="font-size:13px;color:var(--t2);background:var(--bg);padding:10px;border-radius:8px;margin-bottom:10px;line-height:1.6">'+a.why+'</div>':'')
+      +(a.linkedin?'<a href="'+a.linkedin+'" target="_blank" style="font-size:12px;color:var(--violet2);font-weight:700;margin-right:12px"><i class="fab fa-linkedin" style="margin-right:4px"></i>LinkedIn</a>':'')
+      +'<div style="display:flex;gap:8px;margin-top:8px">'
+      +(isPending?
+        '<button class="btn btn-mint btn-sm" onclick="approveAmbassador(\''+a.id+'\',this)"><i class="fas fa-check"></i>Approve</button>'
+        +'<button class="btn btn-coral btn-sm" onclick="rejectAmbassador(\''+a.id+'\',this)"><i class="fas fa-times"></i>Reject</button>'
+        :'')
+      +(isActive?'<span style="font-size:12px;font-weight:700;color:var(--mint2)"><i class="fas fa-check-circle" style="margin-right:4px"></i>Active Ambassador</span>':'')
+      +'</div></div>'
+  }).join('')
+}
+
+async function approveAmbassador(id, btn){
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'
+  await sbUpdate('ambassadors', id, {status:'active'})
+  aToast('Ambassador approved! They can now represent JobSettle.')
+  loadAmbassadorApps()
+  updateAmbStats()
+}
+
+async function rejectAmbassador(id, btn){
+  if(!confirm('Reject this ambassador application?')) return
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>'
+  await sbUpdate('ambassadors', id, {status:'rejected'})
+  aToast('Application rejected')
+  loadAmbassadorApps()
 }
 
 // ── GLOBAL SEARCH ─────────────────────────────────────────────
