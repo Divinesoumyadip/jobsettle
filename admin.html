@@ -816,7 +816,7 @@ async function sbApi(method, table, body, params){
 async function sbPush(table,data){ return await sbApi('POST',table,data) }
 async function sbSelect(table,query){ return await sbApi('GET',table,null,query||'select=*') }
 async function sbDelete(table,id){ await sbApi('DELETE',table,null,'id=eq.'+id) }
-async function sbUpdate(table,id,data){ await sbApi('PATCH',table,data,'id=eq.'+id) }
+async function sbUpdate(table,id,data){ return await sbApi('PATCH',table,data,'id=eq.'+id) }
 
 async function syncFromSupabase(){
   aToast('Syncing from Supabase...')
@@ -923,6 +923,24 @@ function loadAllData(){
 
 // ── NAVIGATION ────────────────────────────────────────────────
 
+// FIX: pageMeta was used but never defined — caused ReferenceError on every page click
+var pageMeta = {
+  'dashboard':       { title:'Dashboard',           sub:'Platform overview & quick stats' },
+  'add-job':         { title:'Add New Job',          sub:'Post a new job to the portal' },
+  'manage-jobs':     { title:'Manage Jobs',          sub:'Edit, delete or feature posted jobs' },
+  'campus':          { title:'Campus DB',            sub:'Campus placement records' },
+  'colleges':        { title:'College Connect',      sub:'Partner colleges & placement officers' },
+  'ambassadors':     { title:'Campus Ambassadors',   sub:'Manage ambassador program' },
+  'community-mod':   { title:'Community Posts',      sub:'Moderate user community posts' },
+  'campus-mod':      { title:'Campus Reports',       sub:'Verify campus placement reports' },
+  'referrals-mod':   { title:'Referrals',            sub:'Manage referral rewards' },
+  'ambassador-mod':  { title:'Ambassador Apps',      sub:'Review ambassador applications' },
+  'users':           { title:'All Users',            sub:'Registered users on JobSettle' },
+  'applications':    { title:'Applications',         sub:'Job applications submitted' },
+  'settings':        { title:'Platform Settings',    sub:'Configure platform options' },
+  'analytics':       { title:'Analytics',            sub:'Traffic, usage & performance data' },
+}
+
 function showPage(id, lnkEl){
   document.querySelectorAll('[id^="page-"]').forEach(function(p){p.style.display='none'})
   var pg = document.getElementById('page-'+id)
@@ -1021,6 +1039,17 @@ function clearJobForm(){
   document.getElementById('jMatch').value=85
   document.getElementById('matchVal').textContent=85
   document.querySelectorAll('.badge-opt').forEach(function(b){b.classList.remove('on')})
+  // BUG FIX: also reset logo so it doesnt bleed into next job
+  logoBase64=null
+  var img=document.getElementById('logoPreviewImg')
+  var icon=document.getElementById('logoPlaceholderIcon')
+  var txt=document.getElementById('logoPlaceholderText')
+  var inp=document.getElementById('logoFileInput')
+  if(img){img.src='';img.style.display='none'}
+  if(icon)icon.style.display='block'
+  if(txt)txt.style.display='block'
+  if(inp)inp.value=''
+  window._editingJobId=null
 }
 
 function saveJob(status){
@@ -1077,8 +1106,16 @@ function saveJob(status){
   }
 
   // Save locally immediately
-  jobs.unshift(job)
+  // BUG FIX: if editing, replace in array; else prepend new job
+  if(window._editingJobId){
+    var editIdx = jobs.findIndex(function(x){return x.id===window._editingJobId})
+    if(editIdx>=0) jobs[editIdx]=job; else jobs.unshift(job)
+  } else {
+    jobs.unshift(job)
+  }
   localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
+  // BUG FIX: notify main app tab to reload jobs immediately
+  window.dispatchEvent(new StorageEvent('storage',{key:'js_jobs_data',newValue:JSON.stringify(jobs)}))
   loadAllData()
   clearJobForm()
 
@@ -1097,17 +1134,28 @@ function saveJob(status){
       logo: (logoBase64 && !logoBase64.startsWith('data:')) ? logoBase64 : null,
       active:true, created_at:new Date().toISOString()
     }
-    sbPush('jobs', sbJob).then(function(res){
-      if(res && res.length > 0){
-        aToast('Job is LIVE on JobSettle!')
-        console.log('Published to Supabase:', res[0])
-      } else {
-        aToast('Saved locally. Check Supabase connection.')
-      }
-    }).catch(function(e){
-      console.error('Supabase push failed:', e)
-      aToast('Saved locally only.')
-    })
+    // BUG FIX: if editing an existing job, UPDATE it instead of inserting new row
+    if(window._editingJobId){
+      sbUpdate('jobs', window._editingJobId, sbJob).then(function(res){
+        aToast('Job updated on JobSettle!')
+        window._editingJobId = null
+      }).catch(function(e){
+        console.error('Supabase update failed:', e)
+        aToast('Updated locally only.')
+      })
+    } else {
+      sbPush('jobs', sbJob).then(function(res){
+        if(res && res.length > 0){
+          aToast('Job is LIVE on JobSettle!')
+          console.log('Published to Supabase:', res[0])
+        } else {
+          aToast('Saved locally. Check Supabase connection.')
+        }
+      }).catch(function(e){
+        console.error('Supabase push failed:', e)
+        aToast('Saved locally only.')
+      })
+    }
   }
 
   setTimeout(function(){
@@ -1171,6 +1219,32 @@ function editJob(id){
   document.getElementById('jMatch').value = j.match_score||85
   document.getElementById('matchVal').textContent = j.match_score||85
   skillTags = [...(j.skills||[])]; renderSkillTags()
+  // BUG FIX: restore existing logo into preview + logoBase64
+  window._editingJobId = id
+  logoBase64 = j.logo||null
+  var img=document.getElementById('logoPreviewImg')
+  var icon=document.getElementById('logoPlaceholderIcon')
+  var txt=document.getElementById('logoPlaceholderText')
+  if(logoBase64 && img){
+    img.src = logoBase64.startsWith('clearbit:')
+      ? 'https://logo.clearbit.com/'+logoBase64.replace('clearbit:','')
+      : logoBase64
+    img.style.display='block'
+    if(icon)icon.style.display='none'
+    if(txt)txt.style.display='none'
+  } else {
+    if(img){img.src='';img.style.display='none'}
+    if(icon)icon.style.display='block'
+    if(txt)txt.style.display='block'
+    // Try auto-fetch clearbit for this company
+    fetchLogoClearbit()
+  }
+  // Show badge: restore existing badges
+  var badges = j.badges||{}
+  document.querySelectorAll('.badge-opt').forEach(function(b){
+    var key=b.textContent.trim().toLowerCase().replace(/\s+/g,'_')
+    b.classList.toggle('on', !!badges[key])
+  })
   aToast('Editing: '+j.title)
 }
 
@@ -1332,22 +1406,29 @@ async function uploadLogoToStorage(file){
         'apikey': SB_KEY,
         'Authorization': 'Bearer '+SB_KEY,
         'Content-Type': file.type||'image/png',
-        'x-upsert': 'true'
+        'x-upsert': 'true',
+        'Cache-Control': '3600'
       },
       body: file
     })
     
-    if(r.ok){
-      // Get public URL
+    if(r.ok || r.status===200){
+      // BUG FIX: use correct public URL format
       var publicUrl = SB_URL+'/storage/v1/object/public/logos/'+fileName
-      logoBase64 = publicUrl // store URL instead of base64
-      aToast('Logo uploaded!')
+      logoBase64 = publicUrl
+      // Show uploaded URL in preview immediately
+      var img=document.getElementById('logoPreviewImg')
+      if(img){ img.src=publicUrl; img.style.display='block' }
+      aToast('Logo uploaded to cloud!')
       console.log('Logo URL:', publicUrl)
     } else {
       var err = await r.text()
       console.warn('Storage upload failed:', r.status, err)
-      // Keep base64 fallback - still works locally
-      aToast('Logo saved locally')
+      // BUG FIX: show user what went wrong
+      if(r.status===400) aToast('Logo bucket not set up in Supabase — using local copy')
+      else if(r.status===403) aToast('Storage permission denied — check Supabase bucket policy')
+      else aToast('Logo saved locally (cloud upload failed: '+r.status+')')
+      // logoBase64 already has the base64 fallback set in previewLogo()
     }
   } catch(e){
     console.warn('Logo upload error:', e.message)

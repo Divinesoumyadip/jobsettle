@@ -3293,8 +3293,8 @@ function getLogo(key, company, logoUrl){
   var fallback = '<svg viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="10" fill="'+color+'"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="16" font-weight="900" font-family="Arial">'+co+'</text></svg>'
   var imgStyle = 'width:40px;height:40px;border-radius:10px;object-fit:contain;background:white;padding:4px;border:1.5px solid var(--bd)'
 
-  // Direct URL from Supabase Storage
-  if(logoUrl && logoUrl.startsWith('http')){
+  // Direct URL from Supabase Storage OR base64 from admin upload
+  if(logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('data:'))){
     return '<img src="'+logoUrl+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
   }
   // Clearbit stored URL
@@ -3766,6 +3766,7 @@ function subscribeToJobUpdates(){
         cachedJobs.unshift({
           id:String(j.id), title:j.title, company:j.company,
           logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
+          logo_url:j.logo||null, // FIX: include logo_url from Supabase
           location:j.location||'Remote', salary:j.salary||'Competitive',
           exp:j.experience||'0-2 years', type:j.job_type||'Full-time',
           category:(j.category||'sde').toLowerCase(),
@@ -3783,7 +3784,22 @@ function subscribeToJobUpdates(){
         var idx=cachedJobs.findIndex(function(x){return String(x.id)===String(j.id)})
         if(idx>-1){
           if(!j.active){ cachedJobs.splice(idx,1) }
-          else{ cachedJobs[idx].active=j.active }
+          else{
+            // FIX: merge ALL updated fields including logo_url
+            var badges2={}; try{badges2=typeof j.badges==='string'?JSON.parse(j.badges):j.badges||{}}catch(e){}
+            var skills2=[]; try{skills2=typeof j.skills==='string'?JSON.parse(j.skills):j.skills||[]}catch(e){}
+            cachedJobs[idx]=Object.assign(cachedJobs[idx],{
+              title:j.title, company:j.company, location:j.location,
+              salary:j.salary, exp:j.experience, type:j.job_type,
+              category:(j.category||'sde').toLowerCase(),
+              logo_url:j.logo||null,
+              logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
+              badges:badges2, skills:skills2,
+              match_score:parseInt(j.match_score)||82,
+              apply_link:j.apply_link||'',
+              active:j.active
+            })
+          }
           localStorage.setItem('js_jobs_data',JSON.stringify(cachedJobs))
           renderJobs()
         }
