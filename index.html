@@ -3252,6 +3252,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 <script>
 // user managed by Supabase Auth - see initAuth()
 let curFil='all', sbCol=window.innerWidth<600, cachedJobs=[]
+let saved=JSON.parse(localStorage.getItem('js_saved')||'[]')
+let applied=JSON.parse(localStorage.getItem('js_applied')||'[]')
+let tracker=JSON.parse(localStorage.getItem('js_tracker')||'[]')
+let userSkills=JSON.parse(localStorage.getItem('js_skills')||'[]')
+let userPlan=localStorage.getItem('js_plan')||'free'
+let user=null
+let jdJobId=null
+let raCurrentJob=null
 
 // ── FALLBACK JOBS (shown when Supabase is empty/offline) ───────
 const FALLBACK_JOBS=[
@@ -3314,7 +3322,6 @@ function switchTab(t){
 
 // AUTH — localStorage only
 // ═══ REAL SUPABASE AUTH ════════════════════════════════════════
-let user = null
 
 // ── SESSION RESTORE ON PAGE LOAD ──────────────────────────────
 async function initAuth(){
@@ -3847,7 +3854,6 @@ function updateCatCounts(){
 
 // ═══ RESUME ANALYZER (Jobright-style) ══════════════════════════
 
-var raCurrentJob = null
 var raMissingKeywords = []
 var raRewrittenText = ''
 
@@ -6352,7 +6358,6 @@ function delT(id){
 // MODAL
 let curJobId=null
 // ── JOB DETAIL PANEL (Jobright-style) ──────────────────────────
-var jdJobId = null
 
 function openApply(id){
   const j = cachedJobs.find(j=>String(j.id)===String(id))
