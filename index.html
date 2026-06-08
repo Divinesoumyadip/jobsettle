@@ -1371,31 +1371,70 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
       </div>
     </div>
     <div class="auth-right">
-      <div class="back-row" onclick="showScreen('landing')"><i class="fas fa-arrow-left"></i> Back to home</div>
+      <div class="back-row" onclick="showScreen('landing')"><i class="fas fa-arrow-left"></i> Back</div>
       <div class="auth-tabs">
         <button class="atab on" id="tSU" onclick="switchTab('signup')">Create Account</button>
         <button class="atab" id="tLI" onclick="switchTab('login')">Sign In</button>
       </div>
+
+      <!-- SIGNUP -->
       <div class="afp on" id="suP">
-        <h3>Get Started Free</h3><p class="sub">Create your account in seconds</p>
-        <div class="frow2"><div><label class="fl">First Name</label><input class="fi" id="sfn" placeholder="Rahul" style="margin-bottom:0"/></div><div><label class="fl">Last Name</label><input class="fi" id="sln" placeholder="Sharma" style="margin-bottom:0"/></div></div>
-        <div style="height:16px"></div>
+        <h3>Get Started Free</h3>
+        <p class="sub">Create your account in seconds</p>
+        <!-- OAuth buttons -->
+        <button class="sbtn" onclick="doGoogle()" style="margin-bottom:10px">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M21.8 10.2H12v3.6h5.6c-.5 2.4-2.7 4.2-5.6 4.2a6.2 6.2 0 110-12.4c1.6 0 3 .6 4.1 1.6l2.6-2.6A10 10 0 002 12a10 10 0 0010 10c5.5 0 10-4.5 10-10 0-.7-.1-1.3-.2-1.8z" fill="#4285f4"/></svg>
+          Continue with Google
+        </button>
+        <button class="sbtn" onclick="doGithub()" style="background:#24292e;color:white;border-color:#24292e">
+          <i class="fab fa-github" style="font-size:16px"></i>
+          Continue with GitHub
+        </button>
+        <div class="fdiv"><span>OR use email</span></div>
+        <div class="frow2">
+          <div><label class="fl">First Name</label><input class="fi" id="sfn" placeholder="Rahul" style="margin-bottom:0"/></div>
+          <div><label class="fl">Last Name</label><input class="fi" id="sln" placeholder="Sharma" style="margin-bottom:0"/></div>
+        </div>
+        <div style="height:12px"></div>
         <label class="fl">Email</label><input class="fi" type="email" id="sem" placeholder="rahul@email.com"/>
         <label class="fl">Password</label><input class="fi" type="password" id="spw" placeholder="Min 6 characters"/>
-        <button class="btn btn-mint" style="width:100%;font-size:14.5px;padding:14px;justify-content:center" onclick="doSignup()"><i class="fas fa-rocket"></i> Create Free Account</button>
-        <div class="fdiv"><span>OR</span></div>
-        <button class="sbtn" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M21.8 10.2H12v3.6h5.6c-.5 2.4-2.7 4.2-5.6 4.2a6.2 6.2 0 110-12.4c1.6 0 3 .6 4.1 1.6l2.6-2.6A10 10 0 002 12a10 10 0 0010 10c5.5 0 10-4.5 10-10 0-.7-.1-1.3-.2-1.8z" fill="#4285f4"/></svg> Continue with Google</button>
+        <div id="suErr" style="display:none;color:#f43f5e;font-size:12.5px;font-weight:600;margin-bottom:10px;padding:8px 12px;background:#fff5f5;border-radius:8px"></div>
+        <button class="btn btn-mint" style="width:100%;font-size:14.5px;padding:14px;justify-content:center" onclick="doSignup()">
+          <i class="fas fa-rocket"></i> Create Free Account
+        </button>
         <p class="af">Already have account? <a onclick="switchTab('login')">Sign in →</a></p>
       </div>
+
+      <!-- LOGIN -->
       <div class="afp" id="liP">
-        <h3>Welcome back</h3><p class="sub">Sign in to your JobSettle account</p>
+        <h3>Welcome back</h3>
+        <p class="sub">Sign in to your JobSettle account</p>
+        <button class="sbtn" onclick="doGoogle()" style="margin-bottom:10px">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M21.8 10.2H12v3.6h5.6c-.5 2.4-2.7 4.2-5.6 4.2a6.2 6.2 0 110-12.4c1.6 0 3 .6 4.1 1.6l2.6-2.6A10 10 0 002 12a10 10 0 0010 10c5.5 0 10-4.5 10-10 0-.7-.1-1.3-.2-1.8z" fill="#4285f4"/></svg>
+          Continue with Google
+        </button>
+        <button class="sbtn" onclick="doGithub()" style="background:#24292e;color:white;border-color:#24292e">
+          <i class="fab fa-github" style="font-size:16px"></i>
+          Continue with GitHub
+        </button>
+        <div class="fdiv"><span>OR use email</span></div>
         <label class="fl">Email</label><input class="fi" type="email" id="lem" placeholder="rahul@email.com"/>
         <label class="fl">Password</label><input class="fi" type="password" id="lpw" placeholder="Your password"/>
-        <div style="text-align:right;margin-top:-10px;margin-bottom:16px"><a style="font-size:12.5px;color:var(--mint2);font-weight:800;cursor:pointer">Forgot password?</a></div>
-        <button class="btn btn-dark" style="width:100%;font-size:14.5px;padding:14px;justify-content:center" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-        <div class="fdiv"><span>OR</span></div>
-        <button class="sbtn" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M21.8 10.2H12v3.6h5.6c-.5 2.4-2.7 4.2-5.6 4.2a6.2 6.2 0 110-12.4c1.6 0 3 .6 4.1 1.6l2.6-2.6A10 10 0 002 12a10 10 0 0010 10c5.5 0 10-4.5 10-10 0-.7-.1-1.3-.2-1.8z" fill="#4285f4"/></svg> Continue with Google</button>
+        <div style="text-align:right;margin-top:-8px;margin-bottom:14px">
+          <a style="font-size:12px;color:var(--mint2);font-weight:700;cursor:pointer" onclick="doForgotPassword()">Forgot password?</a>
+        </div>
+        <div id="liErr" style="display:none;color:#f43f5e;font-size:12.5px;font-weight:600;margin-bottom:10px;padding:8px 12px;background:#fff5f5;border-radius:8px"></div>
+        <button class="btn btn-dark" style="width:100%;font-size:14.5px;padding:14px;justify-content:center" onclick="doLogin()">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
         <p class="af">No account? <a onclick="switchTab('signup')">Create free account →</a></p>
+      </div>
+
+      <!-- LOADING STATE -->
+      <div id="authLoading" style="display:none;text-align:center;padding:40px 20px">
+        <div style="width:48px;height:48px;border:4px solid var(--bd);border-top-color:var(--mint);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px"></div>
+        <div style="font-size:15px;font-weight:700;color:var(--dark)" id="authLoadingMsg">Signing you in...</div>
+        <div style="font-size:13px;color:var(--t3);margin-top:6px">Please wait</div>
       </div>
     </div>
   </div>
@@ -3008,7 +3047,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 
 <!-- Supabase SDK -->
 <script>
-let user=JSON.parse(localStorage.getItem('js_user')||'null')
+// user managed by Supabase Auth - see initAuth()
 let saved=JSON.parse(localStorage.getItem('js_saved')||'[]')
 let applied=JSON.parse(localStorage.getItem('js_applied')||'[]')
 let tracker=JSON.parse(localStorage.getItem('js_tracker')||'[]')
@@ -3060,42 +3099,305 @@ function switchTab(t){
 }
 
 // AUTH — localStorage only
-function doSignup(){
-  const fn=document.getElementById('sfn').value.trim()
-  const ln=document.getElementById('sln').value.trim()
-  const email=document.getElementById('sem').value.trim()
-  const pass=document.getElementById('spw').value
-  if(!fn||!email||!pass){toast('Please fill all fields',1);return}
-  if(pass.length<6){toast('Password min 6 characters',1);return}
-  const name=fn+(ln?' '+ln:'')
-  const u={id:'u'+Date.now(),name,email,initial:fn[0].toUpperCase()}
-  localStorage.setItem('js_user',JSON.stringify(u));user=u
-  // Save to all users list for admin
-  const allUsers=JSON.parse(localStorage.getItem('js_all_users')||'[]')
-  if(!allUsers.find(x=>x.email===email)){
-    allUsers.push({...u,joined:new Date().toISOString(),apps:0,saved:0})
-    localStorage.setItem('js_all_users',JSON.stringify(allUsers))
+// ═══ REAL SUPABASE AUTH ════════════════════════════════════════
+let user = null
+
+// ── SESSION RESTORE ON PAGE LOAD ──────────────────────────────
+async function initAuth(){
+  if(!supa){ fallbackLocalAuth(); return }
+  try {
+    const { data:{ session } } = await supa.auth.getSession()
+    if(session && session.user){
+      await handleAuthSession(session)
+      return
+    }
+  } catch(e){ console.warn('getSession failed:', e) }
+  
+  // Check localStorage fallback
+  const stored = localStorage.getItem('js_user')
+  if(stored){
+    try{ user = JSON.parse(stored); enterDash(); return }catch(e){}
   }
-  enterDash()
+  showScreen('landing')
 }
-function doLogin(){
-  const email=document.getElementById('lem').value.trim()
-  const pass=document.getElementById('lpw').value
-  if(!email||!pass){toast('Please fill all fields',1);return}
-  const stored=JSON.parse(localStorage.getItem('js_user')||'null')
-  if(stored&&stored.email===email){user=stored;enterDash();return}
-  const name=email.split('@')[0]
-  const u={id:'u'+Date.now(),name:name.charAt(0).toUpperCase()+name.slice(1),email,initial:name[0].toUpperCase()}
-  localStorage.setItem('js_user',JSON.stringify(u));user=u;enterDash()
+
+async function handleAuthSession(session){
+  const u = session.user
+  const name = u.user_metadata?.full_name || u.user_metadata?.name || u.email?.split('@')[0] || 'User'
+  user = {
+    id: u.id,
+    name: name,
+    email: u.email,
+    initial: name[0].toUpperCase(),
+    avatar: u.user_metadata?.avatar_url || null,
+    plan: 'free',
+    provider: u.app_metadata?.provider || 'email'
+  }
+  localStorage.setItem('js_user', JSON.stringify(user))
+
+  // Load user's data from Supabase
+  await loadUserDataFromSupabase(u.id)
+
+  // Upsert profile
+  await sbApi('POST','profiles',{
+    id:u.id, name:user.name, email:user.email,
+    avatar_url:user.avatar, updated_at:new Date().toISOString()
+  })
+
+  await enterDash()
 }
-function doGoogle(){
-  const u={id:'u'+Date.now(),name:'User',email:'user@gmail.com',initial:'U'}
-  localStorage.setItem('js_user',JSON.stringify(u));user=u;enterDash()
+
+// ── LOAD ALL USER DATA FROM SUPABASE ──────────────────────────
+async function loadUserDataFromSupabase(userId){
+  if(!userId) return
+  try {
+    // Load saved jobs
+    var savedData = await sbApi('GET','saved_jobs',null,'user_id=eq.'+userId+'&select=job_id')
+    if(savedData && savedData.length){
+      saved = savedData.map(function(s){ return s.job_id })
+      localStorage.setItem('js_saved', JSON.stringify(saved))
+    }
+
+    // Load applications
+    var appsData = await sbApi('GET','applications',null,'user_id=eq.'+userId+'&select=*&order=applied_at.desc')
+    if(appsData && appsData.length){
+      applied = appsData.map(function(a){ return a.job_id })
+      localStorage.setItem('js_applied', JSON.stringify(applied))
+    }
+
+    // Load tracker
+    var trackerData = await sbApi('GET','tracker',null,'user_id=eq.'+userId+'&select=*&order=added_at.desc')
+    if(trackerData && trackerData.length){
+      tracker = trackerData
+      localStorage.setItem('js_tracker', JSON.stringify(tracker))
+    }
+
+    // Load profile
+    var profileData = await sbApi('GET','profiles',null,'id=eq.'+userId+'&select=*')
+    if(profileData && profileData.length){
+      var p = profileData[0]
+      if(p.plan) user.plan = p.plan
+      if(p.name) user.name = p.name
+      localStorage.setItem('js_user', JSON.stringify(user))
+    }
+
+    console.log('User data loaded from Supabase')
+  } catch(e){
+    console.warn('loadUserData failed:', e.message)
+  }
 }
-function doLogout(){
-  localStorage.removeItem('js_user');user=null
-  showScreen('landing');toast('Logged out')
+
+// ── SAVE SAVED JOB TO SUPABASE ────────────────────────────────
+async function saveSavedJobToSupabase(jobId, isSaving){
+  if(!user || !user.id || !supa) return
+  try {
+    if(isSaving){
+      await sbApi('POST','saved_jobs',{
+        user_id:user.id, job_id:String(jobId)
+      })
+    } else {
+      await sbApi('DELETE','saved_jobs',null,
+        'user_id=eq.'+user.id+'&job_id=eq.'+String(jobId))
+    }
+  } catch(e){ console.warn('saveSavedJob failed:', e.message) }
 }
+
+// ── SAVE TRACKER ENTRY TO SUPABASE ───────────────────────────
+async function saveTrackerToSupabase(entry){
+  if(!user || !user.id) return
+  try {
+    await sbApi('POST','tracker',{
+      user_id:user.id,
+      job_id:String(entry.id||''),
+      job_title:entry.title,
+      company:entry.company,
+      salary:entry.salary||'',
+      stage:entry.stage||'applied',
+      notes:entry.notes||'',
+      logo_key:entry.logo_key||'',
+      added_at:entry.added_at||new Date().toISOString()
+    })
+  } catch(e){ console.warn('saveTracker failed:', e.message) }
+}
+
+// ── LISTEN FOR AUTH STATE CHANGES ─────────────────────────────
+function setupAuthListener(){
+  if(!supa) return
+  supa.auth.onAuthStateChange(async function(event, session){
+    console.log('Auth event:', event)
+    if(event === 'SIGNED_IN' && session){
+      await handleAuthSession(session)
+    } else if(event === 'SIGNED_OUT'){
+      user = null
+      localStorage.removeItem('js_user')
+      showScreen('landing')
+    } else if(event === 'PASSWORD_RECOVERY'){
+      showAuth('login')
+      toast('Enter your new password')
+    }
+  })
+}
+
+// ── EMAIL SIGNUP ───────────────────────────────────────────────
+async function doSignup(){
+  const fn = document.getElementById('sfn').value.trim()
+  const ln = document.getElementById('sln').value.trim()
+  const email = document.getElementById('sem').value.trim()
+  const pass = document.getElementById('spw').value
+  const errEl = document.getElementById('suErr')
+  
+  if(!fn || !email || !pass){ showAuthError('suErr','Please fill all fields'); return }
+  if(pass.length < 6){ showAuthError('suErr','Password must be at least 6 characters'); return }
+  if(!email.includes('@')){ showAuthError('suErr','Enter a valid email address'); return }
+  
+  showAuthLoading('Creating your account...')
+  
+  if(supa){
+    try {
+      const { data, error } = await supa.auth.signUp({
+        email, password: pass,
+        options:{ data:{ full_name: fn+(ln?' '+ln:''), first_name:fn, last_name:ln } }
+      })
+      if(error){ showAuthError('suErr', error.message); hideAuthLoading(); return }
+      if(data.user && !data.session){
+        // Email confirmation required
+        hideAuthLoading()
+        showAuthError('suErr', '✅ Check your email to confirm your account!', 'success')
+        return
+      }
+      // Auto-confirmed
+      if(data.session){ await handleAuthSession(data.session) }
+    } catch(e){ showAuthError('suErr', e.message); hideAuthLoading() }
+  } else {
+    // Fallback localStorage signup
+    const name = fn+(ln?' '+ln:'')
+    user = {id:'u'+Date.now(), name, email, initial:fn[0].toUpperCase(), plan:'free'}
+    localStorage.setItem('js_user', JSON.stringify(user))
+    hideAuthLoading()
+    enterDash()
+  }
+}
+
+// ── EMAIL LOGIN ────────────────────────────────────────────────
+async function doLogin(){
+  const email = document.getElementById('lem').value.trim()
+  const pass = document.getElementById('lpw').value
+  
+  if(!email || !pass){ showAuthError('liErr','Enter email and password'); return }
+  
+  showAuthLoading('Signing you in...')
+  
+  if(supa){
+    try {
+      const { data, error } = await supa.auth.signInWithPassword({ email, password:pass })
+      if(error){ showAuthError('liErr', error.message); hideAuthLoading(); return }
+      if(data.session){ await handleAuthSession(data.session) }
+    } catch(e){ showAuthError('liErr', e.message); hideAuthLoading() }
+  } else {
+    // Fallback
+    const name = email.split('@')[0]
+    user = {id:'u'+Date.now(), name, email, initial:name[0].toUpperCase(), plan:'free'}
+    localStorage.setItem('js_user', JSON.stringify(user))
+    hideAuthLoading()
+    enterDash()
+  }
+}
+
+// ── GOOGLE OAUTH ───────────────────────────────────────────────
+async function doGoogle(){
+  if(!supa){ toast('Google login requires internet connection',1); return }
+  showAuthLoading('Redirecting to Google...')
+  try {
+    const { error } = await supa.auth.signInWithOAuth({
+      provider: 'google',
+      options:{ redirectTo: window.location.origin + window.location.pathname }
+    })
+    if(error){ showAuthError('suErr', error.message); hideAuthLoading() }
+  } catch(e){ showAuthError('suErr', e.message); hideAuthLoading() }
+}
+
+// ── GITHUB OAUTH ───────────────────────────────────────────────
+async function doGithub(){
+  if(!supa){ toast('GitHub login requires internet connection',1); return }
+  showAuthLoading('Redirecting to GitHub...')
+  try {
+    const { error } = await supa.auth.signInWithOAuth({
+      provider: 'github',
+      options:{ redirectTo: window.location.origin + window.location.pathname }
+    })
+    if(error){ showAuthError('suErr', error.message); hideAuthLoading() }
+  } catch(e){ showAuthError('suErr', e.message); hideAuthLoading() }
+}
+
+// ── FORGOT PASSWORD ────────────────────────────────────────────
+async function doForgotPassword(){
+  const email = document.getElementById('lem').value.trim()
+  if(!email){ showAuthError('liErr','Enter your email first'); return }
+  if(!supa){ toast('Requires internet connection',1); return }
+  showAuthLoading('Sending reset email...')
+  try {
+    const { error } = await supa.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    })
+    hideAuthLoading()
+    if(error){ showAuthError('liErr', error.message) }
+    else { showAuthError('liErr', '✅ Password reset email sent! Check your inbox.', 'success') }
+  } catch(e){ hideAuthLoading(); showAuthError('liErr', e.message) }
+}
+
+// ── LOGOUT ────────────────────────────────────────────────────
+async function doLogout(){
+  if(supa){ await supa.auth.signOut() }
+  user = null
+  localStorage.removeItem('js_user')
+  // Clear session data
+  ;['js_saved','js_applied','js_tracker'].forEach(k=>localStorage.removeItem(k))
+  saved=[];applied=[];tracker=[]
+  showScreen('landing')
+  toast('Logged out successfully')
+}
+
+// ── AUTH UI HELPERS ────────────────────────────────────────────
+function showAuthError(elId, msg, type){
+  var el = document.getElementById(elId)
+  if(!el) return
+  el.style.display = 'block'
+  el.style.background = type==='success'?'#f0fdf4':'#fff5f5'
+  el.style.color = type==='success'?'#16a34a':'#f43f5e'
+  el.textContent = msg
+  if(type!=='success') hideAuthLoading()
+}
+
+function showAuthLoading(msg){
+  ;['suP','liP'].forEach(id=>{ var el=document.getElementById(id); if(el) el.style.display='none' })
+  var ld = document.getElementById('authLoading')
+  var lm = document.getElementById('authLoadingMsg')
+  if(ld) ld.style.display='block'
+  if(lm) lm.textContent = msg||'Loading...'
+}
+
+function hideAuthLoading(){
+  var ld = document.getElementById('authLoading')
+  if(ld) ld.style.display='none'
+  // Restore active tab
+  var isSU = document.getElementById('tSU').classList.contains('on')
+  document.getElementById(isSU?'suP':'liP').style.display='block'
+}
+
+function fallbackLocalAuth(){
+  const stored = localStorage.getItem('js_user')
+  if(stored){ try{ user=JSON.parse(stored); enterDash(); return }catch(e){} }
+  showScreen('landing')
+}
+
+// Update logout button to use real logout
+function doLogoutClick(){ doLogout() }
+// old doLogin removed
+
+// old doGoogle removed
+
+// old version removed
+
 // ═══ SUPABASE REAL-TIME BACKEND ═══════════════════════════════
 const SUPABASE_URL = 'https://eidnnyfkwtaaeezszktv.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpZG5ueWZrd3RhYWVlenN6a3R2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4MjA2MDcsImV4cCI6MjA5NjM5NjYwN30.St4CuGM7LvdhYBiQ97ylaQq5eS1i-rLZtXk4Sx7O1WM'
@@ -3190,11 +3492,19 @@ async function saveUserToSupabase(u){
 
 // ── SAVE APPLICATION ───────────────────────────────────────────
 async function saveApplicationToSupabase(app){
-  await sbApi('POST','applications',{
-    user_email:user&&user.email, user_name:user&&user.name,
-    job_id:String(app.jobId), job_title:app.jobTitle,
-    company:app.company, applied_at:new Date().toISOString()
-  })
+  if(!user) return
+  try {
+    await sbApi('POST','applications',{
+      user_id: user.id||null,
+      user_email: user.email,
+      user_name: user.name,
+      job_id: String(app.jobId),
+      job_title: app.jobTitle,
+      company: app.company,
+      status: 'applied',
+      applied_at: new Date().toISOString()
+    })
+  } catch(e){ console.warn('saveApp failed:', e.message) }
 }
 
 // ── REALTIME SUBSCRIPTION ──────────────────────────────────────
@@ -3299,7 +3609,157 @@ function updateCatCounts(){
 }
 
 
-// ═══ CATEGORY DROPDOWN ═════════════════════════════════════════
+// ═══ REAL BACKEND FOR ALL FEATURES ════════════════════════════
+
+// ── COMMUNITY POSTS ───────────────────────────────────────────
+var communityPostsCache = []
+
+async function loadCommunityPosts(){
+  var data = await sbApi('GET','community_posts',null,'select=*&order=created_at.desc&limit=50')
+  if(data && data.length){
+    communityPostsCache = data
+    renderCommunityPosts(data)
+  }
+}
+
+async function submitCommunityPost(content, tags){
+  if(!user){ toast('Login to post',1); return }
+  if(!content || content.length < 10){ toast('Write something meaningful!',1); return }
+  var post = {
+    user_id: user.id,
+    user_name: user.name,
+    avatar_url: user.avatar||null,
+    content: content,
+    tags: tags||[],
+    likes: 0, replies: 0
+  }
+  var res = await sbApi('POST','community_posts',post)
+  if(res && res.length){
+    communityPostsCache.unshift(res[0])
+    renderCommunityPosts(communityPostsCache)
+    toast('Posted!')
+    return true
+  }
+  return false
+}
+
+async function likeCommunityPost(postId){
+  await sbApi('PATCH','community_posts',{likes:1},'id=eq.'+postId)
+}
+
+// ── LEADERBOARD (REAL) ────────────────────────────────────────
+async function loadLeaderboard(){
+  var data = await sbApi('GET','leaderboard',null,'select=*&order=points.desc&limit=100')
+  if(data && data.length) return data
+  return null
+}
+
+async function updateLeaderboardEntry(){
+  if(!user || !user.id) return
+  var appsCount = applied.length
+  var savedCount = saved.length
+  var points = (appsCount*10) + (savedCount*2)
+  await sbApi('POST','leaderboard',{
+    user_id:user.id, user_name:user.name,
+    avatar_url:user.avatar||null,
+    college: JSON.parse(localStorage.getItem('js_profile')||'{}').city||'',
+    points:points, applications_count:appsCount,
+    streak_days:1, updated_at:new Date().toISOString()
+  })
+}
+
+// ── AI HISTORY (REAL) ──────────────────────────────────────────
+async function saveAIHistory(type, inputData, result){
+  if(!user || !user.id) return
+  await sbApi('POST','ai_history',{
+    user_id:user.id, type:type,
+    input_data:inputData, result:result
+  })
+}
+
+async function loadAIHistory(type){
+  if(!user || !user.id) return []
+  var data = await sbApi('GET','ai_history',null,
+    'user_id=eq.'+user.id+'&type=eq.'+type+'&select=*&order=created_at.desc&limit=10')
+  return data||[]
+}
+
+// ── JOB ALERTS (REAL) ─────────────────────────────────────────
+async function saveJobAlert(keywords, categories, locations){
+  if(!user || !user.id){ toast('Login to set alerts',1); return }
+  await sbApi('POST','job_alerts',{
+    user_id:user.id,
+    keywords:keywords||[],
+    categories:categories||[],
+    locations:locations||[],
+    email_alerts:true
+  })
+  toast('Job alert saved! You\'ll be notified of matching jobs.')
+}
+
+// ── REFERRALS (REAL) ──────────────────────────────────────────
+async function submitReferral(referredEmail){
+  if(!user || !user.id){ toast('Login to refer',1); return }
+  var res = await sbApi('POST','referrals',{
+    referrer_id:user.id,
+    referred_email:referredEmail,
+    status:'pending'
+  })
+  if(res && res.length){
+    toast('Referral sent to '+referredEmail+'! You\'ll earn ₹500 when they join.')
+    return true
+  }
+  return false
+}
+
+async function loadMyReferrals(){
+  if(!user || !user.id) return []
+  var data = await sbApi('GET','referrals',null,
+    'referrer_id=eq.'+user.id+'&select=*')
+  return data||[]
+}
+
+// ── RESUME SAVE (REAL) ────────────────────────────────────────
+async function saveResumeToSupabase(resumeData, grade, score){
+  if(!user || !user.id) return
+  await sbApi('POST','resumes',{
+    user_id:user.id, name:user.name,
+    data:resumeData, grade:grade||'A',
+    score:score||90, is_primary:true,
+    updated_at:new Date().toISOString()
+  })
+}
+
+// ── HOOK AI TOOLS TO SAVE HISTORY ─────────────────────────────
+// Called after analyzeCallback completes
+async function saveCallbackHistory(input, result){
+  saveAIHistory('callback', input, result)
+  updateLeaderboardEntry()
+}
+
+async function saveRejectionHistory(input, result){
+  saveAIHistory('rejection', input, result)
+}
+
+async function saveSOSHistory(input, result){
+  saveAIHistory('interview_sos', input, result)
+}
+
+// ── SUBSCRIBE TO COMMUNITY REALTIME ───────────────────────────
+function subscribeToCommunity(){
+  if(!supa) return
+  supa.channel('public:community_posts')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'community_posts'},
+      function(payload){
+        if(!payload.new) return
+        communityPostsCache.unshift(payload.new)
+        renderCommunityPosts(communityPostsCache)
+      })
+    .subscribe()
+}
+
+// ══════════════════════════════════════════════════════════════
+
 var catDropOpen = false
 function toggleCatDropdown(){
   catDropOpen = !catDropOpen
@@ -3374,6 +3834,10 @@ async function enterDash(){
   showScreen('dashboard')
   initPlan()
   toast('Welcome, '+user.name.split(' ')[0]+'!')
+  // Subscribe to realtime community
+  subscribeToCommunity()
+  // Update leaderboard
+  setTimeout(updateLeaderboardEntry, 3000)
 }
 
 function updateLiveStatus(state){
@@ -3462,9 +3926,12 @@ function setNav(el){document.querySelectorAll('.dsb-lnk').forEach(l=>l.classList
 // SAVE
 function toggleSave(id,btn){
   const sid=String(id),idx=saved.indexOf(sid)
-  if(idx===-1){saved.push(sid);btn.classList.add('on');btn.innerHTML='<i class="fas fa-heart"></i>';toast('Job saved!')}
+  const isSaving = idx===-1
+  if(isSaving){saved.push(sid);btn.classList.add('on');btn.innerHTML='<i class="fas fa-heart"></i>';toast('Job saved!')}
   else{saved.splice(idx,1);btn.classList.remove('on');btn.innerHTML='<i class="far fa-heart"></i>';toast('Removed')}
   localStorage.setItem('js_saved',JSON.stringify(saved));updateCounts();renderSaved()
+  // Sync to Supabase
+  saveSavedJobToSupabase(sid, isSaving)
 }
 function renderSaved(){
   const p=document.getElementById('savedPanel')
@@ -3818,7 +4285,7 @@ function showReferralView(){hideAllViews();setPage('referral');document.getEleme
 function showMockView(){hideAllViews();setPage('mock');document.getElementById('mockView').style.display='block'}
 function showLeaderboardView(){hideAllViews();setPage('leaderboard');document.getElementById('leaderboardView').style.display='block';const el=document.getElementById('lbYouAv');if(el&&user)el.textContent=user.initial}
 function showResumeBuilderView(){hideAllViews();setPage('builder');document.getElementById('resumeBuilderView').style.display='block'}
-function showCommunityView(){hideAllViews();setPage('community');document.getElementById('communityView').style.display='block';if(user)document.getElementById('communityAv').textContent=user.initial}
+function showCommunityView(){hideAllViews();setPage('community');document.getElementById('communityView').style.display='block';if(user)document.getElementById('communityAv').textContent=user.initial;loadCommunityPosts()}
 function showNewsView(){hideAllViews();setPage('news');document.getElementById('newsView').style.display='block'}
 
 // ═══ CAMPUS PLACEMENT DATABASE ═══
@@ -3897,14 +4364,115 @@ function togglePlan(type){
   yearly.style.background=type==='yearly'?'linear-gradient(135deg,var(--mint),var(--mint2))':'transparent'
   yearly.style.color=type==='yearly'?'white':'rgba(255,255,255,.5)'
 }
-function activatePlan(plan){
-  userPlan=plan;localStorage.setItem('js_plan',plan)
-  const names={starter:'Starter',pro:'Pro',elite:'Elite'}
-  document.getElementById('dsPlan').textContent=names[plan]||'Premium'
-  document.getElementById('dsPlan').style.color='var(--mint2)'
-  document.getElementById('upgradeBanner').style.display='none'
-  closePremiumModal();toast('Welcome to JobSettle '+names[plan]+'! All features unlocked!')
+// ── REAL RAZORPAY PAYMENT ─────────────────────────────────────
+// Replace YOUR_RAZORPAY_KEY_ID with your actual Razorpay key
+var RAZORPAY_KEY = 'rzp_test_Sz2hr3B9TcFeqF'
+
+var PLAN_PRICES = {
+  starter: { monthly: 199, yearly: 1429, name: 'Starter' },
+  pro:     { monthly: 399, yearly: 2869, name: 'Pro' },
+  elite:   { monthly: 799, yearly: 5749, name: 'Elite' }
 }
+
+function activatePlan(plan){
+  if(!user){ toast('Please login first',1); showAuth('login'); return }
+
+  var isYearly = document.getElementById('planToggleYearly')?.classList.contains('on')||false
+  var price = PLAN_PRICES[plan]
+  var amount = isYearly ? price.yearly : price.monthly
+  var period = isYearly ? 'year' : 'month'
+
+  // Load Razorpay script dynamically
+  if(!window.Razorpay){
+    var script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.onload = function(){ openRazorpay(plan, amount, period) }
+    script.onerror = function(){
+      // Razorpay not available - activate for free (dev mode)
+      console.warn('Razorpay not loaded - activating in dev mode')
+      activatePlanFree(plan)
+    }
+    document.head.appendChild(script)
+  } else {
+    openRazorpay(plan, amount, period)
+  }
+}
+
+function openRazorpay(plan, amount, period){
+  if(!window.Razorpay){
+    activatePlanFree(plan)
+    return
+  }
+
+  var options = {
+    key: RAZORPAY_KEY,
+    amount: amount * 100, // Razorpay takes paise
+    currency: 'INR',
+    name: 'JobSettle',
+    description: PLAN_PRICES[plan].name + ' Plan - 1 ' + period,
+    image: 'https://stunning-peony-172de3.netlify.app/favicon.ico',
+    prefill: {
+      name: user.name,
+      email: user.email,
+      contact: JSON.parse(localStorage.getItem('js_profile')||'{}').phone || ''
+    },
+    theme: { color: '#00e5b0' },
+    handler: async function(response){
+      // Payment successful
+      console.log('Payment ID:', response.razorpay_payment_id)
+      await handlePaymentSuccess(plan, amount, period, response.razorpay_payment_id)
+    },
+    modal: {
+      ondismiss: function(){ toast('Payment cancelled') }
+    }
+  }
+
+  var rzp = new window.Razorpay(options)
+  rzp.on('payment.failed', function(response){
+    toast('Payment failed: '+response.error.description, 1)
+  })
+  rzp.open()
+}
+
+async function handlePaymentSuccess(plan, amount, period, paymentId){
+  // Save payment to Supabase
+  await sbApi('POST','payments',{
+    user_id: user.id,
+    user_email: user.email,
+    plan: plan,
+    amount: amount,
+    period: period,
+    payment_id: paymentId,
+    status: 'success',
+    created_at: new Date().toISOString()
+  }).catch(function(){})
+
+  // Update user plan in profiles table
+  await sbApi('PATCH','profiles',{
+    plan: plan,
+    plan_expires: new Date(Date.now() + (period==='year'?365:30)*24*60*60*1000).toISOString(),
+    updated_at: new Date().toISOString()
+  },'id=eq.'+user.id)
+
+  // Activate locally
+  activatePlanFree(plan, paymentId)
+  toast('Payment successful! Welcome to JobSettle '+PLAN_PRICES[plan].name+'!')
+}
+
+function activatePlanFree(plan, paymentId){
+  userPlan = plan
+  localStorage.setItem('js_plan', plan)
+  user.plan = plan
+  localStorage.setItem('js_user', JSON.stringify(user))
+  const names = {starter:'Starter', pro:'Pro', elite:'Elite'}
+  var planEl = document.getElementById('dsPlan')
+  if(planEl){ planEl.textContent = names[plan]; planEl.style.color = 'var(--mint2)' }
+  var banner = document.getElementById('upgradeBanner')
+  if(banner) banner.style.display = 'none'
+  closePremiumModal()
+  if(!paymentId) toast('Plan activated! (Test mode — add Razorpay key for real payments)')
+}
+
 function initPlan(){
   if(userPlan!=='free'){
     document.getElementById('dsPlan').textContent=userPlan==='elite'?'Elite':'Pro'
@@ -4186,14 +4754,24 @@ function submitPlacement() {
     const lite = campusPlacements.map(p=>({...p,oaFile:p.oaFile?{name:p.oaFile.name}:null,intFile:p.intFile?{name:p.intFile.name}:null}))
     localStorage.setItem(CAMPUS_DB_KEY, JSON.stringify(lite))
   }
+  // Save to Supabase
+  sbApi('POST','campus_placements',{
+    company:entry.company, college:entry.college,
+    role:entry.role, package:parseFloat(entry.package)||0,
+    year:new Date().getFullYear(),
+    oa_questions:entry.oaQuestions,
+    interview_rounds:entry.interviewRounds,
+    tips:entry.tips,
+    submitted_by:user?.id||null,
+    verified:false
+  }).catch(function(){})
   closeAddPlacement()
   renderCampusDB(campusPlacements)
   ;['cp_college','cp_company','cp_role','cp_package','cp_oa','cp_interview','cp_tips','cp_batch'].forEach(id=>document.getElementById(id).value='')
   window._oaFileData = null
   window._intFileData = null
-  toast('Experience shared! Thank you Helping thousands of students!')
+  toast('Experience shared! Helping thousands of students!')
 }
-
 
 function renderJobCard(j,i){
   const isSaved=saved.includes(String(j.id))
@@ -4251,10 +4829,21 @@ function previewProfile(){
   const n=document.getElementById('pName').value
   if(n)document.getElementById('profileNameBig').textContent=n
 }
-function saveProfile(){
+async function saveProfile(){
   const p={name:document.getElementById('pName').value,phone:document.getElementById('pPhone').value,city:document.getElementById('pCity').value,role:document.getElementById('pRole').value,bio:document.getElementById('pBio').value}
   localStorage.setItem('js_profile',JSON.stringify(p))
   if(p.name&&user){user.name=p.name;user.initial=p.name[0].toUpperCase();localStorage.setItem('js_user',JSON.stringify(user));document.getElementById('dsName').textContent=p.name.split(' ')[0];document.getElementById('dsAv').textContent=user.initial;document.getElementById('profileAvBig').textContent=user.initial}
+  // Save to Supabase profiles table
+  if(user && user.id){
+    await sbApi('PATCH','profiles',{
+      name:p.name||user.name,
+      phone:p.phone,
+      location:p.city,
+      bio:p.bio,
+      skills:JSON.stringify(userSkills),
+      updated_at:new Date().toISOString()
+    },'id=eq.'+user.id)
+  }
   toast('Profile saved!')
 }
 function addSkill(){
@@ -4795,8 +5384,9 @@ function analyzeRejection(){
   },2000)
 }
 
-// INIT
-if(user){enterDash()}else{showScreen('landing')}
+// INIT — Real Supabase Auth
+setupAuthListener()
+initAuth()
 window.addEventListener('storage',e=>{if(e.key==='js_jobs_data'){cachedJobs=JSON.parse(e.newValue||'null')||FALLBACK_JOBS;renderJobs()}})
 </script>
 </body>
