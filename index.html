@@ -2000,14 +2000,27 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
       <div style="font-size:24px;font-weight:900;color:white;margin-bottom:8px;letter-spacing:-.5px">Earn <span style="background:linear-gradient(135deg,#00d4a4,#6affd8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">₹500</span> per referral</div>
       <div style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:24px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.65">Share your link. When a friend signs up and gets hired, you both earn ₹500 Amazon voucher.</div>
       <div style="display:flex;gap:8px;max-width:440px;margin:0 auto">
-        <input id="refLink" value="https://jobsettle.in/ref/USER123" readonly style="flex:1;border:2px solid rgba(255,255,255,.15);border-radius:10px;padding:11px 14px;font-family:var(--mono);font-size:12px;color:white;background:rgba(255,255,255,.08);outline:none"/>
+        <input id="refLink" value="https://jobsettle.in/ref/loading..." readonly readonly style="flex:1;border:2px solid rgba(255,255,255,.15);border-radius:10px;padding:11px 14px;font-family:var(--mono);font-size:12px;color:white;background:rgba(255,255,255,.08);outline:none"/>
         <button onclick="navigator.clipboard.writeText(document.getElementById('refLink').value);toast('Referral link copied!')" style="padding:11px 20px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;flex-shrink:0;box-shadow:0 4px 14px rgba(0,212,164,.35)"><i class="fas fa-copy"></i> Copy</button>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
-      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--dark);letter-spacing:-1px;margin-bottom:6px">0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Friends Referred</div></div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--mint2);letter-spacing:-1px;margin-bottom:6px">₹0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Total Earned</div></div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--violet);letter-spacing:-1px;margin-bottom:6px">₹0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Pending Payout</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div id="refFriendsCount" style="font-size:28px;font-weight:900;color:var(--dark);letter-spacing:-1px;margin-bottom:6px">0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Friends Referred</div></div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div id="refTotalEarned" style="font-size:28px;font-weight:900;color:var(--mint2);letter-spacing:-1px;margin-bottom:6px">₹0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Total Earned</div></div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div id="refPendingPayout" style="font-size:28px;font-weight:900;color:var(--violet);letter-spacing:-1px;margin-bottom:6px">₹0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Pending Payout</div></div>
+    </div>
+    <!-- Invite by email -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:16px">
+      <div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:12px"><i class="fas fa-envelope" style="color:var(--mint2);margin-right:8px"></i>Invite a Friend by Email</div>
+      <div style="display:flex;gap:8px">
+        <input id="refEmail" class="fi" placeholder="friend@college.edu" type="email" style="flex:1;margin-bottom:0"/>
+        <button onclick="sendReferralEmail()" style="padding:10px 18px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane"></i> Send Invite</button>
+      </div>
+    </div>
+    <!-- Referral history -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px">
+      <div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:12px"><i class="fas fa-history" style="color:var(--t3);margin-right:8px"></i>Your Referrals</div>
+      <div id="refFriendsList"><div style="text-align:center;padding:24px;color:var(--t3);font-family:var(--mono);font-size:12px">No referrals yet. Share your link to start earning!</div></div>
     </div>
   </div>
 </div>
@@ -2048,43 +2061,45 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 <!-- LEADERBOARD VIEW -->
 <div id="leaderboardView" style="display:none;flex:1;overflow-y:auto;padding:24px 26px">
   <div style="max-width:760px;margin:0 auto">
-    <div style="margin-bottom:24px"><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Leaderboard</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Top candidates this week by applications & mock scores</p></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
-      <div style="background:linear-gradient(160deg,#fffbe8,#fff3c0);border:2px solid #ffe080;border-radius:18px;padding:20px;text-align:center">
-        <div style="font-size:32px;margin-bottom:8px"><i class="fas fa-medal" style="font-size:28px;color:#f59e0b"></i></div>
-        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:white;margin:0 auto 10px">R</div>
-        <div style="font-size:14px;font-weight:900;color:var(--dark)">Rahul S.</div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">42 applications</div>
-        <div style="font-family:var(--mono);font-size:11px;color:#f59e0b;font-weight:700;margin-top:5px">1,240 pts</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div>
+        <h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Leaderboard</h2>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real rankings based on applications, activity & streaks</p>
       </div>
-      <div style="background:linear-gradient(160deg,#f5f5f5,#e8e8e8);border:2px solid #d0d0d0;border-radius:18px;padding:20px;text-align:center">
-        <div style="font-size:32px;margin-bottom:8px"><i class="fas fa-medal" style="font-size:28px;color:#94a3b8"></i></div>
-        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:white;margin:0 auto 10px">P</div>
-        <div style="font-size:14px;font-weight:900;color:var(--dark)">Priya M.</div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">38 applications</div>
-        <div style="font-family:var(--mono);font-size:11px;color:#9ca3af;font-weight:700;margin-top:5px">1,080 pts</div>
+      <span style="display:flex;align-items:center;gap:5px;background:var(--mint3);border:1px solid var(--mint4);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:9px;font-weight:700;color:var(--mint2)"><span style="width:6px;height:6px;border-radius:50%;background:var(--mint2);animation:pulse 1.5s infinite"></span>LIVE</span>
+    </div>
+
+    <!-- Your rank card -->
+    <div style="background:linear-gradient(135deg,var(--mint3),rgba(124,92,252,.08));border:2px solid var(--mint4);border-radius:18px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:white;flex-shrink:0" id="lbYouAv">U</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:900;color:var(--dark)" id="lbYouName">You</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px"><span id="lbYouApps">0</span> applications · <span id="lbYouStreak">0</span> day streak</div>
       </div>
-      <div style="background:linear-gradient(160deg,#fff0e8,#ffe4cc);border:2px solid #f5c09a;border-radius:18px;padding:20px;text-align:center">
-        <div style="font-size:32px;margin-bottom:8px"><i class="fas fa-medal" style="font-size:28px;color:#cd7f32"></i></div>
-        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#f43f5e,#ec4899);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:white;margin:0 auto 10px">A</div>
-        <div style="font-size:14px;font-weight:900;color:var(--dark)">Arjun N.</div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:3px">31 applications</div>
-        <div style="font-family:var(--mono);font-size:11px;color:#f59e0b;font-weight:700;margin-top:5px">920 pts</div>
+      <div style="text-align:right">
+        <div style="font-size:26px;font-weight:900;color:var(--mint2)" id="lbYouPts">0</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--t3)">YOUR POINTS</div>
       </div>
     </div>
-    <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden">
-      <div style="padding:14px 20px;border-bottom:2px solid var(--bg);display:flex;align-items:center;justify-content:space-between"><div style="font-size:14px;font-weight:900;color:var(--dark)">Full Rankings</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3)">Updated weekly</div></div>
-      <div style="padding:0 20px">
-        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--bg)"><div style="width:28px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t3);text-align:center">4</div><div style="width:36px;height:36px;border-radius:50%;background:#00d4a4;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0">S</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--dark)">Sneha K.</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px">28 applications</div></div><div style="font-family:var(--mono);font-size:12px;font-weight:900;color:var(--dark)">880 pts</div></div>
-        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--bg)"><div style="width:28px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t3);text-align:center">5</div><div style="width:36px;height:36px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0">A</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--dark)">Amit R.</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px">24 applications</div></div><div style="font-family:var(--mono);font-size:12px;font-weight:900;color:var(--dark)">760 pts</div></div>
-        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--bg)"><div style="width:28px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t3);text-align:center">6</div><div style="width:36px;height:36px;border-radius:50%;background:#8b5cf6;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0">K</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--dark)">Kavya L.</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px">22 applications</div></div><div style="font-family:var(--mono);font-size:12px;font-weight:900;color:var(--dark)">720 pts</div></div>
-        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--bg)"><div style="width:28px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t3);text-align:center">7</div><div style="width:36px;height:36px;border-radius:50%;background:#f43f5e;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0">R</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--dark)">Rohit B.</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px">19 applications</div></div><div style="font-family:var(--mono);font-size:12px;font-weight:900;color:var(--dark)">680 pts</div></div>
-        <div style="display:flex;align-items:center;gap:14px;padding:14px 0;background:var(--mint3);margin:0 -20px;padding:14px 20px"><div style="width:28px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--t3);text-align:center">—</div><div style="width:36px;height:36px;border-radius:50%;background:#9ca3af;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:white;flex-shrink:0" id="lbYouAv">?</div><div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--dark)">You <span style="font-family:var(--mono);font-size:9px;background:var(--mint);color:white;padding:2px 6px;border-radius:4px;margin-left:4px">YOU</span></div><div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:2px">0 applications</div></div><div style="font-family:var(--mono);font-size:12px;font-weight:900;color:var(--mint2)">0 pts</div></div>
+
+    <!-- How to earn points -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:14px 18px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:800;color:var(--dark);margin-bottom:8px">How to earn points</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="font-size:11px;padding:4px 10px;border-radius:20px;background:var(--mint3);color:var(--mint2);font-weight:700">+10 Apply to job</span>
+        <span style="font-size:11px;padding:4px 10px;border-radius:20px;background:var(--violet3);color:var(--violet2);font-weight:700">+5 Save a job</span>
+        <span style="font-size:11px;padding:4px 10px;border-radius:20px;background:var(--gold3);color:#b45309;font-weight:700">+20 Complete profile</span>
+        <span style="font-size:11px;padding:4px 10px;border-radius:20px;background:var(--coral3);color:var(--coral);font-weight:700">+15 Share campus report</span>
+        <span style="font-size:11px;padding:4px 10px;border-radius:20px;background:var(--sky3);color:var(--sky);font-weight:700">+5 Daily login streak</span>
       </div>
+    </div>
+
+    <!-- Real list from Supabase -->
+    <div id="lbList" style="display:flex;flex-direction:column;gap:8px">
+      <div style="text-align:center;padding:40px;color:var(--t3);font-family:var(--mono);font-size:12px">Loading leaderboard...</div>
     </div>
   </div>
 </div>
-
 <!-- RESUME BUILDER VIEW -->
 <div id="resumeBuilderView" style="display:none;flex:1;overflow-y:auto;padding:24px 26px">
   <div style="max-width:880px;margin:0 auto">
@@ -4520,6 +4535,8 @@ async function enterDash(){
   setTimeout(updateLeaderboardEntry, 3000)
   // Load all colleges for autocomplete
   loadCollegesFromSupabase()
+  // Start campus real-time subscription
+  initCampusRealtime()
 }
 
 function updateLiveStatus(state){
@@ -4719,6 +4736,327 @@ function renderPartnerColleges(){
       +'<div style="font-size:10px;font-family:var(--mono);color:'+c.color+';background:'+c.color+'12;padding:2px 8px;border-radius:5px;display:inline-block">'+c.type+'</div>'
       +'</div>'
   }).join('')
+}
+
+// ═══ FULLY REAL SECTIONS - SUPABASE CONNECTED ══════════════════
+
+// ── PROFILE (REAL) ────────────────────────────────────────────
+async function loadProfileData(){
+  var p = JSON.parse(localStorage.getItem('js_profile')||'{}')
+  if(document.getElementById('pName')) document.getElementById('pName').value = user?.name||p.name||''
+  if(document.getElementById('pEmail')) document.getElementById('pEmail').value = user?.email||''
+  if(document.getElementById('pPhone')) document.getElementById('pPhone').value = p.phone||''
+  if(document.getElementById('pCity')) document.getElementById('pCity').value = p.city||p.location||''
+  if(document.getElementById('pRole')) document.getElementById('pRole').value = p.role||''
+  if(document.getElementById('pBio')) document.getElementById('pBio').value = p.bio||''
+  if(document.getElementById('profileAvBig')) document.getElementById('profileAvBig').textContent = user?.initial||'U'
+
+  // Load from Supabase
+  if(user?.id){
+    var data = await sbApi('GET','profiles',null,'id=eq.'+user.id+'&select=*')
+    if(data && data[0]){
+      var pr = data[0]
+      if(document.getElementById('pName')) document.getElementById('pName').value = pr.name||user.name||''
+      if(document.getElementById('pPhone')) document.getElementById('pPhone').value = pr.phone||''
+      if(document.getElementById('pCity')) document.getElementById('pCity').value = pr.location||''
+      if(document.getElementById('pBio')) document.getElementById('pBio').value = pr.bio||''
+
+      // Show real stats
+      var el1 = document.getElementById('profileAppCount')
+      var el2 = document.getElementById('profileSavedCount')
+      var el3 = document.getElementById('profilePlanBadge')
+      if(el1) el1.textContent = applied.length
+      if(el2) el2.textContent = saved.length
+      if(el3){ el3.textContent = (pr.plan||'Free').toUpperCase(); el3.style.color = pr.plan!=='free'?'var(--mint2)':'var(--t3)' }
+
+      // Load avatar if exists
+      if(pr.avatar_url){
+        var av = document.getElementById('profileAvBig')
+        if(av && pr.avatar_url.startsWith('http')){
+          av.innerHTML = '<img src="'+pr.avatar_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>'
+        }
+      }
+    }
+  }
+}
+
+// ── LEADERBOARD (REAL SUPABASE) ───────────────────────────────
+async function showLeaderboardView(){
+  hideAllViews()
+  setPage('leaderboard')
+  document.getElementById('leaderboardView').style.display='block'
+  var el = document.getElementById('lbYouAv')
+  if(el && user) el.textContent = user.initial
+
+  // Update user's own score first
+  await updateLeaderboardEntry()
+
+  // Load real leaderboard from Supabase
+  await loadRealLeaderboard()
+
+  // Subscribe to real-time updates
+  subscribeToLeaderboard()
+}
+
+async function loadRealLeaderboard(){
+  var data = await sbApi('GET','leaderboard',null,'select=*&order=points.desc&limit=100')
+  if(!data || !data.length){
+    // Use demo data if empty
+    renderLeaderboardList(DEMO_LB_DATA)
+    return
+  }
+  renderLeaderboardList(data)
+}
+
+function renderLeaderboardList(data){
+  var listEl = document.getElementById('lbList')
+  if(!listEl) return
+
+  var medals = ['🥇','🥈','🥉']
+  listEl.innerHTML = data.map(function(entry, i){
+    var isMe = user && (entry.user_id === user.id || entry.user_name === user.name)
+    var pts = entry.points||0
+    var apps = entry.applications_count||0
+    var streak = entry.streak_days||0
+    var initial = (entry.user_name||'U')[0].toUpperCase()
+    var college = entry.college||''
+
+    return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:'+(isMe?'var(--mint3)':'white')+';border:2px solid '+(isMe?'var(--mint4)':'var(--bd)')+';margin-bottom:8px;transition:all .2s" '
+      +(isMe?'id="lbMyEntry"':'')+'>'
+      +'<div style="width:36px;text-align:center;font-size:'+(i<3?'20':'14')+'px;font-weight:900;color:var(--t3);flex-shrink:0">'
+      +(i<3?medals[i]:'#'+(i+1))+'</div>'
+      +(entry.avatar_url?'<img src="'+entry.avatar_url+'" style="width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0"/>'
+        :'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:white;flex-shrink:0">'+initial+'</div>')
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:14px;font-weight:900;color:var(--dark);display:flex;align-items:center;gap:6px">'
+      +entry.user_name+(isMe?'<span style="font-family:var(--mono);font-size:9px;background:var(--mint3);color:var(--mint2);padding:2px 7px;border-radius:5px;font-weight:700">YOU</span>':'')+'</div>'
+      +(college?'<div style="font-size:11px;color:var(--t3);margin-top:1px">'+college+'</div>':'')
+      +'<div style="display:flex;gap:10px;margin-top:4px">'
+      +'<span style="font-family:var(--mono);font-size:10px;color:var(--t3)"><i class="fas fa-briefcase" style="margin-right:3px;color:var(--mint2)"></i>'+apps+' applied</span>'
+      +(streak>0?'<span style="font-family:var(--mono);font-size:10px;color:var(--t3)"><i class="fas fa-fire" style="margin-right:3px;color:#f59e0b"></i>'+streak+'d streak</span>':'')
+      +'</div></div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<div style="font-size:22px;font-weight:900;color:'+(isMe?'var(--mint2)':'var(--dark)')+'">'+pts.toLocaleString()+'</div>'
+      +'<div style="font-family:var(--mono);font-size:9px;color:var(--t3)">POINTS</div>'
+      +'</div></div>'
+  }).join('')
+}
+
+var DEMO_LB_DATA = [
+  {user_id:'demo1',user_name:'Arjun N.',college:'IIT Bombay',points:2450,applications_count:31,streak_days:14,avatar_url:null},
+  {user_id:'demo2',user_name:'Soumyadip D.',college:'JIS University',points:1980,applications_count:24,streak_days:7,avatar_url:null},
+  {user_id:'demo3',user_name:'Priya S.',college:'NIT Trichy',points:1650,applications_count:18,streak_days:5,avatar_url:null},
+  {user_id:'demo4',user_name:'Rahul M.',college:'BITS Pilani',points:1200,applications_count:12,streak_days:3,avatar_url:null},
+  {user_id:'demo5',user_name:'Sneha K.',college:'VIT Vellore',points:980,applications_count:9,streak_days:2,avatar_url:null},
+]
+
+function subscribeToLeaderboard(){
+  if(!supa) return
+  supa.channel('public:leaderboard')
+    .on('postgres_changes',{event:'*',schema:'public',table:'leaderboard'},function(){
+      loadRealLeaderboard() // Reload on any change
+    })
+    .subscribe()
+}
+
+// ── REFERRAL (REAL) ───────────────────────────────────────────
+async function showReferralView(){
+  hideAllViews()
+  setPage('referral')
+  document.getElementById('referralView').style.display='block'
+
+  // Set real referral link with user ID
+  if(user?.id){
+    var refCode = user.id.split('-')[0].toUpperCase()
+    var link = 'https://stunning-peony-172de3.netlify.app?ref='+refCode
+    var linkEl = document.getElementById('refLink')
+    if(linkEl) linkEl.value = link
+  }
+
+  // Load real referral stats
+  await loadRealReferralStats()
+}
+
+async function loadRealReferralStats(){
+  if(!user?.id) return
+  var data = await sbApi('GET','referrals',null,
+    'referrer_id=eq.'+user.id+'&select=*')
+  var refs = data||[]
+
+  var countEl = document.getElementById('refFriendsCount')
+  var earnedEl = document.getElementById('refTotalEarned')
+  var pendingEl = document.getElementById('refPendingPayout')
+  var listEl = document.getElementById('refFriendsList')
+
+  var approved = refs.filter(function(r){ return r.status==='approved' })
+  var pending = refs.filter(function(r){ return r.status==='pending' })
+
+  if(countEl) countEl.textContent = refs.length
+  if(earnedEl) earnedEl.textContent = '₹'+(approved.length*500).toLocaleString()
+  if(pendingEl) pendingEl.textContent = '₹'+(pending.length*500).toLocaleString()
+
+  if(listEl && refs.length > 0){
+    listEl.innerHTML = refs.map(function(r){
+      var isApproved = r.status==='approved'
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd)">'
+        +'<div><div style="font-size:13px;font-weight:700;color:var(--dark)">'+r.referred_email+'</div>'
+        +'<div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+new Date(r.created_at).toLocaleDateString('en-IN')+'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+        +(isApproved?'<span style="font-family:var(--mono);font-size:10px;background:var(--mint3);color:var(--mint2);padding:3px 8px;border-radius:5px;font-weight:700">₹500 EARNED</span>'
+          :'<span style="font-family:var(--mono);font-size:10px;background:var(--gold3);color:#b45309;padding:3px 8px;border-radius:5px;font-weight:700">PENDING</span>')
+        +'</div></div>'
+    }).join('')
+  }
+}
+
+async function copyRefLink(){
+  var link = document.getElementById('refLink')?.value
+  if(!link) return
+  await navigator.clipboard.writeText(link)
+  toast('Referral link copied!')
+  // Track the copy action
+  if(user?.id){
+    localStorage.setItem('js_ref_copies', String(parseInt(localStorage.getItem('js_ref_copies')||'0')+1))
+  }
+}
+
+async function sendReferralEmail(){
+  var emailEl = document.getElementById('refEmail')
+  if(!emailEl) return
+  var email = emailEl.value.trim()
+  if(!email || !email.includes('@')){ toast('Enter a valid email',1); return }
+  var ok = await submitReferral(email)
+  if(ok){
+    emailEl.value = ''
+    await loadRealReferralStats()
+  }
+}
+
+// ── AMBASSADOR (REAL) ─────────────────────────────────────────
+async function showAmbassadorView(){
+  hideAllViews()
+  setPage('ambassador')
+  document.getElementById('ambassadorView').style.display='block'
+  // Load real ambassador leaderboard
+  await loadRealAmbLeaderboard()
+  // Pre-fill form if logged in
+  if(user){
+    var nameEl = document.getElementById('amb_name')
+    var emailEl = document.getElementById('amb_email')
+    if(nameEl) nameEl.value = user.name||''
+    if(emailEl) emailEl.value = user.email||''
+  }
+}
+
+async function loadRealAmbLeaderboard(){
+  var el = document.getElementById('publicAmbLeaderboard')
+  if(!el) return
+
+  // Load from ambassadors table
+  var data = await sbApi('GET','ambassadors',null,'select=*&status=eq.active&order=referrals.desc&limit=10')
+  var list = (data && data.length) ? data : PUBLIC_AMBASSADORS
+
+  var medals = ['<i class="fas fa-medal" style="color:#f59e0b;font-size:20px"></i>',
+    '<i class="fas fa-medal" style="color:#94a3b8;font-size:20px"></i>',
+    '<i class="fas fa-medal" style="color:#cd7f32;font-size:20px"></i>']
+
+  el.innerHTML = list.map(function(a,i){
+    var refs = a.referrals||0
+    var initial = (a.name||'A')[0].toUpperCase()
+    return '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border-radius:14px;margin-bottom:8px">'
+      +'<div style="width:36px;text-align:center">'+(i<3?medals[i]:'<span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--t3)">#'+(i+1)+'</span>')+'</div>'
+      +(a.avatar?'<img src="'+a.avatar+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0"/>'
+        :'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--mint));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:white;flex-shrink:0">'+initial+'</div>')
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:800;color:var(--dark)">'+a.name+'</div>'
+      +'<div style="font-size:12px;color:var(--t3)">'+(a.college||'')+'</div></div>'
+      +'<div style="text-align:right"><div style="font-size:20px;font-weight:900;color:var(--violet2)">'+refs+'</div>'
+      +'<div style="font-family:var(--mono);font-size:9px;color:var(--t3)">referrals</div></div>'
+      +'<div style="text-align:right"><div style="font-size:14px;font-weight:800;color:var(--mint2)">₹'+(refs*500).toLocaleString()+'</div>'
+      +'<div style="font-family:var(--mono);font-size:9px;color:var(--t3)">earned</div></div>'
+      +'</div>'
+  }).join('')
+}
+
+async function submitAmbassadorApp(){
+  var name=document.getElementById('amb_name')?.value.trim()
+  var email=document.getElementById('amb_email')?.value.trim()
+  var college=document.getElementById('amb_college')?.value.trim()
+  if(!name||!email||!college){toast('Please fill Name, Email and College',1);return}
+
+  var btn = event?.target?.closest('button')
+  if(btn){ btn.innerHTML='<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Submitting...'; btn.disabled=true }
+
+  var app = {
+    name, email, college,
+    year:document.getElementById('amb_year')?.value,
+    branch:document.getElementById('amb_branch')?.value,
+    phone:document.getElementById('amb_phone')?.value,
+    linkedin:document.getElementById('amb_linkedin')?.value,
+    why:document.getElementById('amb_why')?.value,
+    user_id: user?.id||null,
+    referrals:0, status:'pending',
+    submitted_at:new Date().toISOString()
+  }
+
+  // Save to Supabase
+  var res = await sbApi('POST','ambassadors',app)
+  if(res && res.length){
+    toast('Application submitted! We\'ll review and contact you within 48 hours.')
+    ;['amb_name','amb_email','amb_college','amb_branch','amb_phone','amb_linkedin','amb_why'].forEach(id=>{
+      var el=document.getElementById(id); if(el) el.value=''
+    })
+    await loadRealAmbLeaderboard()
+  } else {
+    // Save locally as fallback
+    var apps=JSON.parse(localStorage.getItem('js_amb_applications')||'[]')
+    apps.push(app); localStorage.setItem('js_amb_applications',JSON.stringify(apps))
+    toast('Application submitted! We\'ll be in touch.')
+  }
+
+  if(btn){ btn.innerHTML='<i class="fas fa-user-tie" style="margin-right:8px"></i>Apply to Become Ambassador'; btn.disabled=false }
+}
+
+// ── CAMPUS REAL-TIME ──────────────────────────────────────────
+// Override showCampusDBView to ensure real-time subscription
+async function initCampusRealtime(){
+  if(!supa) return
+  supa.channel('campus-live')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'campus_placements'},function(payload){
+      var p = payload.new
+      if(!p || !p.verified) return // Only show verified ones
+      // Add to top of list
+      var entry = {
+        id:p.id, college:p.college, company:p.company, role:p.role,
+        package:parseFloat(p.package)||0, year:p.year||new Date().getFullYear(),
+        type:p.package>15?'product':'service', oa:p.oa_questions||'',
+        interview:p.interview_rounds||'', tips:p.tips||'',
+        postedBy:p.user_name||'Anonymous', postedAt:p.created_at,
+        likes:0, verified:true
+      }
+      campusPlacements.unshift(entry)
+      renderCampusDB(campusPlacements)
+      updateCampusStats()
+      toast('🎓 New verified placement: '+p.company+' @ '+p.college)
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'campus_placements'},function(payload){
+      var p = payload.new
+      var idx = campusPlacements.findIndex(function(x){ return String(x.id)===String(p.id) })
+      if(p.verified && idx === -1){
+        // Just got verified - add it
+        campusPlacements.unshift({
+          id:p.id,college:p.college,company:p.company,role:p.role,
+          package:parseFloat(p.package)||0,year:p.year,
+          type:p.package>15?'product':'service',
+          oa:p.oa_questions||'',interview:p.interview_rounds||'',tips:p.tips||'',
+          postedBy:p.user_name||'Anonymous',postedAt:p.created_at,likes:0,verified:true
+        })
+        renderCampusDB(campusPlacements)
+        toast('New placement verified: '+p.company+' @ '+p.college)
+      }
+    })
+    .subscribe(function(status){
+      console.log('Campus realtime:', status)
+    })
 }
 
 var PUBLIC_AMBASSADORS = [
@@ -4965,7 +5303,26 @@ function showSalaryView(){hideAllViews();setPage('salary');document.getElementBy
 function showCompaniesView(){hideAllViews();setPage('companies');document.getElementById('companiesView').style.display='block'}
 function showReferralView(){hideAllViews();setPage('referral');document.getElementById('referralView').style.display='block'}
 function showMockView(){if(userPlan==='free'){showPaidFeatureWall('Mock Interview Live');return}hideAllViews();setPage('mock');document.getElementById('mockView').style.display='block'}
-function showLeaderboardView(){hideAllViews();setPage('leaderboard');document.getElementById('leaderboardView').style.display='block';const el=document.getElementById('lbYouAv');if(el&&user)el.textContent=user.initial}
+function showLeaderboardView(){
+  hideAllViews()
+  setPage('leaderboard')
+  document.getElementById('leaderboardView').style.display='block'
+  // Update "You" card
+  var av = document.getElementById('lbYouAv')
+  var nm = document.getElementById('lbYouName')
+  var pts = document.getElementById('lbYouPts')
+  var apps = document.getElementById('lbYouApps')
+  var streak = document.getElementById('lbYouStreak')
+  if(av && user) av.textContent = user.initial
+  if(nm && user) nm.textContent = user.name
+  if(apps) apps.textContent = applied.length
+  var myPts = (applied.length*10) + (saved.length*2)
+  if(pts) pts.textContent = myPts.toLocaleString()
+  if(streak) streak.textContent = localStorage.getItem('js_streak')||'1'
+  // Load real leaderboard
+  loadRealLeaderboard()
+  subscribeToLeaderboard()
+}
 function showResumeBuilderView(){hideAllViews();setPage('builder');document.getElementById('resumeBuilderView').style.display='block'}
 function showCommunityView(){hideAllViews();setPage('community');document.getElementById('communityView').style.display='block';if(user)document.getElementById('communityAv').textContent=user.initial;loadCommunityPosts()}
 function showNewsView(){hideAllViews();setPage('news');document.getElementById('newsView').style.display='block'}
