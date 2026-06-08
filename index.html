@@ -1570,6 +1570,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
         </div>
         <button class="notif" onclick="showAlertsView();setNav(document.querySelectorAll('.dsb-lnk')[5])"><i class="fas fa-bell"></i><div class="ndot"></div></button>
         <button onclick="showCampusDBView();setNav(document.querySelectorAll('.dsb-lnk')[document.querySelectorAll('.dsb-lnk').length-5])" style="display:flex;align-items:center;gap:7px;padding:9px 16px;background:linear-gradient(135deg,#f43f5e,#be123c);border:none;border-radius:11px;font-family:var(--font);font-size:12.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(244,63,94,.3);transition:all .2s;white-space:nowrap" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'"><i class="fas fa-university" style="font-size:12px"></i> Campus Placements <span style="background:rgba(255,255,255,.25);padding:1px 7px;border-radius:5px;font-size:10px;font-family:var(--mono)">New</span></button>
+        <button onclick="showPremiumModal()" id="upgradeTopBtn" style="display:flex;align-items:center;gap:7px;padding:9px 18px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:11px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(245,158,11,.4);transition:all .2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'"><i class="fas fa-crown" style="font-size:11px"></i> Upgrade</button>
         <button class="ai-topbtn" onclick="showInterviewPrepView();setNav(document.querySelectorAll('.dsb-lnk')[4])"><i class="fas fa-robot" style="font-size:12px"></i> Use JobSettle AI</button>
         <a href="https://t.me/YOYOAI_CRAKINTERVIEW" target="_blank" class="tg-btn"><i class="fab fa-telegram" style="color:#2aabee;font-size:15px"></i> Alerts</a>
       </div>
@@ -4525,6 +4526,8 @@ function activatePlanFree(plan, paymentId){
   if(planEl){ planEl.textContent = names[plan]; planEl.style.color = 'var(--mint2)' }
   var banner = document.getElementById('upgradeBanner')
   if(banner) banner.style.display = 'none'
+  var topBtn = document.getElementById('upgradeTopBtn')
+  if(topBtn) topBtn.style.display = 'none'
   closePremiumModal()
   if(!paymentId) toast('Plan activated! (Test mode — add Razorpay key for real payments)')
 }
@@ -4535,6 +4538,8 @@ function initPlan(){
     document.getElementById('dsPlan').style.color='var(--mint2)'
     const banner=document.getElementById('upgradeBanner')
     if(banner)banner.style.display='none'
+    const topBtn=document.getElementById('upgradeTopBtn')
+    if(topBtn)topBtn.style.display='none'
   }
 }
 
