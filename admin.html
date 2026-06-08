@@ -210,6 +210,9 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
       <div class="adm-sb-sec">Partnerships</div>
       <div class="adm-lnk" onclick="showPage('colleges',this)"><i class="fas fa-graduation-cap"></i>College Connect</div>
       <div class="adm-lnk" onclick="showPage('ambassadors',this)"><i class="fas fa-user-tie"></i>Campus Ambassadors<span class="cnt" id="sbAmbCount" style="background:rgba(255,180,0,.2);color:var(--gold)">0</span></div>
+      <div class="adm-sb-sec">Moderation</div>
+      <div class="adm-lnk" onclick="showPage('community-mod',this)"><i class="fas fa-comments"></i>Community Posts<span class="cnt" id="sbCommCount" style="background:rgba(255,95,109,.2);color:var(--coral)">0</span></div>
+      <div class="adm-lnk" onclick="showPage('campus-mod',this)"><i class="fas fa-university"></i>Campus Reports<span class="cnt" id="sbCampusModCount" style="background:rgba(255,95,109,.2);color:var(--coral)">0</span></div>
       <div class="adm-sb-sec">Users</div>
       <div class="adm-lnk" onclick="showPage('users',this)"><i class="fas fa-users"></i>All Users<span class="cnt" id="sbUserCount">0</span></div>
       <div class="adm-lnk" onclick="showPage('applications',this)"><i class="fas fa-paper-plane"></i>Applications<span class="cnt" id="sbAppCount">0</span></div>
@@ -489,6 +492,33 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
               <thead><tr><th>Applicant</th><th>Job</th><th>Company</th><th>Applied At</th><th>Status</th></tr></thead>
               <tbody id="appsTableBody"></tbody>
             </table>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ╔═ COMMUNITY MODERATION ═══════════════╗ -->
+      <div id="page-community-mod" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-comments" style="color:var(--coral)"></i>Pending Community Posts</div>
+            <button class="btn btn-mint btn-sm" onclick="loadPendingPosts()"><i class="fas fa-sync"></i>Refresh</button>
+          </div>
+          <div id="pendingPostsList" style="padding:16px">
+            <div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">Click Refresh to load pending posts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ╔═ CAMPUS MODERATION ══════════════════╗ -->
+      <div id="page-campus-mod" style="display:none">
+        <div class="adm-section">
+          <div class="adm-sec-hdr">
+            <div class="adm-sec-title"><i class="fas fa-university" style="color:var(--gold)"></i>Pending Campus Reports</div>
+            <button class="btn btn-mint btn-sm" onclick="loadPendingCampus()"><i class="fas fa-sync"></i>Refresh</button>
+          </div>
+          <div id="pendingCampusList" style="padding:16px">
+            <div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">Click Refresh to load pending reports</div>
           </div>
         </div>
       </div>
@@ -873,6 +903,8 @@ function showPage(id, lnkEl){
   if(id==='analytics') renderAnalytics()
   if(id==='colleges'){ renderColleges(); updateCollegeStats() }
   if(id==='ambassadors'){ renderAmbassadors(); updateAmbStats() }
+  if(id==='community-mod'){ loadPendingPosts() }
+  if(id==='campus-mod'){ loadPendingCampus() }
 }
 
 // ── DASHBOARD ────────────────────────────────────────────────
@@ -1491,6 +1523,101 @@ async function testSupabase(){
   } else {
     aToast('Supabase returned empty. Check RLS policies.', 1)
   }
+}
+
+// ── COMMUNITY MODERATION ─────────────────────────────────────
+async function loadPendingPosts(){
+  aToast('Loading pending posts...')
+  var data = await sbSelect('community_posts','select=*&status=eq.pending&order=created_at.desc')
+  var el = document.getElementById('pendingPostsList')
+  if(!el) return
+  
+  // Update count badge
+  var badge = document.getElementById('sbCommCount')
+  if(badge) badge.textContent = (data||[]).length
+
+  if(!data || !data.length){
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--t3);font-family:var(--mono)">No pending posts</div>'
+    return
+  }
+  
+  el.innerHTML = data.map(function(p){
+    return '<div style="padding:16px;border:1.5px solid var(--bd);border-radius:14px;margin-bottom:12px">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+      +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;color:white">'+(p.user_name||'?')[0]+'</div>'
+      +'<div><div style="font-weight:800;color:var(--dark)">'+(p.user_name||'Anonymous')+'</div>'
+      +'<div style="font-size:11px;color:var(--t3);font-family:var(--mono)">'+new Date(p.created_at).toLocaleString('en-IN')+'</div></div>'
+      +'<span style="margin-left:auto;background:var(--gold3);color:#b45309;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;font-family:var(--mono)">PENDING</span>'
+      +'</div>'
+      +'<div style="font-size:14px;color:var(--dark);line-height:1.7;margin-bottom:12px;padding:12px;background:var(--bg);border-radius:10px">'+p.content+'</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button class="btn btn-mint btn-sm" onclick="approvePost(\''+p.id+'\',this)"><i class="fas fa-check"></i>Approve</button>'
+      +'<button class="btn btn-coral btn-sm" onclick="rejectPost(\''+p.id+'\',this)"><i class="fas fa-times"></i>Reject</button>'
+      +'</div></div>'
+  }).join('')
+}
+
+async function approvePost(id, btn){
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
+  await sbUpdate('community_posts', id, {status:'approved'})
+  btn.closest('[style*=padding:16px]').style.opacity = '0.5'
+  btn.closest('[style*=padding:16px]').innerHTML += '<div style="text-align:center;color:var(--mint2);font-weight:800;padding:8px">✅ Approved — Now visible to students</div>'
+  aToast('Post approved and published!')
+  loadPendingPosts()
+}
+
+async function rejectPost(id, btn){
+  if(!confirm('Reject and delete this post?')) return
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
+  await sbDelete('community_posts', id)
+  btn.closest('[style*=padding:16px]').remove()
+  aToast('Post rejected and removed')
+  loadPendingPosts()
+}
+
+// ── CAMPUS MODERATION ─────────────────────────────────────────
+async function loadPendingCampus(){
+  aToast('Loading pending campus reports...')
+  var data = await sbSelect('campus_placements','select=*&verified=eq.false&order=created_at.desc')
+  var el = document.getElementById('pendingCampusList')
+  if(!el) return
+
+  var badge = document.getElementById('sbCampusModCount')
+  if(badge) badge.textContent = (data||[]).length
+
+  if(!data || !data.length){
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--t3);font-family:var(--mono)">No pending campus reports</div>'
+    return
+  }
+
+  el.innerHTML = data.map(function(p){
+    return '<div style="padding:16px;border:1.5px solid var(--bd);border-radius:14px;margin-bottom:12px">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      +'<div><div style="font-size:15px;font-weight:900;color:var(--dark)">'+p.company+' → '+p.college+'</div>'
+      +'<div style="font-size:12px;color:var(--t3)">'+p.role+' · ₹'+p.package+' LPA · '+(p.year||2026)+'</div></div>'
+      +'<span style="background:var(--gold3);color:#b45309;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;font-family:var(--mono)">PENDING</span>'
+      +'</div>'
+      +(p.oa_questions?'<div style="font-size:12px;color:var(--t2);background:var(--bg);padding:10px;border-radius:8px;margin-bottom:8px"><strong>OA:</strong> '+p.oa_questions.substring(0,200)+'...</div>':'')
+      +'<div style="display:flex;gap:8px">'
+      +'<button class="btn btn-mint btn-sm" onclick="approveCampus(\''+p.id+'\',this)"><i class="fas fa-check"></i>Verify & Publish</button>'
+      +'<button class="btn btn-coral btn-sm" onclick="rejectCampus(\''+p.id+'\',this)"><i class="fas fa-times"></i>Reject</button>'
+      +'</div></div>'
+  }).join('')
+}
+
+async function approveCampus(id, btn){
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'
+  await sbUpdate('campus_placements', id, {verified:true})
+  aToast('Campus report verified and published!')
+  loadPendingCampus()
+}
+
+async function rejectCampus(id, btn){
+  if(!confirm('Reject this campus report?')) return
+  await sbDelete('campus_placements', id)
+  btn.closest('[style*=padding:16px]').remove()
+  aToast('Campus report rejected')
+  loadPendingCampus()
 }
 
 // ── GLOBAL SEARCH ─────────────────────────────────────────────

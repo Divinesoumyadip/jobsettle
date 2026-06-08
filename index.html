@@ -3625,6 +3625,57 @@ function updateCatCounts(){
 }
 
 
+// ═══ PAYWALL & USAGE LIMITS ════════════════════════════════════
+var AI_FREE_LIMIT = 10
+
+function getAIUsage(){ return parseInt(localStorage.getItem('js_ai_usage')||'0') }
+function incrementAIUsage(){ var n=getAIUsage()+1; localStorage.setItem('js_ai_usage',String(n)); return n }
+function getRemainingAI(){ return Math.max(0, AI_FREE_LIMIT - getAIUsage()) }
+
+function checkAIAccess(toolName){
+  if(userPlan && userPlan !== 'free') return true
+  var remaining = getRemainingAI()
+  if(remaining <= 0){ showAIPaywall(toolName); return false }
+  if(remaining <= 3) toast(remaining+' free AI uses left. Upgrade for unlimited!')
+  return true
+}
+
+function showAIPaywall(toolName){
+  var m = document.createElement('div')
+  m.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(6,7,15,.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px'
+  m.innerHTML = '<div style="background:white;border-radius:24px;padding:36px;max-width:420px;width:100%;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.2)">'
+    +'<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;margin:0 auto 16px"><i class="fas fa-crown" style="color:white;font-size:26px"></i></div>'
+    +'<div style="font-size:22px;font-weight:900;color:var(--dark);margin-bottom:8px">You\'ve used all 10 free uses!</div>'
+    +'<div style="font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:24px"><strong>'+( toolName||'AI Tools')+'</strong> requires Premium for unlimited access.</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">'
+    +'<div style="padding:16px;border:2px solid var(--bd);border-radius:14px"><div style="font-size:20px;font-weight:900;color:var(--dark)">₹399<span style="font-size:12px;color:var(--t3)">/mo</span></div><div style="font-size:12px;font-weight:700;color:var(--t2);margin:4px 0">Pro Plan</div><div style="font-size:11px;color:var(--t3)">Unlimited AI</div></div>'
+    +'<div style="padding:16px;border:2px solid var(--mint4);border-radius:14px;background:var(--mint3)"><div style="font-size:20px;font-weight:900;color:var(--dark)">₹799<span style="font-size:12px;color:var(--t3)">/mo</span></div><div style="font-size:12px;font-weight:700;color:var(--mint2);margin:4px 0">Elite Plan</div><div style="font-size:11px;color:var(--mint2)">Everything+</div></div>'
+    +'</div>'
+    +'<button onclick="this.closest(\'[style*=fixed]\').remove();showPremiumModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:13px;font-family:var(--font);font-size:15px;font-weight:900;color:white;cursor:pointer;margin-bottom:10px"><i class="fas fa-bolt" style="margin-right:8px"></i>Upgrade Now — Unlimited AI</button>'
+    +'<button onclick="this.closest(\'[style*=fixed]\').remove()" style="width:100%;padding:10px;background:none;border:none;font-family:var(--font);font-size:13px;color:var(--t3);cursor:pointer">Maybe later</button>'
+    +'</div>'
+  document.body.appendChild(m)
+  m.onclick = function(e){ if(e.target===m) m.remove() }
+}
+
+function showPaidFeatureWall(featureName){
+  var m = document.createElement('div')
+  m.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(6,7,15,.7);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px'
+  var features = ['Unlimited Mock Interviews','AI Interview Coaching','Real-time Answer Hints','Company-specific Prep','Resume AI Review','Priority Support']
+  m.innerHTML = '<div style="background:white;border-radius:24px;padding:36px;max-width:420px;width:100%;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.2)">'
+    +'<div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;margin:0 auto 16px"><i class="fas fa-lock" style="color:white;font-size:26px"></i></div>'
+    +'<div style="font-size:22px;font-weight:900;color:var(--dark);margin-bottom:8px">'+featureName+' is Premium</div>'
+    +'<div style="font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:20px">Available on <strong style="color:var(--violet2)">Pro</strong> and <strong style="color:var(--mint2)">Elite</strong> plans.</div>'
+    +'<div style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left">'
+    +features.map(f=>'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><i class="fas fa-check-circle" style="color:var(--mint2);font-size:13px"></i><span style="font-size:13px;color:var(--t2)">'+f+'</span></div>').join('')
+    +'</div>'
+    +'<button onclick="this.closest(\'[style*=fixed]\').remove();showPremiumModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:13px;font-family:var(--font);font-size:15px;font-weight:900;color:white;cursor:pointer;margin-bottom:10px"><i class="fas fa-crown" style="margin-right:8px"></i>Upgrade to Pro — ₹399/mo</button>'
+    +'<button onclick="this.closest(\'[style*=fixed]\').remove()" style="width:100%;padding:10px;background:none;border:none;font-family:var(--font);font-size:13px;color:var(--t3);cursor:pointer">Maybe later</button>'
+    +'</div>'
+  document.body.appendChild(m)
+  m.onclick = function(e){ if(e.target===m) m.remove() }
+}
+
 // ── JOB OPTIONS MENU (3 dots) ─────────────────────────────────
 function showJobMenu(e, jobId, title, company, applyLink){
   e.stopPropagation()
@@ -3680,29 +3731,35 @@ function showJobMenu(e, jobId, title, company, applyLink){
 var communityPostsCache = []
 
 async function loadCommunityPosts(){
+  // Only load approved posts (status = 'approved' or no status field)
   var data = await sbApi('GET','community_posts',null,'select=*&order=created_at.desc&limit=50')
   if(data && data.length){
-    communityPostsCache = data
-    renderCommunityPosts(data)
+    // Filter to only show approved posts
+    var approved = data.filter(function(p){ return !p.status || p.status === 'approved' })
+    communityPostsCache = approved
+    renderCommunityPosts(approved)
   }
 }
 
 async function submitCommunityPost(content, tags){
   if(!user){ toast('Login to post',1); return }
   if(!content || content.length < 10){ toast('Write something meaningful!',1); return }
+  
+  // Save to Supabase with pending status (needs admin approval)
   var post = {
     user_id: user.id,
     user_name: user.name,
     avatar_url: user.avatar||null,
     content: content,
     tags: tags||[],
-    likes: 0, replies: 0
+    likes: 0, replies: 0,
+    status: 'pending' // Admin must approve
   }
+  
   var res = await sbApi('POST','community_posts',post)
   if(res && res.length){
-    communityPostsCache.unshift(res[0])
-    renderCommunityPosts(communityPostsCache)
-    toast('Posted!')
+    // Show pending message - NOT visible yet
+    toast('Post submitted! Our team will review and approve it shortly.')
     return true
   }
   return false
@@ -4369,12 +4426,12 @@ function showAppliedView(){
     return card.replace('APPLY WITH AUTOFILL','<span style="color:var(--mint2);font-weight:800"><i class="fas fa-check-circle"></i> Applied</span>')
   }).join('')
 }
-function showInterviewPrepView(){hideAllViews();setPage('interview');document.getElementById('interviewPrepView').style.display='block'}
+function showInterviewPrepView(){if(userPlan==='free'){showPaidFeatureWall('Interview Prep AI');return}hideAllViews();setPage('interview');document.getElementById('interviewPrepView').style.display='block'}
 function showAlertsView(){hideAllViews();setPage('alerts');document.getElementById('alertsView').style.display='block'}
 function showSalaryView(){hideAllViews();setPage('salary');document.getElementById('salaryView').style.display='block'}
 function showCompaniesView(){hideAllViews();setPage('companies');document.getElementById('companiesView').style.display='block'}
 function showReferralView(){hideAllViews();setPage('referral');document.getElementById('referralView').style.display='block'}
-function showMockView(){hideAllViews();setPage('mock');document.getElementById('mockView').style.display='block'}
+function showMockView(){if(userPlan==='free'){showPaidFeatureWall('Mock Interview Live');return}hideAllViews();setPage('mock');document.getElementById('mockView').style.display='block'}
 function showLeaderboardView(){hideAllViews();setPage('leaderboard');document.getElementById('leaderboardView').style.display='block';const el=document.getElementById('lbYouAv');if(el&&user)el.textContent=user.initial}
 function showResumeBuilderView(){hideAllViews();setPage('builder');document.getElementById('resumeBuilderView').style.display='block'}
 function showCommunityView(){hideAllViews();setPage('community');document.getElementById('communityView').style.display='block';if(user)document.getElementById('communityAv').textContent=user.initial;loadCommunityPosts()}
@@ -4594,11 +4651,13 @@ function initPlan(){
 
 // EMERGENCY PREP
 function generateEmergencyPlan(){
+  if(!checkAIAccess('Interview Tomorrow SOS')) return
   const company=document.getElementById('ep_company').value.trim()
   const role=document.getElementById('ep_role').value.trim()
   const type=document.getElementById('ep_type').value
   const hours=parseInt(document.getElementById('ep_time').value)
   if(!company||!role){toast('Enter company and role',1);return}
+  incrementAIUsage()
   const btn=document.getElementById('epBtn')
   btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating Your Plan...'
   const companyData={
@@ -5356,10 +5415,12 @@ function toast(msg,err=0){
 
 // ═══ WILL I GET CALLED BACK ═══
 function analyzeCallback(){
+  if(!checkAIAccess('Will I Get Called?')) return
   const jd=document.getElementById('cb_jd').value.trim()
   const prof=document.getElementById('cb_profile').value.trim()
   if(!jd){toast('Paste the job description',1);return}
   if(!prof){toast('Paste your profile/skills',1);return}
+  incrementAIUsage()
   const btn=document.getElementById('cbBtn')
   btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analyzing...'
   const jdL=jd.toLowerCase(),profL=prof.toLowerCase()
@@ -5434,6 +5495,8 @@ var ICONS = {
 function ico(k){var cls=ICONS[k]||'fa-circle';return '<i class="fas '+cls+'"><\/i>'}
 
 function analyzeRejection(){
+  if(!checkAIAccess('Rejection Analyzer')) return
+  incrementAIUsage()
   const email=document.getElementById('rej_email').value.trim()
   const role=document.getElementById('rej_role').value.trim()
   const context=document.getElementById('rej_context').value.trim()
