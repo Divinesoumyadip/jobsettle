@@ -239,8 +239,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 .dsb-sec{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;color:var(--t3);padding:7px 11px 4px;text-transform:uppercase;white-space:nowrap;transition:opacity .25s}
 .dsb.col .dsb-sec{opacity:0;height:0;padding:0}
 .dsb-lnk{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;font-size:13.5px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s;white-space:nowrap;position:relative}
-.cat-item:hover{background:rgba(255,255,255,.07)!important}
-.cat-item:hover span:nth-child(2){color:white!important}
+.cat-item:hover{background:var(--bg)!important}
+.cat-item:hover span:nth-child(2){color:var(--dark)!important}
 .dsb-lnk:hover{background:var(--bg);color:var(--dark)}
 .dsb-lnk.on{background:linear-gradient(135deg,var(--mint3),#d0f8f0);color:var(--mint2)}
 .dsb-lnk .li{width:20px;text-align:center;font-size:15px;flex-shrink:0}
@@ -1462,75 +1462,75 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 
       <div class="dsb-sec">CATEGORIES</div>
       <!-- Category Dropdown -->
-      <div id="catDropdownWrap" style="margin:0 4px 6px;border-radius:12px;overflow:hidden;border:1.5px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03)">
+      <div id="catDropdownWrap" style="margin:0 4px 6px;border-radius:12px;overflow:hidden;border:1.5px solid var(--bd);background:var(--bg)">
         <div onclick="toggleCatDropdown()" style="display:flex;align-items:center;gap:9px;padding:10px 12px;cursor:pointer;transition:all .15s" id="catDropdownBtn">
           <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-layer-group" style="color:white;font-size:11px"></i></div>
-          <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.8);flex:1">All Categories</span>
-          <i class="fas fa-chevron-down" style="color:rgba(255,255,255,.3);font-size:11px;transition:transform .2s" id="catChevron"></i>
+          <span style="font-size:13px;font-weight:700;color:var(--dark);flex:1">All Categories</span>
+          <i class="fas fa-chevron-down" style="color:var(--t3);font-size:11px;transition:transform .2s" id="catChevron"></i>
         </div>
         <div id="catDropdownList" style="display:none;padding:4px 6px 8px">
           <div onclick="pickCat(this,'sde')" class="cat-item" data-cat="sde" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#7c5cfc,#5b3de8);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-code" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">SDE / Backend</span>
-            <span class="cat-cnt" id="cnt-sde" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">SDE / Backend</span>
+            <span class="cat-cnt" id="cnt-sde" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'frontend')" class="cat-item" data-cat="frontend" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#2fc0f0,#1a9ed4);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-laptop-code" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">Frontend</span>
-            <span class="cat-cnt" id="cnt-frontend" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">Frontend</span>
+            <span class="cat-cnt" id="cnt-frontend" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'ml')" class="cat-item" data-cat="ml" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#ff3daf,#d4008f);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-brain" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">Data / ML</span>
-            <span class="cat-cnt" id="cnt-ml" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">Data / ML</span>
+            <span class="cat-cnt" id="cnt-ml" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'devops')" class="cat-item" data-cat="devops" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#ffb400,#e09500);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-server" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">DevOps / Cloud</span>
-            <span class="cat-cnt" id="cnt-devops" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">DevOps / Cloud</span>
+            <span class="cat-cnt" id="cnt-devops" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'pm')" class="cat-item" data-cat="pm" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#00e5b0,#00b88a);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-chess" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">Product Manager</span>
-            <span class="cat-cnt" id="cnt-pm" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">Product Manager</span>
+            <span class="cat-cnt" id="cnt-pm" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'design')" class="cat-item" data-cat="design" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#ff5f6d,#e03444);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-pen-nib" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">UI/UX Design</span>
-            <span class="cat-cnt" id="cnt-design" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">UI/UX Design</span>
+            <span class="cat-cnt" id="cnt-design" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'campus')" class="cat-item" data-cat="campus" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#a78bfa,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-graduation-cap" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">Campus Drive</span>
-            <span class="cat-cnt" id="cnt-campus" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">Campus Drive</span>
+            <span class="cat-cnt" id="cnt-campus" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div onclick="pickCat(this,'remote')" class="cat-item" data-cat="remote" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:2px">
             <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-globe" style="color:white;font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.65);flex:1">Remote</span>
-            <span class="cat-cnt" id="cnt-remote" style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.25)">0</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t1);flex:1">Remote</span>
+            <span class="cat-cnt" id="cnt-remote" style="font-family:var(--mono);font-size:9px;color:var(--mint2)">0</span>
           </div>
           <div style="height:1px;background:rgba(255,255,255,.06);margin:4px 2px 6px"></div>
           <div onclick="pickCat(this,null)" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s">
             <div style="width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-th" style="color:rgba(255,255,255,.4);font-size:10px"></i></div>
-            <span style="font-size:12.5px;font-weight:700;color:rgba(255,255,255,.4)">View All Jobs</span>
+            <span style="font-size:12.5px;font-weight:700;color:var(--t2)">View All Jobs</span>
           </div>
         </div>
       </div>
 
 
       <div class="dsb-sec">TOOLS</div>
-      <div class="dsb-lnk" onclick="setNav(this);showSalaryView()"><i class="fas fa-rupee-sign li"></i><span class="lbl">Salary Insights</span></div>
-      <div class="dsb-lnk" onclick="setNav(this);showCompaniesView()"><i class="fas fa-building li"></i><span class="lbl">Top Companies</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showResumeBuilderView()"><i class="fas fa-magic li"></i><span class="lbl">Resume Builder</span><span class="dsb-badge" style="background:linear-gradient(135deg,#00d4a4,#00a67e);color:white">Free</span></div>
-      <div class="dsb-lnk" onclick="setNav(this);showReferralView()"><i class="fas fa-users li"></i><span class="lbl">Refer & Earn</span><span class="dsb-badge" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">₹500</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showCommunityView()"><i class="fas fa-comments li"></i><span class="lbl">Community</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white">12</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showNewsView()"><i class="fas fa-newspaper li"></i><span class="lbl">Tech News</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showCallbackView()"><i class="fas fa-chart-pie li"></i><span class="lbl">Will I Get Called?</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white">AI</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showRejectionView()"><i class="fas fa-heartbeat li"></i><span class="lbl">Rejection Analyzer</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:white">AI</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showEmergencyPrepView()" style="background:linear-gradient(135deg,rgba(244,63,94,.08),rgba(244,63,94,.03));border:1.5px solid rgba(244,63,94,.15)"><i class="fas fa-fire li" style="color:#f43f5e"></i><span class="lbl" style="color:#f43f5e">Interview Tomorrow!</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:white;animation:pulse 1.5s infinite">SOS</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showCampusDBView()"><i class="fas fa-university li"></i><span class="lbl">Campus Placements</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f43f5e,#be123c);color:white">New</span></div>
-      <div class="dsb-lnk" onclick="setNav(this);showCollegeConnectView()"><i class="fas fa-handshake li"></i><span class="lbl">College Connect</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white">Partner</span></div>
+
+      <div class="dsb-sec">PARTNERSHIPS</div>
+      <div class="dsb-lnk" onclick="setNav(this);showCollegeConnectView()"><i class="fas fa-graduation-cap li"></i><span class="lbl">College Connect</span><span class="dsb-badge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white">Partner</span></div>
       <div class="dsb-lnk" onclick="setNav(this);showAmbassadorView()"><i class="fas fa-user-tie li"></i><span class="lbl">Be Ambassador</span><span class="dsb-badge" style="background:linear-gradient(135deg,#7c5cfc,#5b3de8);color:white">₹500</span></div>
+      <div class="dsb-lnk" onclick="setNav(this);showReferralView()"><i class="fas fa-gift li"></i><span class="lbl">Refer & Earn</span><span class="dsb-badge" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">₹500</span></div>
 
       <div class="dsb-sec">ACCOUNT</div>
       <div class="dsb-lnk" onclick="setNav(this);showProfile()"><i class="fas fa-user li"></i><span class="lbl">My Profile</span></div>
