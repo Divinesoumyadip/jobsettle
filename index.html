@@ -489,6 +489,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 .trk-modal-hdr{padding:22px 26px 18px;border-bottom:2px solid var(--bg);display:flex;align-items:center;justify-content:space-between}
 .trk-modal-body{padding:22px 26px 26px}
 </style>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
@@ -4382,19 +4383,33 @@ function activatePlan(plan){
   var amount = isYearly ? price.yearly : price.monthly
   var period = isYearly ? 'year' : 'month'
 
+  // Show loading on button
+  var btn = event && event.target ? event.target.closest('button') : null
+  if(btn){ btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...'; btn.disabled = true }
+
+  function restoreBtn(){
+    if(btn){ btn.innerHTML = 'Get '+PLAN_PRICES[plan].name; btn.disabled = false }
+  }
+
   // Load Razorpay script dynamically
   if(!window.Razorpay){
     var script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.onload = function(){ openRazorpay(plan, amount, period) }
+    script.onload = function(){
+      restoreBtn()
+      closePremiumModal() // Close our modal before Razorpay opens
+      setTimeout(function(){ openRazorpay(plan, amount, period) }, 300)
+    }
     script.onerror = function(){
-      // Razorpay not available - activate for free (dev mode)
-      console.warn('Razorpay not loaded - activating in dev mode')
-      activatePlanFree(plan)
+      restoreBtn()
+      console.warn('Razorpay not loaded')
+      toast('Payment gateway unavailable. Try again.', 1)
     }
     document.head.appendChild(script)
   } else {
-    openRazorpay(plan, amount, period)
+    restoreBtn()
+    closePremiumModal()
+    setTimeout(function(){ openRazorpay(plan, amount, period) }, 300)
   }
 }
 
