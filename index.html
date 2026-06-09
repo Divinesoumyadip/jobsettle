@@ -1730,7 +1730,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
           </div>
           <div style="display:flex;gap:6px">
             <button onclick="runResumeAnalysis()" style="padding:6px 13px;border:1.5px solid var(--mint4);border-radius:7px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--mint2);cursor:pointer"><i class="fas fa-chart-bar" style="margin-right:4px"></i>Analyze</button>
-            <button onclick="toast('Resume downloaded!')" style="padding:6px 13px;border:1.5px solid var(--bd);border-radius:7px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer"><i class="fas fa-download" style="margin-right:4px"></i>Export</button>
+            <button onclick="downloadResumeReal()" style="padding:6px 13px;border:1.5px solid var(--bd);border-radius:7px;background:white;font-family:var(--font);font-size:12px;font-weight:700;color:var(--t2);cursor:pointer"><i class="fas fa-download" style="margin-right:4px"></i>Export</button>
           </div>
         </div>
         <!-- Upload more -->
@@ -1786,7 +1786,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
         <div id="sectionsList" style="display:flex;flex-direction:column;gap:8px">
           <!-- sections rendered by JS -->
         </div>
-        <div onclick="toast('New section added!')" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border:2px dashed var(--bd);border-radius:10px;cursor:pointer;margin-top:8px;font-size:13px;font-weight:700;color:var(--t3);transition:all .2s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint2)'" onmouseout="this.style.borderColor='var(--bd)';this.style.color='var(--t3)'">
+        <div onclick="addResumeSection()" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border:2px dashed var(--bd);border-radius:10px;cursor:pointer;margin-top:8px;font-size:13px;font-weight:700;color:var(--t3);transition:all .2s" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint2)'" onmouseout="this.style.borderColor='var(--bd)';this.style.color='var(--t3)'">
           <i class="fas fa-plus-circle"></i> Add New Section
         </div>
       </div>
@@ -1943,10 +1943,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
     <div style="background:white;border:2px solid var(--bd);border-radius:20px;padding:24px;margin-bottom:18px">
       <div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:18px">Create Custom Alert</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-        <div><label class="fl">Keyword</label><input class="fi" placeholder="e.g. React Developer" style="margin-bottom:0"/></div>
-        <div><label class="fl">Location</label><select class="fi" style="cursor:pointer;margin-bottom:0"><option>All India</option><option>Bangalore</option><option>Mumbai</option><option>Remote</option></select></div>
+        <div><label class="fl">Keyword</label><input class="fi" id="alertKeyword" placeholder="e.g. React Developer" style="margin-bottom:0"/></div>
+        <div><label class="fl">Location</label><select class="fi" id="alertLocation" style="cursor:pointer;margin-bottom:0"><option>All India</option><option>Bangalore</option><option>Mumbai</option><option>Remote</option></select></div>
       </div>
-      <button onclick="toast('Alert created! You will be notified instantly.')" style="display:flex;align-items:center;gap:8px;padding:11px 22px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-bell"></i> Create Alert</button>
+      <button onclick="createJobAlertReal()" style="display:flex;align-items:center;gap:8px;padding:11px 22px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-bell"></i> Create Alert</button>
     </div>
   </div>
 </div>
@@ -2288,7 +2288,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
           <div style="font-size:13px;font-weight:900;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="fas fa-tools" style="color:#f59e0b"></i> Skills</div>
           <input class="fi" placeholder="React, Node.js, Python, AWS..." style="margin-bottom:0"/>
         </div>
-        <button onclick="toast('Resume generated! Downloading PDF...')" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:12px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(0,212,164,.3)"><i class="fas fa-download"></i> Download Resume PDF</button>
+        <button onclick="downloadResumeReal()" style="display:flex;align-items:center;justify-content:center;gap:9px;padding:14px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:12px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(0,212,164,.3)"><i class="fas fa-download"></i> Download Resume PDF</button>
       </div>
       <!-- Preview side -->
       <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:24px;font-size:12px;position:sticky;top:0">
@@ -2318,12 +2318,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
   <div style="max-width:880px;margin:0 auto">
     <div style="margin-bottom:24px;display:flex;align-items:center;justify-content:space-between">
       <div><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Community</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Discuss jobs, share experiences, help each other</p></div>
-      <button onclick="toast('Post submitted!')" style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-pen"></i> New Post</button>
+      <button onclick="document.getElementById('communityPostText').focus()" style="display:flex;align-items:center;gap:8px;padding:10px 20px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-pen"></i> New Post</button>
     </div>
     <!-- Post composer -->
     <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start">
       <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:white;flex-shrink:0" id="communityAv">?</div>
-      <div style="flex:1"><textarea style="width:100%;border:2px solid var(--bd);border-radius:11px;padding:11px 14px;font-family:var(--font);font-size:14px;color:var(--dark);outline:none;resize:none;min-height:60px;line-height:1.6;transition:border-color .15s" placeholder="Share a tip, ask a question, celebrate an offer..." onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--bd)'"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button onclick="toast('Post published!')" style="padding:8px 18px;background:var(--dark);border:none;border-radius:9px;font-family:var(--font);font-size:12.5px;font-weight:800;color:white;cursor:pointer">Post</button></div></div>
+      <div style="flex:1"><textarea id="communityPostText" style="width:100%;border:2px solid var(--bd);border-radius:11px;padding:11px 14px;font-family:var(--font);font-size:14px;color:var(--dark);outline:none;resize:none;min-height:60px;line-height:1.6;transition:border-color .15s" placeholder="Share a tip, ask a question, celebrate an offer..." onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--bd)'"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button onclick="submitCommunityPostReal()" style="padding:8px 18px;background:var(--dark);border:none;border-radius:9px;font-family:var(--font);font-size:12.5px;font-weight:800;color:white;cursor:pointer">Post</button></div></div>
     </div>
     <!-- Posts -->
     <div style="display:flex;flex-direction:column;gap:14px">
@@ -2335,9 +2335,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
         </div>
         <p style="font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:14px">Just cracked Amazon SDE-2!! Used JobSettle to apply and did 4 mock interviews here. The system design question was exactly what I practiced. For anyone preparing — focus on LLD + HLD and practice explaining your thought process out loud!</p>
         <div style="display:flex;gap:16px;padding-top:13px;border-top:1px solid var(--bg)">
-          <button onclick="this.innerHTML='<i class="fas fa-heart" style="color:#f43f5e"></i> <span>47</span>';toast('Liked!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-heart"></i> <span>46</span></button>
-          <button onclick="toast('Reply posted!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-comment"></i> 12</button>
-          <button onclick="toast('Copied link!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="fas fa-share"></i> Share</button>
+          <button onclick="likeCommunityPost(this)" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-heart"></i> <span>46</span></button>
+          <button onclick="document.getElementById('communityPostText').focus();document.getElementById('communityPostText').scrollIntoView({behavior:'smooth'})" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-comment"></i> 12</button>
+          <button onclick="navigator.clipboard.writeText(window.location.href).then(function(){toast('Link copied!')})" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="fas fa-share"></i> Share</button>
         </div>
       </div>
       <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:20px">
@@ -2348,9 +2348,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
         </div>
         <p style="font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:14px">Tip for freshers: Don't wait until you're "ready" to apply. Apply now, learn from rejections, and keep improving. I got rejected 8 times before my Microsoft offer. The tracker here helped me stay organized and not lose hope.</p>
         <div style="display:flex;gap:16px;padding-top:13px;border-top:1px solid var(--bg)">
-          <button onclick="this.innerHTML='<i class="fas fa-heart" style="color:#f43f5e"></i> <span>89</span>';toast('Liked!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-heart"></i> <span>88</span></button>
-          <button onclick="toast('Reply posted!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-comment"></i> 24</button>
-          <button onclick="toast('Copied link!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="fas fa-share"></i> Share</button>
+          <button onclick="likeCommunityPost(this)" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-heart"></i> <span>88</span></button>
+          <button onclick="document.getElementById('communityPostText').focus();document.getElementById('communityPostText').scrollIntoView({behavior:'smooth'})" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-comment"></i> 24</button>
+          <button onclick="navigator.clipboard.writeText(window.location.href).then(function(){toast('Link copied!')})" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="fas fa-share"></i> Share</button>
         </div>
       </div>
       <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:20px">
@@ -2361,9 +2361,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
         </div>
         <p style="font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:14px">Is TCS NQT worth it for a 2025 batch fresher? I have a 7.8 CGPA from a tier-3 college. Should I also apply to Infosys Instep or directly to product companies?</p>
         <div style="display:flex;gap:16px;padding-top:13px;border-top:1px solid var(--bg)">
-          <button onclick="this.innerHTML='<i class="fas fa-heart" style="color:#f43f5e"></i> <span>23</span>';toast('Liked!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-heart"></i> <span>22</span></button>
-          <button onclick="toast('Reply posted!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-comment"></i> 31</button>
-          <button onclick="toast('Copied link!')" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="fas fa-share"></i> Share</button>
+          <button onclick="likeCommunityPost(this)" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-heart"></i> <span>22</span></button>
+          <button onclick="document.getElementById('communityPostText').focus();document.getElementById('communityPostText').scrollIntoView({behavior:'smooth'})" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="far fa-comment"></i> 31</button>
+          <button onclick="navigator.clipboard.writeText(window.location.href).then(function(){toast('Link copied!')})" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;color:var(--t3)"><i class="fas fa-share"></i> Share</button>
         </div>
       </div>
     </div>
@@ -2375,7 +2375,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
   <div style="max-width:880px;margin:0 auto">
     <div style="margin-bottom:24px"><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Tech News</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Latest from the Indian tech and startup ecosystem</p></div>
     <div style="display:flex;flex-direction:column;gap:14px">
-      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--mint)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="toast('Opening article...')">
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--mint)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="window.open('https://economictimes.indiatimes.com/tech/technology','_blank')">
         <div style="padding:20px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-family:var(--mono);font-size:9px;background:var(--mint3);color:var(--mint2);padding:3px 9px;border-radius:6px;font-weight:700">HIRING</span><span style="font-family:var(--mono);font-size:10px;color:var(--t3)">2 hours ago</span></div>
           <div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:8px;letter-spacing:-.2px;line-height:1.4">Google India Plans to Hire 5,000 Engineers in 2026 Across Bangalore and Hyderabad</div>
@@ -2383,7 +2383,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
           <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t3)">Economic Times · 4 min read</span><div style="display:flex;gap:8px"><span style="padding:4px 10px;background:var(--bg);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--t2)">Google</span><span style="padding:4px 10px;background:var(--bg);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--t2)">Hiring</span></div></div>
         </div>
       </div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--violet)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="toast('Opening article...')">
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--violet)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="window.open('https://inc42.com/startups/','_blank')">
         <div style="padding:20px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-family:var(--mono);font-size:9px;background:var(--violet3);color:var(--violet);padding:3px 9px;border-radius:6px;font-weight:700">FUNDING</span><span style="font-family:var(--mono);font-size:10px;color:var(--t3)">6 hours ago</span></div>
           <div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:8px;letter-spacing:-.2px;line-height:1.4">Zepto Raises $500M Series F at $5B Valuation — Plans 2,000 Tech Hires This Year</div>
@@ -2391,7 +2391,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
           <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t3)">Inc42 · 3 min read</span><div style="display:flex;gap:8px"><span style="padding:4px 10px;background:var(--bg);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--t2)">Startup</span><span style="padding:4px 10px;background:var(--bg);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--t2)">Funding</span></div></div>
         </div>
       </div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#f59e0b';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="toast('Opening article...')">
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#f59e0b';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="window.open('https://www.livemint.com/technology','_blank')">
         <div style="padding:20px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-family:var(--mono);font-size:9px;background:var(--y3);color:var(--gold2);padding:3px 9px;border-radius:6px;font-weight:700">LAYOFFS</span><span style="font-family:var(--mono);font-size:10px;color:var(--t3)">1 day ago</span></div>
           <div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:8px;letter-spacing:-.2px;line-height:1.4">Byju's Completes Final Round of Layoffs — 800 Tech Employees Affected</div>
@@ -2399,7 +2399,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
           <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--t3)">Mint · 5 min read</span><div style="display:flex;gap:8px"><span style="padding:4px 10px;background:var(--bg);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--t2)">Edtech</span><span style="padding:4px 10px;background:var(--bg);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--t2)">Layoffs</span></div></div>
         </div>
       </div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#3b82f6';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="toast('Opening article...')">
+      <div style="background:white;border:2px solid var(--bd);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#3b82f6';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--bd)';this.style.transform='none'" onclick="window.open('https://economictimes.indiatimes.com/tech/information-tech','_blank')">
         <div style="padding:20px">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-family:var(--mono);font-size:9px;background:var(--b3);color:var(--b1);padding:3px 9px;border-radius:6px;font-weight:700">CAREER</span><span style="font-family:var(--mono);font-size:10px;color:var(--t3)">2 days ago</span></div>
           <div style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:8px;letter-spacing:-.2px;line-height:1.4">TCS Infosys Wipro Hiring 1 Lakh Freshers in FY2026 — Campus Placement Season Opens</div>
@@ -5670,7 +5670,7 @@ function renderIssues(){
       return '<div style="padding:14px 16px;background:'+issue.bg+';border:1.5px solid '+issue.border+';border-radius:12px;margin-bottom:10px">'
         +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
         +'<div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:'+issue.color+';flex-shrink:0"></span><span style="font-size:13.5px;font-weight:800;color:'+issue.color+'">'+issue.title+'</span></div>'
-        +'<button onclick="toast(\'Opening fix editor...\')" style="padding:5px 13px;background:'+issue.color+';color:white;border:none;border-radius:7px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">'+issue.action+'</button>'
+        +'<button onclick="showResume()" style="padding:5px 13px;background:'+issue.color+';color:white;border:none;border-radius:7px;font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer">'+issue.action+'</button>'
         +'</div>'
         +'<div style="font-size:13px;color:var(--t2);line-height:1.65;margin-left:16px">'+issue.desc+'</div>'
         +'</div>'
@@ -5687,8 +5687,8 @@ function renderSectionsList(){
       +'<div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--mint),var(--mint2));display:flex;align-items:center;justify-content:center"><i class="'+s.icon+'" style="color:white;font-size:13px"></i></div>'
       +'<span style="font-size:13.5px;font-weight:700;color:var(--dark);flex:1">'+s.label+'</span>'
       +'<div style="display:flex;gap:4px">'
-      +'<button onclick="toast(\'Edit section\')" style="width:28px;height:28px;border-radius:7px;background:white;border:1.5px solid var(--bd);cursor:pointer;font-size:11px;color:var(--t3)"><i class="fas fa-pen"></i></button>'
-      +'<button onclick="toast(\'Section hidden\')" style="width:28px;height:28px;border-radius:7px;background:white;border:1.5px solid var(--bd);cursor:pointer;font-size:11px;color:var(--t3)"><i class="fas fa-eye"></i></button>'
+      +'<button onclick="showResume()" style="width:28px;height:28px;border-radius:7px;background:white;border:1.5px solid var(--bd);cursor:pointer;font-size:11px;color:var(--t3)"><i class="fas fa-pen"></i></button>'
+      +'<button onclick="this.style.opacity=this.style.opacity===\'0.4\'?\'1\':\'0.4\'" style="width:28px;height:28px;border-radius:7px;background:white;border:1.5px solid var(--bd);cursor:pointer;font-size:11px;color:var(--t3)"><i class="fas fa-eye"></i></button>'
       +'</div>'
       +'</div>'
   }).join('')
@@ -6095,48 +6095,42 @@ function initPlan(){
 }
 
 // EMERGENCY PREP
-function generateEmergencyPlan(){
-  if(!checkAIAccess('Interview Tomorrow SOS')) return
-  const company=document.getElementById('ep_company').value.trim()
-  const role=document.getElementById('ep_role').value.trim()
-  const type=document.getElementById('ep_type').value
-  const hours=parseInt(document.getElementById('ep_time').value)
+async function generateEmergencyPlan(){
+  var company=document.getElementById('ep_company').value.trim()
+  var role=document.getElementById('ep_role').value.trim()
+  var type=document.getElementById('ep_type').value
+  var hours=parseInt(document.getElementById('ep_time').value)||4
   if(!company||!role){toast('Enter company and role',1);return}
   incrementAIUsage()
-  const btn=document.getElementById('epBtn')
+  var btn=document.getElementById('epBtn')
   btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Generating Your Plan...'
-  const companyData={
-    google:{style:'Heavy DSA + System Design. Behavioral with Googleyness.',topics:['Binary Trees — Traversal, LCA, Max Depth','Graphs — BFS/DFS, Dijkstra','Dynamic Programming — DP on strings/arrays','System Design: Design Google Drive/YouTube','Googleyness behavioral questions'],must:['LRU Cache','Word Ladder','Merge K sorted lists','Design YouTube','Tell me about a time you disagreed with a decision']},
-    amazon:{style:'Leadership Principles HEAVY + DSA. OOP design.',topics:['Leadership Principles — all 14 with stories','Arrays + HashMap patterns','Trees traversal + BST','OOP Design: Parking Lot / Library','SQL basics — Joins, GROUP BY'],must:['Two Sum and variants','LRU Cache','LP: Tell me about a time you failed','LP: Describe a time you showed Customer Obsession','Design Amazon Cart / notification system']},
-    microsoft:{style:'DSA + OOP + deep project dive.',topics:['Linked Lists, Trees, Graphs','Dynamic Programming basics','OOP: Polymorphism, Interfaces, Design Patterns','System Design: URL Shortener, Messaging App','Your own project — be ready to go VERY deep'],must:['Reverse linked list + detect cycle','Serialize/deserialize BST','Explain your most complex project','Design patterns: Observer, Factory','What is the hardest technical challenge you faced?']},
-    flipkart:{style:'Machine Coding + DSA. Build real systems in 90 minutes.',topics:['Machine Coding: Splitwise, Parking Lot, BookMyShow','DSA: Graphs + DP + Heaps','OS: Scheduling, Deadlock, Memory','DBMS: Joins, Indexes, Transactions','Low Level Design principles'],must:['Design Splitwise from scratch (implement it!)','HashMap internals + collision resolution','Design Notification System','Count islands (BFS)','Implement Thread Pool in Java']},
-    tcs:{style:'Basic aptitude + CS fundamentals. Very standard and friendly.',topics:['Basic programs in C/Java/Python','SQL: SELECT, JOIN, GROUP BY, subqueries','DBMS: Normalization, ACID, Transactions','OS: Process Scheduling, Deadlock','Verbal Reasoning + Aptitude'],must:['Reverse a string / array','SQL: 2nd highest salary, top 3 per department','Tell me about yourself (2 mins)','Why TCS? Where do you see yourself in 5 years?','Basic OOPS: 4 pillars with examples']},
-  }
-  const co=company.toLowerCase()
-  let cd={style:'Standard technical interview format.',topics:['DSA: Arrays, Strings, Trees','System Design fundamentals','OOP concepts and design patterns','SQL fundamentals','Behavioral STAR stories'],must:['Two Sum / sliding window','Fibonacci with DP','Design a URL Shortener','Tell me about yourself','Describe a challenging project']}
-  for(const [k,v] of Object.entries(companyData)){if(co.includes(k)){cd=v;break}}
-  const timeline=[]
-  if(hours>=2){timeline.push({time:'Hour 1',task:'Core DSA revision — focus topics above',icon:'code',color:'var(--violet3)'})}
-  if(hours>=4){timeline.push({time:'Hour 2-3',task:'Must-know questions — solve or review solutions',icon:'target',color:'var(--mint3)'})}
-  if(hours>=6){timeline.push({time:'Hour 4-5',task:'System Design OR behavioral prep (per interview type)',icon:'design',color:'var(--b3)'})}
-  if(hours>=8){timeline.push({time:'Hour 6-7',task:'Mock yourself — answer 3 questions out loud',icon:'mic',color:'var(--y3)'})}
-  timeline.push({time:'Final 30 min',task:'Read about company, prepare 2 good questions to ask them. Then SLEEP.',icon:'sleep',color:'var(--bg)'})
-  const skipMap={technical:['Competitive programming tricks','Bit manipulation','Advanced math','Design patterns deep dive'],hr:['DSA coding problems','System Design','Technical CS theory'],system:['LeetCode grinding','Aptitude tests','CS theory'],full:['Advanced bit tricks','Obscure algorithms','Deep CS theory'],machine:['System Design theory','HR stories','Aptitude prep']}
-  const skip=skipMap[type]||skipMap.full
-  const motivations=[`You have ${hours} hours. That's enough. Focused prep beats panicked cramming every time.`,`${company} chose to interview YOU. They already think you might be good enough. Now just show them.`,`People clear ${company} with less prep than you're about to do. Follow the plan. One step at a time.`,`The interview is tomorrow. Anxiety is just excitement without direction. This plan gives you direction.`]
-  setTimeout(function(){
-    btn.disabled=false;btn.innerHTML='<i class="fas fa-fire"></i> Generate My Emergency Prep Plan'
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:1200,
+      system:'You are an expert interview coach for Indian tech companies. Generate emergency 24-hour interview prep plans. Respond ONLY in this JSON format: {"interviewStyle":"What makes this company unique","topics":["Topic 1","Topic 2","Topic 3","Topic 4","Topic 5"],"mustKnow":["Question 1","Question 2","Question 3","Question 4","Question 5"],"skipTopics":["Skip this","Skip this too"],"timeline":[{"time":"Hour 1-2","task":"What to study"}],"motivation":"Motivational message for the candidate"}',
+            messages:[{role:'user',content:'Company: '+company+' Role: '+role+' Interview type: '+type+' Hours: '+hours+'. Respond JSON only.'}]
+    })})
+    var d=await r.json()
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||'{}'
+    txt=txt.replace(/```json|```/g,'').trim()
+    var res=JSON.parse(txt)
+    var iconMap={code:'fa-laptop-code',target:'fa-crosshairs',design:'fa-drafting-compass',mic:'fa-microphone',sleep:'fa-moon',time:'fa-clock',skill:'fa-tools'}
+    function ico2(k){return '<i class="fas '+(iconMap[k]||'fa-circle')+'"></i>'}
     document.getElementById('epResult').style.display='block'
-    document.getElementById('epTimeline').innerHTML='<div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px"><i class="fas fa-clock" style="color:var(--coral)"></i> Tonight\'s Schedule ('+hours+' hours)</div><div style="display:flex;flex-direction:column;gap:10px">'+timeline.map(function(t){return'<div style="display:flex;gap:12px;align-items:center"><div style="background:'+t.color+';border-radius:8px;padding:6px 10px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--dark);flex-shrink:0;white-space:nowrap">'+t.time+'</div><span style="width:28px;height:28px;background:rgba(0,0,0,.06);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--dark)">'+ico(t.icon)+'</span><span style="font-size:13.5px;font-weight:700;color:var(--dark)">'+t.task+'</span></div>'}).join('')+'</div>'
-    document.getElementById('epTopics').innerHTML=cd.topics.map(function(t){return'<div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:10px"><div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--coral),var(--red2));display:flex;align-items:center;justify-content:center;font-size:11px;color:white;flex-shrink:0"><i class="fas fa-thumbtack" style="color:white;font-size:11px"></i></div><div style="font-size:13.5px;font-weight:700;color:var(--dark);line-height:1.5">'+t+'</div></div>'}).join('')
-    document.getElementById('epQuestions').innerHTML='<div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px"><i class="fas fa-star" style="color:var(--gold)"></i> Must-Know for '+company+' — High Probability</div><div style="display:flex;flex-direction:column;gap:8px">'+cd.must.map(function(q){return'<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--y3);border-radius:10px"><i class="fas fa-exclamation-circle" style="color:var(--gold);flex-shrink:0"></i><span style="font-size:13.5px;font-weight:700;color:var(--dark)">'+q+'</span></div>'}).join('')+'</div>'
-    document.getElementById('epSkip').innerHTML='<div style="font-size:14px;font-weight:900;color:var(--coral);margin-bottom:12px"><i class="fas fa-ban" style="margin-right:8px"></i>Do NOT Study Tonight</div><div style="display:flex;flex-wrap:wrap;gap:8px">'+skip.map(function(s){return'<span style="padding:5px 14px;background:white;border:1.5px solid rgba(244,63,94,.3);border-radius:8px;font-size:12.5px;font-weight:700;color:var(--coral)">'+s+'</span>'}).join('')+'</div><div style="font-size:12px;color:var(--coral);margin-top:10px;font-style:italic">Focus only on what\'s above. Breadth is your enemy tonight.</div>'
-    const mot=motivations[Math.floor(Math.random()*motivations.length)]
-    document.getElementById('epMotivation').innerHTML='<div style="font-size:22px;margin-bottom:12px"><i class="fas fa-fist-raised" style="font-size:20px;color:white"></i></div><div style="font-size:14px;font-weight:800;color:white;margin-bottom:8px">You\'ve got this!</div><div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.75;max-width:500px;margin:0 auto">'+mot+'</div><div style="margin-top:14px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3)">Interview style: '+cd.style+'</div>'
-    toast('Emergency prep plan ready! Go crush it!')
+    document.getElementById('epTimeline').innerHTML='<div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px"><i class="fas fa-clock" style="color:var(--coral)"></i> Tonight Schedule ('+hours+' hours)</div><div style="display:flex;flex-direction:column;gap:10px">'+(res.timeline||[]).map(function(t){return'<div style="display:flex;gap:12px;align-items:center"><div style="background:var(--violet3);border-radius:8px;padding:6px 10px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--dark);flex-shrink:0;white-space:nowrap">'+t.time+'</div><span style="font-size:13.5px;font-weight:700;color:var(--dark)">'+t.task+'</span></div>'}).join('')+'</div>'
+    document.getElementById('epTopics').innerHTML=(res.topics||[]).map(function(t){return'<div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;display:flex;align-items:flex-start;gap:10px"><div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--coral),#be123c);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-thumbtack" style="color:white;font-size:11px"></i></div><div style="font-size:13.5px;font-weight:700;color:var(--dark);line-height:1.5">'+t+'</div></div>'}).join('')
+    document.getElementById('epQuestions').innerHTML='<div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px"><i class="fas fa-star" style="color:var(--gold)"></i> Must-Know for '+company+'</div><div style="display:flex;flex-direction:column;gap:8px">'+(res.mustKnow||[]).map(function(q){return'<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--y3);border-radius:10px"><i class="fas fa-exclamation-circle" style="color:var(--gold);flex-shrink:0"></i><span style="font-size:13.5px;font-weight:700;color:var(--dark)">'+q+'</span></div>'}).join('')+'</div>'
+    document.getElementById('epSkip').innerHTML='<div style="font-size:14px;font-weight:900;color:var(--coral);margin-bottom:12px"><i class="fas fa-ban" style="margin-right:8px"></i>Do NOT Study Tonight</div><div style="display:flex;flex-wrap:wrap;gap:8px">'+(res.skipTopics||[]).map(function(s){return'<span style="padding:5px 14px;background:white;border:1.5px solid rgba(244,63,94,.3);border-radius:8px;font-size:12.5px;font-weight:700;color:var(--coral)">'+s+'</span>'}).join('')+'</div>'
+    document.getElementById('epMotivation').innerHTML='<div style="font-size:22px;margin-bottom:12px"><i class="fas fa-fist-raised" style="color:white;font-size:20px"></i></div><div style="font-size:14px;font-weight:800;color:white;margin-bottom:8px">You got this!</div><div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.75;max-width:500px;margin:0 auto">'+(res.motivation||'You have the time. Follow the plan. Crush it.')+'</div><div style="margin-top:14px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3)">'+company+' interview style: '+(res.interviewStyle||'')+'</div>'
+    if(user) saveSOSHistory(company+' - '+role, JSON.stringify(res))
+    toast('Emergency plan ready! Go crush it!')
     document.getElementById('emergencyPrepView').scrollTop=0
-  },2000)
+  }catch(e){
+    toast('Failed: '+e.message+'. Check internet connection.')
+  }
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-fire"></i> Generate My Emergency Prep Plan'
 }
+
 function requestExpert(){toast('Expert request sent! We will WhatsApp you within 30 minutes')}
 function renderCampusDB(data) {
   const list = document.getElementById('campusDBList')
@@ -6962,55 +6956,54 @@ function toast(msg,err=0){
 }
 
 // ═══ WILL I GET CALLED BACK ═══
-function analyzeCallback(){
+async function analyzeCallback(){
   if(!checkAIAccess('Will I Get Called?')) return
-  const jd=document.getElementById('cb_jd').value.trim()
-  const prof=document.getElementById('cb_profile').value.trim()
+  var jd=document.getElementById('cb_jd').value.trim()
+  var prof=document.getElementById('cb_profile').value.trim()
   if(!jd){toast('Paste the job description',1);return}
   if(!prof){toast('Paste your profile/skills',1);return}
   incrementAIUsage()
-  const btn=document.getElementById('cbBtn')
-  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analyzing...'
-  const jdL=jd.toLowerCase(),profL=prof.toLowerCase()
-  const skills=['react','node','python','java','javascript','typescript','aws','docker','kubernetes','sql','mongodb','redis','graphql','django','spring','angular','vue','golang','rust','machine learning','tensorflow','pytorch','system design','microservices','git','linux','devops','azure','gcp','flutter','swift','kotlin','android','ios','c++']
-  const matched=[],missing=[]
-  skills.forEach(s=>{const inJD=jdL.includes(s),inProf=profL.includes(s);if(inJD&&inProf)matched.push(s);else if(inJD&&!inProf)missing.push(s)})
-  const jdCount=Math.max(skills.filter(s=>jdL.includes(s)).length,1)
-  let score=Math.round((matched.length/jdCount)*100)
-  const expM=jd.match(/(\d+)\+?\s*years?/i)
-  if(expM){const req=parseInt(expM[1]);const myM=prof.match(/(\d+\.?\d*)\s*years?/i);if(myM){const my=parseFloat(myM[1]);if(my>=req)score=Math.min(score+10,97);else if(my<req-2)score=Math.max(score-20,5)}}
-  if((jdL.includes('senior')||jdL.includes('lead'))&&profL.includes('fresher'))score=Math.max(score-25,8)
-  score=Math.max(8,Math.min(95,score));if(matched.length===0)score=Math.floor(Math.random()*15)+5
-  const actions=[]
-  if(missing.length>0)actions.push('Add missing keywords to resume: <strong style="color:var(--mint)">'+missing.slice(0,3).join(', ')+'</strong>')
-  if(score<50)actions.push('Consider applying to junior/fresher roles first to build profile')
-  if(!profL.includes('project')&&!profL.includes('built'))actions.push('Add projects with impact numbers — "Built X that reduced Y by 40%"')
-  if(score>=70)actions.push('Good match! Apply now and prepare for OA immediately')
-  if(score>=85)actions.push('Excellent fit! Very likely shortlisted. Start interview prep today.')
-  if(missing.length>3)actions.push('Quick course on '+missing[0]+' — even listing it on resume helps')
-  let verdict,verdictMsg,color
-  if(score>=80){verdict='STRONG MATCH';verdictMsg='High chance of shortlist! Apply immediately.';color='#00d4a4'}
-  else if(score>=60){verdict='GOOD MATCH';verdictMsg='Decent chance. Add missing keywords and apply.';color='#f59e0b'}
-  else if(score>=40){verdict='WEAK MATCH';verdictMsg='Fix resume first or target similar easier roles.';color='#f97316'}
-  else{verdict='LOW MATCH';verdictMsg='Too many gaps. Upskill 2-3 months then reapply.';color='#f43f5e'}
-  const hist=JSON.parse(localStorage.getItem('js_cb_history')||'[]')
-  hist.unshift({score,verdict,role:jd.substring(0,60)+'...',date:new Date().toLocaleDateString('en-IN')})
-  localStorage.setItem('js_cb_history',JSON.stringify(hist.slice(0,10)))
-  setTimeout(function(){
-    btn.disabled=false;btn.innerHTML='<i class="fas fa-brain"></i> Analyze My Chances'
-    document.getElementById('cbEmpty').style.display='none'
+  var btn=document.getElementById('cbBtn')
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analyzing with AI...'
+  document.getElementById('cbEmpty').style.display='none'
+  document.getElementById('cbResult').style.display='none'
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:800,
+      system:'You are an expert ATS and recruiting analyst for Indian tech companies. Analyze job descriptions vs candidate profiles. Always respond in this EXACT JSON format only, no other text: {"score":75,"verdict":"GOOD MATCH","verdictMsg":"Decent match. Add missing keywords.","matched":["react","node"],"missing":["docker","aws"],"actions":["Add Docker to resume","Build an AWS project"]}',
+      messages:[{role:'user',content:'JD: '+jd+' Profile: '+prof}]})})
+    var d=await r.json()
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||'{}'
+    txt=txt.replace(/```json|```/g,'').trim()
+    var result=JSON.parse(txt)
+    var score=Math.max(5,Math.min(97,parseInt(result.score)||50))
+    var verdict=result.verdict||'ANALYZED'
+    var verdictMsg=result.verdictMsg||''
+    var matched=result.matched||[]
+    var missing=result.missing||[]
+    var actions=result.actions||[]
+    var color=score>=80?'#00d4a4':score>=60?'#f59e0b':score>=40?'#f97316':'#f43f5e'
+    var C=2*Math.PI*68,arc=document.getElementById('cbArc')
     document.getElementById('cbResult').style.display='flex'
-    const C=2*Math.PI*68,arc=document.getElementById('cbArc')
     arc.setAttribute('stroke',color);arc.setAttribute('stroke-dashoffset',(C-(score/100)*C).toFixed(1))
     document.getElementById('cbPct').textContent=score+'%';document.getElementById('cbPct').style.color=color
     document.getElementById('cbVerdict').textContent=verdict;document.getElementById('cbVerdict').style.color=color
     document.getElementById('cbVerdictMsg').textContent=verdictMsg
-    document.getElementById('cbMatched').innerHTML=matched.length?matched.map(function(s){return'<span style="padding:4px 12px;background:var(--mint3);border:1.5px solid var(--mint4);border-radius:7px;font-size:12px;font-weight:700;color:var(--mint2)">'+s+'</span>'}).join(''):'<span style="font-size:12px;color:var(--t3);font-style:italic">No matching tech skills found</span>'
-    document.getElementById('cbMissing').innerHTML=missing.length?missing.slice(0,8).map(function(s){return'<span style="padding:4px 12px;background:var(--coral3);border:1.5px solid rgba(244,63,94,.2);border-radius:7px;font-size:12px;font-weight:700;color:var(--coral)">'+s+'</span>'}).join(''):'<span style="font-size:12px;color:var(--mint2);font-weight:700">No major missing skills!</span>'
+    document.getElementById('cbMatched').innerHTML=matched.length?matched.map(function(s){return'<span style="padding:4px 12px;background:var(--mint3);border:1.5px solid var(--mint4);border-radius:7px;font-size:12px;font-weight:700;color:var(--mint2)">'+s+'</span>'}).join(''):'<span style="font-size:12px;color:var(--t3)">No matching skills found</span>'
+    document.getElementById('cbMissing').innerHTML=missing.length?missing.map(function(s){return'<span style="padding:4px 12px;background:var(--coral3);border:1.5px solid rgba(244,63,94,.2);border-radius:7px;font-size:12px;font-weight:700;color:var(--coral)">'+s+'</span>'}).join(''):'<span style="font-size:12px;color:var(--mint2);font-weight:700">No major missing skills!</span>'
     document.getElementById('cbActions').innerHTML=actions.slice(0,4).map(function(a,i){return'<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:rgba(0,212,164,.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:var(--mint);flex-shrink:0;margin-top:1px">'+(i+1)+'</div><div style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.65">'+a+'</div></div>'}).join('')
-    renderCBHistory();toast('Analysis complete!')
-  },1800)
+    var hist=JSON.parse(localStorage.getItem('js_cb_history')||'[]')
+    hist.unshift({score,verdict,role:jd.substring(0,60)+'...',date:new Date().toLocaleDateString('en-IN')})
+    localStorage.setItem('js_cb_history',JSON.stringify(hist.slice(0,10)))
+    if(user) saveCallbackHistory(jd.substring(0,200), JSON.stringify(result))
+    renderCBHistory();toast('AI Analysis complete!')
+  }catch(e){
+    toast('AI analysis failed: '+e.message)
+    document.getElementById('cbEmpty').style.display='flex'
+  }
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-brain"></i> Analyze My Chances'
 }
+
 function renderCBHistory(){
   const hist=JSON.parse(localStorage.getItem('js_cb_history')||'[]')
   const el=document.getElementById('cbHistory');if(!el)return
@@ -7042,67 +7035,43 @@ var ICONS = {
 }
 function ico(k){var cls=ICONS[k]||'fa-circle';return '<i class="fas '+cls+'"><\/i>'}
 
-function analyzeRejection(){
+async function analyzeRejection(){
   if(!checkAIAccess('Rejection Analyzer')) return
   incrementAIUsage()
-  const email=document.getElementById('rej_email').value.trim()
-  const role=document.getElementById('rej_role').value.trim()
-  const context=document.getElementById('rej_context').value.trim()
+  var email=document.getElementById('rej_email').value.trim()
+  var role=document.getElementById('rej_role').value.trim()
+  var context=document.getElementById('rej_context').value.trim()
   if(!email){toast('Paste the rejection email',1);return}
-  const btn=document.getElementById('rejBtn')
+  var btn=document.getElementById('rejBtn')
   btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Analyzing...'
-  const full=(email+' '+context).toLowerCase()
-  var rejType,rejEmoji,rejDesc
-  if(full.includes('oa')||full.includes('online assessment')||full.includes('coding test')||full.includes('hackerrank')){
-    rejType='Failed Online Assessment (OA)';rejEmoji='code';rejDesc="You cleared resume screening but didn't pass the coding test."
-  } else if(full.includes('resume')||full.includes('profile')||(!full.includes('round')&&full.includes('application'))){
-    rejType='Resume / Profile Rejected';rejEmoji='resume';rejDesc='Your resume was screened out before any interview.'
-  } else if(full.includes('interview')||full.includes('round')||full.includes('technical')){
-    rejType='Interview Round Rejection';rejEmoji='mic';rejDesc="You reached the interview stage but didn't clear one or more rounds."
-  } else if(full.includes('offer')||full.includes('salary')||full.includes('compensation')){
-    rejType='Offer Stage Rejection';rejEmoji='offer';rejDesc='You made it far! Likely rejected at offer/negotiation stage.'
-  } else {
-    rejType='Early Stage Rejection';rejEmoji='search';rejDesc='Rejected before or during initial screening.'
-  }
-  var causes=[]
-  if(full.includes('experience')||full.includes('years'))causes.push({icon:'time',text:'Experience mismatch — applied above your current level'})
-  if(full.includes('skill')||full.includes('qualification'))causes.push({icon:'skill',text:'Missing required skills or tech stack in your resume'})
-  if(full.includes('oa')||full.includes('solved'))causes.push({icon:'code',text:'OA performance — DSA skills or time management needs improvement'})
-  if(full.includes('culture')||full.includes('fit'))causes.push({icon:'culture',text:"Culture fit mismatch — values didn't align with the team"})
-  if(causes.length===0){causes.push({icon:'compete',text:'High competition — many strong candidates applied'});causes.push({icon:'resume',text:"Resume keywords didn't match their ATS filters"})}
-  var fixes=[]
-  if(rejType.includes('OA')){
-    fixes.push({icon:'study',label:'Practice DSA',detail:'50 LeetCode Mediums. Focus on Arrays, Trees, Graphs, DP.'})
-    fixes.push({icon:'time',label:'Time Management',detail:'Practice every problem with a 45-minute timer.'})
-    fixes.push({icon:'repeat',label:'Company-specific prep',detail:'Search "[Company] OA questions" on GFG, LeetCode Discuss.'})
-  } else if(rejType.includes('Resume')){
-    fixes.push({icon:'keyword',label:'Add Keywords',detail:'Use our "Will I Get Called?" tool to find missing keywords.'})
-    fixes.push({icon:'impact',label:'Quantify Impact',detail:'"Built feature X that reduced load time by 40%"'})
-    fixes.push({icon:'target',label:'Tailor Resume',detail:'Create different versions for SDE, Frontend, Backend roles.'})
-  } else {
-    fixes.push({icon:'mic',label:'Mock Interviews',detail:'Do 5 mock interviews this week using our Mock Interview tool.'})
-    fixes.push({icon:'design',label:'System Design',detail:'Study top 10 system design problems. Explain out loud.'})
-    fixes.push({icon:'star',label:'STAR Stories',detail:'Prepare 5 STAR format stories for behavioural questions.'})
-  }
-  fixes.push({icon:'retry',label:'Re-apply in 3 months',detail:'Many candidates get hired on their 2nd attempt after improving.'})
-  var tgts=['Razorpay','Zepto','Meesho','Groww','CRED','Postman']
-  var tmap={google:['Microsoft','Meta','Stripe','Atlassian'],amazon:['Flipkart','Meesho','Swiggy'],microsoft:['Adobe','Intuit','Walmart Labs'],flipkart:['Meesho','Zepto','Blinkit']}
-  for(var co in tmap){if((role+email).toLowerCase().includes(co)){tgts=tmap[co];break}}
-  var motivations=["Amazon rejected Steve Jobs. Netflix rejected its co-founder 5 times. Every rejection is a redirect.","Jeff Bezos applied to Merrill Lynch and got rejected. Warren Buffett was rejected by Harvard. You're in good company.","The average SDE gets rejected 10-15 times before landing their dream job. This is just one step closer.","Google rejects 99.7% of applicants. Applying there means you had the courage to aim for the best.","Satya Nadella was rejected by Sun Microsystems before joining Microsoft. One company's loss is another's gain."]
-  var motivation=motivations[Math.floor(Math.random()*motivations.length)]
-  setTimeout(function(){
-    btn.disabled=false;btn.innerHTML='<i class="fas fa-search"></i> Analyze Rejection'
-    document.getElementById('rejEmpty').style.display='none'
+  document.getElementById('rejEmpty').style.display='none'
+  document.getElementById('rejResult').style.display='none'
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:900,
+      system:'You are an expert career coach for Indian tech job seekers. Analyze rejection emails/situations. Respond ONLY in this JSON format: {"rejectionType":"OA Rejection","emoji":"code","description":"You were rejected at the coding test stage.","causes":["Weak DSA skills","Time management in OA"],"fixes":[{"label":"Practice LeetCode","detail":"Do 50 medium problems focused on Arrays and Trees"}],"targetCompanies":["Razorpay","Zepto","Groww"],"motivation":"Every rejection is a redirect to something better."}',
+      messages:[{role:'user',content:'Rejection: '+email+' Role: '+(role||'SWE')+' Context: '+(context||'')}]})})
+    var d=await r.json()
+    var txt=(d.content&&d.content[0]&&d.content[0].text)||'{}'
+    txt=txt.replace(/```json|```/g,'').trim()
+    var res=JSON.parse(txt)
+    var iconMap={code:'fa-laptop-code',target:'fa-crosshairs',design:'fa-drafting-compass',mic:'fa-microphone',sleep:'fa-moon',time:'fa-clock',skill:'fa-tools',culture:'fa-handshake',compete:'fa-chart-bar',resume:'fa-file-alt',study:'fa-book',repeat:'fa-redo',keyword:'fa-key',impact:'fa-chart-line',star:'fa-star',retry:'fa-sync',offer:'fa-pen',search:'fa-search'}
+    function ico(k){return '<i class="fas '+(iconMap[k]||'fa-circle')+'"></i>'}
     document.getElementById('rejResult').style.display='flex'
-    document.getElementById('rejTypeEmoji').innerHTML='<div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--coral),var(--red2));display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:22px;color:white">'+ico(rejEmoji)+'</div>'
-    document.getElementById('rejTypeName').textContent=rejType
-    document.getElementById('rejTypeDesc').textContent=rejDesc
-    document.getElementById('rejCauses').innerHTML=causes.map(function(c){return'<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--coral3);border-radius:9px"><span style="width:28px;height:28px;background:rgba(244,63,94,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#f43f5e">'+ico(c.icon)+'</span><span style="font-size:13px;color:var(--dark);font-weight:600;line-height:1.6">'+c.text+'</span></div>'}).join('')
-    document.getElementById('rejFixes').innerHTML=fixes.map(function(f){return'<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--violet3);border-radius:9px"><span style="width:28px;height:28px;background:rgba(108,71,255,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#6c47ff">'+ico(f.icon)+'</span><div><div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:2px">'+f.label+'</div><div style="font-size:12px;color:var(--t2);line-height:1.6">'+f.detail+'</div></div></div>'}).join('')
-    document.getElementById('rejTargets').innerHTML=tgts.map(function(c){return'<span style="padding:6px 14px;background:white;border:2px solid var(--mint4);border-radius:8px;font-size:13px;font-weight:800;color:var(--mint2);cursor:pointer" onclick="showJobsView()">'+c+'</span>'}).join('')
-    document.getElementById('rejMotivationTxt').textContent=motivation
-    toast("Analysis complete! Don't give up")
-  },2000)
+    document.getElementById('rejTypeEmoji').innerHTML='<div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--coral),#be123c);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:22px;color:white">'+ico(res.emoji||'search')+'</div>'
+    document.getElementById('rejTypeName').textContent=res.rejectionType||'Rejection Analyzed'
+    document.getElementById('rejTypeDesc').textContent=res.description||''
+    document.getElementById('rejCauses').innerHTML=(res.causes||[]).map(function(c){return'<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--coral3);border-radius:9px"><span style="width:28px;height:28px;background:rgba(244,63,94,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#f43f5e">'+ico('compete')+'</span><span style="font-size:13px;color:var(--dark);font-weight:600;line-height:1.6">'+c+'</span></div>'}).join('')
+    document.getElementById('rejFixes').innerHTML=(res.fixes||[]).map(function(f){return'<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--violet3);border-radius:9px"><span style="width:28px;height:28px;background:rgba(108,71,255,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#6c47ff">'+ico('star')+'</span><div><div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:2px">'+f.label+'</div><div style="font-size:12px;color:var(--t2);line-height:1.6">'+f.detail+'</div></div></div>'}).join('')
+    document.getElementById('rejTargets').innerHTML=(res.targetCompanies||[]).map(function(c){return'<span style="padding:6px 14px;background:white;border:2px solid var(--mint4);border-radius:8px;font-size:13px;font-weight:800;color:var(--mint2);cursor:pointer" onclick="showJobsView()">'+c+'</span>'}).join('')
+    document.getElementById('rejMotivationTxt').textContent=res.motivation||'Every rejection brings you closer to the right opportunity.'
+    if(user) saveRejectionHistory(email.substring(0,200), JSON.stringify(res))
+    toast('Analysis complete!')
+  }catch(e){
+    toast('Analysis failed: '+e.message)
+    document.getElementById('rejEmpty').style.display='flex'
+  }
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-search"></i> Analyze Rejection'
 }
 
 // INIT — Real Supabase Auth
@@ -7722,6 +7691,398 @@ function mockUpdateStats(){
 }
 mockUpdateStats()
 if(window.speechSynthesis) speechSynthesis.onvoiceschanged=function(){}
+
+
+// ══════════════════════════════════════════════════════════════
+// PRODUCTION REAL FUNCTIONS — no more fake toasts
+// ══════════════════════════════════════════════════════════════
+
+// ── REAL JOB ALERT ───────────────────────────────────────────
+async function createJobAlertReal(){
+  if(!user){ toast('Sign in to create job alerts'); showAuth('login'); return }
+  var kw = (document.getElementById('alertKeyword')||{}).value||''
+  var loc = (document.getElementById('alertLocation')||{}).value||'All India'
+  if(!kw.trim()){ toast('Enter a keyword for your alert'); document.getElementById('alertKeyword').focus(); return }
+  var btn = event.target; btn.disabled=true; btn.textContent='Creating...'
+  try{
+    await saveJobAlert([kw.trim()], [], [loc])
+    toast('Alert created! You will be notified for: '+kw)
+    document.getElementById('alertKeyword').value=''
+  }catch(e){ toast('Error creating alert. Try again.') }
+  btn.disabled=false; btn.innerHTML='<i class="fas fa-bell"></i> Create Alert'
+}
+
+// ── REAL COMMUNITY POST ───────────────────────────────────────
+async function submitCommunityPostReal(){
+  if(!user){ toast('Sign in to post'); showAuth('login'); return }
+  var txt = document.getElementById('communityPostText')
+  var content2 = txt ? txt.value.trim() : ''
+  if(!content2 || content2.length < 10){ toast('Write at least 10 characters'); return }
+  var btn = event.target; btn.disabled=true; btn.textContent='Posting...'
+  try{
+    await submitCommunityPost(content2, [])
+    if(txt) txt.value=''
+    toast('Post published! Visible after moderation.')
+  }catch(e){ toast('Error posting. Try again.') }
+  btn.disabled=false; btn.textContent='Post'
+}
+
+// ── REAL RESUME PDF DOWNLOAD ──────────────────────────────────
+function downloadResumeReal(){
+  // Collect form data
+  var name = document.querySelector('#resumeBuilderView input[placeholder="Full Name"]')
+  var email = document.querySelector('#resumeBuilderView input[placeholder="Email"]')
+  var phone = document.querySelector('#resumeBuilderView input[placeholder="Phone"]')
+  var linkedin = document.querySelector('#resumeBuilderView input[placeholder="LinkedIn URL"]')
+  var company = document.querySelector('#resumeBuilderView input[placeholder="Company Name"]')
+  var role = document.querySelector('#resumeBuilderView input[placeholder="Role / Position"]')
+  var skills = document.querySelector('#resumeBuilderView input[placeholder="React, Node.js, Python, AWS..."]')
+  var exp = document.querySelector('#resumeBuilderView textarea')
+
+  var nameVal = name ? name.value.trim() : (user ? user.name : 'Your Name')
+  if(!nameVal){ toast('Enter your name first'); if(name)name.focus(); return }
+
+  // Build HTML resume for printing
+  var resumeHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Resume - ${nameVal}</title>
+<style>
+  body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 40px;color:#111;font-size:14px;line-height:1.6}
+  h1{font-size:26px;font-weight:900;margin-bottom:4px;letter-spacing:-.5px}
+  .contact{font-size:12px;color:#555;margin-bottom:20px;border-bottom:2px solid #111;padding-bottom:12px}
+  h2{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #ddd;padding-bottom:4px;margin:18px 0 10px}
+  .exp-title{font-weight:800;font-size:14px}.exp-co{color:#555;font-size:12px;margin-bottom:6px}
+  .skills{display:flex;flex-wrap:wrap;gap:8px}.skill{background:#f0f0f0;padding:3px 10px;border-radius:4px;font-size:12px}
+  @media print{body{margin:20px;padding:0 20px}}
+</style></head><body>
+<h1>${nameVal}</h1>
+<div class="contact">
+  ${email?email.value:''} ${phone?' · '+phone.value:''} ${linkedin?' · '+linkedin.value:''}
+</div>
+${company||role ? `<h2>Experience</h2><div><div class="exp-title">${role?role.value:''}</div><div class="exp-co">${company?company.value:''}</div><p>${exp?exp.value:''}</p></div>` : ''}
+${skills && skills.value ? `<h2>Skills</h2><div class="skills">${skills.value.split(',').map(s=>'<span class="skill">'+s.trim()+'</span>').join('')}</div>` : ''}
+</body></html>`
+
+  var blob = new Blob([resumeHTML], {type:'text/html'})
+  var url = URL.createObjectURL(blob)
+  var a = document.createElement('a')
+  a.href = url; a.download = (nameVal.replace(/\s+/g,'_')+'_Resume.html')
+  a.click()
+  URL.revokeObjectURL(url)
+  toast('Resume downloaded! Open in browser and Print → Save as PDF')
+  
+  // Save to Supabase if user logged in
+  if(user) saveResumeToSupabase({name:nameVal, email:email?email.value:'', skills:skills?skills.value:''}, 'A', 90)
+}
+
+// ── REAL INTERVIEW PREP AI ────────────────────────────────────
+var ipTopic='dsa', ipHistory=[]
+var IP_SYS={
+  dsa:'You are an expert DSA interview coach for Indian tech companies (Google, Amazon, Flipkart, TCS). Give clear answers with time/space complexity. Use examples. Keep under 300 words.',
+  system_design:'You are an expert system design interview coach. Cover requirements, components, databases, scaling, trade-offs. Be practical and concise.',
+  hr:'You are an HR interview coach for Indian tech companies. Help with behavioral questions using STAR method. Give sample answers.',
+  frontend:'You are a frontend interview expert. React, JS, CSS. Give code examples where helpful. Keep answers practical.',
+  sql:'You are a SQL and database interview expert. Clear query examples, indexing, joins, normalization.'
+}
+function ipSetTopic(t){
+  ipTopic=t;ipHistory=[]
+  var ids={dsa:'ipBtnDsa',system_design:'ipBtnSd',hr:'ipBtnHr',frontend:'ipBtnFe',sql:'ipBtnSql'}
+  Object.keys(ids).forEach(function(k){
+    var b=document.getElementById(ids[k]);if(!b)return
+    b.style.background=k===t?'var(--violet3)':'white'
+    b.style.borderColor=k===t?'var(--violet)':'var(--bd)'
+    b.style.color=k===t?'var(--violet2)':'var(--t2)'
+  })
+  var box=document.getElementById('ipChatBox');if(!box)return
+  var names={dsa:'DSA',system_design:'System Design',hr:'HR',frontend:'Frontend',sql:'SQL'}
+  box.innerHTML='<div style="display:flex;gap:12px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.7">Topic switched to <strong>'+(names[t]||t)+'</strong>. Ask me anything!</div></div></div>'
+}
+function ipAsk(t){var i=document.getElementById('ipInput');if(i){i.value=t;ipSend()}}
+async function ipSend(){
+  var inp=document.getElementById('ipInput')
+  var msg=(inp?inp.value:'').trim();if(!msg)return
+  if(inp){inp.value='';inp.style.height='auto'}
+  var box=document.getElementById('ipChatBox');if(!box)return
+  var esc=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  box.innerHTML+='<div style="display:flex;justify-content:flex-end;margin-bottom:4px"><div style="max-width:80%;background:linear-gradient(135deg,var(--violet),var(--violet2));border-radius:14px;padding:12px 16px"><div style="font-size:13.5px;color:white;line-height:1.65">'+esc(msg)+'</div></div></div>'
+  var tid='tp'+Date.now()
+  box.innerHTML+='<div id="'+tid+'" style="display:flex;gap:12px;margin-bottom:4px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="background:var(--bg);border-radius:14px;padding:14px 16px;color:var(--t3);font-size:13px">Thinking...</div></div>'
+  box.scrollTop=box.scrollHeight
+  ipHistory.push({role:'user',content:msg})
+  if(ipHistory.length>20)ipHistory=ipHistory.slice(-20)
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:IP_SYS[ipTopic]||IP_SYS.dsa,messages:ipHistory})})
+    var d=await r.json()
+    var reply=(d.content&&d.content[0]&&d.content[0].text)||'No response. Please try again.'
+    ipHistory.push({role:'assistant',content:reply})
+    var el=document.getElementById(tid);if(el)el.remove()
+    box.innerHTML+='<div style="display:flex;gap:12px;margin-bottom:4px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.75;white-space:pre-wrap">'+esc(reply)+'</div></div></div>'
+    box.scrollTop=box.scrollHeight
+    if(user) saveAIHistory('interview_prep', msg, reply)
+  }catch(e){
+    var el=document.getElementById(tid);if(el)el.remove()
+    box.innerHTML+='<div style="background:var(--coral3);border-radius:12px;padding:12px 16px;font-size:13px;color:var(--coral);margin-bottom:4px">Error: '+e.message+'. Make sure Netlify AI function is deployed.</div>'
+    box.scrollTop=box.scrollHeight
+  }
+}
+
+// ── MOCK INTERVIEW (Google Meet Style) ────────────────────────
+var mockCurQ=0,mockScores=[],mockType2='sde',mockCo=''
+var mockStats2=JSON.parse(localStorage.getItem('js_mock_stats')||'{"total":0,"scores":[]}')
+var MOCK_QN={sde:5,hr:5,frontend:5,system_design:3}
+var MOCK_SYS2={
+  sde:'You are a strict SDE interviewer at a top Indian tech company. Ask 1 DSA or system design question. When evaluating always start with SCORE: X/10 then give specific feedback on what was good and what was missing.',
+  hr:'You are a professional HR interviewer at a top Indian tech company. Ask 1 behavioral question. Evaluate using STAR method. Start with SCORE: X/10 then feedback.',
+  frontend:'You are a senior frontend engineer interviewing candidates. Ask 1 React/JS/CSS question. Start evaluation with SCORE: X/10 then feedback.',
+  system_design:'You are a principal engineer doing system design interviews. Ask 1 system design question. Start evaluation with SCORE: X/10 then feedback.'
+}
+var camStream=null,camOn=true,micOn2=true,recognition2=null,listening2=false,finalTxt2=''
+var synth2=window.speechSynthesis
+
+function setAiSpeaking(s){
+  var r1=document.getElementById('aiRing1'),r2=document.getElementById('aiRing2')
+  var dot=document.getElementById('aiSpeakDot'),ico=document.getElementById('aiRobotIcon')
+  var bar=document.getElementById('aiStatusBar')
+  if(r1)r1.style.display=s?'block':'none'
+  if(r2)r2.style.display=s?'block':'none'
+  if(dot)dot.style.background=s?'var(--mint)':'rgba(255,255,255,.3)'
+  if(ico)ico.style.color=s?'var(--mint)':'var(--violet)'
+  if(bar){bar.textContent=s?'● AI is speaking...':'● Your turn to answer';bar.style.color=s?'var(--mint)':'rgba(255,255,255,.6)'}
+}
+function aiSpeak2(text,onDone){
+  if(synth2)synth2.cancel()
+  if(!synth2||!text){setAiSpeaking(false);if(onDone)onDone();return}
+  setAiSpeaking(true)
+  var u=new SpeechSynthesisUtterance(text)
+  u.rate=0.9;u.pitch=1.1;u.volume=1
+  var voices=synth2.getVoices()
+  var v=voices.find(function(v){return v.lang.startsWith('en')&&v.name.includes('Google')})||voices.find(function(v){return v.lang.startsWith('en')})
+  if(v)u.voice=v
+  u.onend=function(){setAiSpeaking(false);if(onDone)onDone()}
+  u.onerror=function(){setAiSpeaking(false);if(onDone)onDone()}
+  synth2.speak(u)
+}
+function stopSpeaking2(){if(synth2)synth2.cancel();setAiSpeaking(false)}
+
+function initRec2(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition
+  if(!SR)return null
+  var r=new SR();r.continuous=true;r.interimResults=true;r.lang='en-IN'
+  r.onresult=function(e){
+    var interim='';finalTxt2=''
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)finalTxt2+=e.results[i][0].transcript
+      else interim+=e.results[i][0].transcript
+    }
+    var lt=document.getElementById('liveTranscript'),ma=document.getElementById('mockAnswer')
+    if(lt)lt.textContent=(finalTxt2+interim)||'Listening...'
+    if(ma&&finalTxt2)ma.value=finalTxt2
+  }
+  r.onend=function(){if(listening2)try{r.start()}catch(e){}}
+  r.onerror=function(e){console.warn('Speech:',e.error)}
+  return r
+}
+function startListening2(){
+  if(!recognition2)recognition2=initRec2()
+  if(!recognition2)return
+  finalTxt2='';listening2=true
+  var lt=document.getElementById('liveTranscript');if(lt)lt.textContent='Listening...'
+  try{recognition2.start()}catch(e){}
+  updateMicBtn2()
+  var dot=document.getElementById('micStatusDot'),txt=document.getElementById('micStatusTxt')
+  if(dot)dot.style.background='#f43f5e'
+  if(txt)txt.textContent='● Recording — speak your answer now'
+}
+function stopListening2(){
+  listening2=false;if(recognition2)try{recognition2.stop()}catch(e){}
+  updateMicBtn2()
+  var dot=document.getElementById('micStatusDot'),txt=document.getElementById('micStatusTxt')
+  if(dot)dot.style.background='var(--bd)'
+  if(txt)txt.textContent='Mic stopped — submit or type your answer'
+}
+function toggleMic(){
+  micOn2=!micOn2
+  if(micOn2)startListening2();else stopListening2()
+  if(camStream)camStream.getAudioTracks().forEach(function(t){t.enabled=micOn2})
+}
+function updateMicBtn2(){
+  var btn=document.getElementById('micBtn'),ico=document.getElementById('micIcon')
+  if(!btn)return
+  btn.style.background=listening2?'rgba(244,63,94,.8)':'rgba(255,255,255,.15)'
+  if(ico)ico.className=listening2?'fas fa-microphone':'fas fa-microphone-slash'
+}
+async function startCamPreview(){
+  try{
+    var s=await navigator.mediaDevices.getUserMedia({video:true,audio:false})
+    var p=document.getElementById('mockCamPreview'),o=document.getElementById('mockCamOff')
+    if(p){p.srcObject=s;p.style.display='block'}
+    if(o)o.style.display='none'
+    camStream=s
+  }catch(e){toast('Camera access denied. Please allow in browser settings.')}
+}
+async function startCamera(){
+  try{
+    var s=await navigator.mediaDevices.getUserMedia({video:true,audio:true})
+    camStream=s
+    var v=document.getElementById('mockUserCam'),o=document.getElementById('mockCamOffPip')
+    if(v){v.srcObject=s;v.style.display='block'}
+    if(o)o.style.display='none'
+  }catch(e){
+    var v=document.getElementById('mockUserCam'),o=document.getElementById('mockCamOffPip')
+    if(v)v.style.display='none';if(o)o.style.display='block'
+  }
+}
+function stopCamera(){if(camStream){camStream.getTracks().forEach(function(t){t.stop()});camStream=null}}
+function toggleCam(){
+  camOn=!camOn
+  var v=document.getElementById('mockUserCam'),ico=document.getElementById('camIcon')
+  var btn=document.getElementById('camBtn'),o=document.getElementById('mockCamOffPip')
+  if(camStream)camStream.getVideoTracks().forEach(function(t){t.enabled=camOn})
+  if(ico)ico.className=camOn?'fas fa-video':'fas fa-video-slash'
+  if(btn)btn.style.background=camOn?'rgba(255,255,255,.15)':'rgba(244,63,94,.7)'
+  if(v)v.style.display=camOn?'block':'none'
+  if(o)o.style.display=camOn?'none':'block'
+}
+function testMic(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition
+  if(!SR){toast('Use Chrome for speech support');return}
+  var r=new SR()
+  r.onresult=function(e){toast('Mic works! Heard: '+e.results[0][0].transcript)}
+  r.onerror=function(){toast('Mic error — allow microphone in browser')}
+  r.start();setTimeout(function(){try{r.stop()}catch(e){}},3000)
+  toast('Say something to test your mic...')
+}
+
+async function startMock(type){
+  mockType2=type||'sde';mockCo=(document.getElementById('mockCompanyInput')||{}).value||''
+  mockCurQ=0;mockScores=[];micOn2=true;camOn=true
+  stopSpeaking2();stopListening2()
+  var s=document.getElementById('mockSetup'),ss=document.getElementById('mockSession'),sr=document.getElementById('mockResults')
+  if(s)s.style.display='none';if(ss)ss.style.display='block';if(sr)sr.style.display='none'
+  var fb=document.getElementById('mockFeedback');if(fb)fb.style.display='none'
+  var sb=document.getElementById('mockSubmitBtn');if(sb){sb.style.display='block';sb.disabled=false;sb.innerHTML='<i class="fas fa-check"></i> Submit Answer'}
+  var nb=document.getElementById('mockNextBtn');if(nb)nb.style.display='none'
+  var ma=document.getElementById('mockAnswer');if(ma)ma.value=''
+  var qt=document.getElementById('mockQTotal');if(qt)qt.textContent=MOCK_QN[mockType2]||5
+  var qn=document.getElementById('mockQNum');if(qn)qn.textContent='1'
+  var ms=document.getElementById('mockScore');if(ms)ms.textContent='-'
+  var pb=document.getElementById('mockProgressBar');if(pb)pb.style.width=(100/(MOCK_QN[mockType2]||5))+'%'
+  await startCamera()
+  var bar=document.getElementById('aiStatusBar');if(bar){bar.textContent='● Connecting...';bar.style.color='rgba(255,255,255,.6)'}
+  aiSpeak2('Hello! Welcome to your '+(mockType2.replace('_',' '))+' interview.'+(mockCo?' I will be interviewing you for '+mockCo+' today.':'')+' I will ask you '+(MOCK_QN[mockType2]||5)+' questions. Take your time and answer clearly. Let us begin.', function(){mockAskQ()})
+}
+
+async function mockAskQ(){
+  var total=MOCK_QN[mockType2]||5,qn=mockCurQ+1
+  stopListening2()
+  var mq=document.getElementById('mockQuestion');if(mq)mq.textContent='Generating question...'
+  var ql=document.getElementById('mockQLabel');if(ql)ql.textContent='QUESTION '+qn+' of '+total
+  var fb=document.getElementById('mockFeedback');if(fb)fb.style.display='none'
+  var ma=document.getElementById('mockAnswer');if(ma)ma.value=''
+  var lt=document.getElementById('liveTranscript');if(lt)lt.textContent='Your spoken answer appears here...'
+  var sb=document.getElementById('mockSubmitBtn');if(sb){sb.style.display='block';sb.disabled=false;sb.innerHTML='<i class="fas fa-check"></i> Submit Answer'}
+  var nb=document.getElementById('mockNextBtn');if(nb)nb.style.display='none'
+  var ctx=mockCo?' This is for '+mockCo+'.':''
+  var bar=document.getElementById('aiStatusBar');if(bar){bar.textContent='● Preparing question '+qn+'...';bar.style.color='var(--gold)'}
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:MOCK_SYS2[mockType2],messages:[{role:'user',content:'Give question '+qn+' of '+total+' for a '+mockType2.replace('_',' ')+' interview.'+ctx+' Just the question in 1-3 sentences. No introduction.'}]})})
+    var d=await r.json()
+    var q=(d.content&&d.content[0]&&d.content[0].text)||'Tell me about a challenging problem you solved recently.'
+    if(mq)mq.textContent=q
+    aiSpeak2('Question '+qn+'. '+q, function(){startListening2()})
+  }catch(e){if(mq)mq.textContent='Network error. Type your answer below.';if(bar){bar.textContent='● Error';bar.style.color='var(--coral)'}}
+}
+
+async function mockSubmitAnswer(){
+  stopListening2();stopSpeaking2()
+  var ma=document.getElementById('mockAnswer'),lt=document.getElementById('liveTranscript')
+  var ans=(ma?ma.value:'').trim()
+  if(!ans&&lt&&lt.textContent!=='Your spoken answer appears here...')ans=lt.textContent
+  if(!ans){toast('Please answer by speaking or typing!');return}
+  var sb=document.getElementById('mockSubmitBtn');if(sb){sb.disabled=true;sb.innerHTML='Evaluating...'}
+  var bar=document.getElementById('aiStatusBar');if(bar){bar.textContent='● Evaluating your answer...';bar.style.color='var(--gold)'}
+  var q=document.getElementById('mockQuestion')?document.getElementById('mockQuestion').textContent:''
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:MOCK_SYS2[mockType2],messages:[{role:'user',content:'Question: '+q+' --- Candidate answer: '+ans+' --- Evaluate. Start with SCORE: X/10 then give 3-4 sentences of specific feedback.'}]})})
+    var d=await r.json()
+    var fb2=(d.content&&d.content[0]&&d.content[0].text)||'Could not evaluate.'
+    var sm=fb2.match(/SCORE:\s*(\d+)/i);var sc=sm?parseInt(sm[1]):5
+    mockScores.push(sc)
+    var fb=document.getElementById('mockFeedback');if(fb)fb.style.display='block'
+    var ft=document.getElementById('mockFeedbackText');if(ft)ft.textContent=fb2.replace(/SCORE:\s*\d+\/10\s*/i,'').trim()
+    var scard=document.getElementById('mockScoreCard');if(scard)scard.style.display='flex'
+    var snum=document.getElementById('mockScoreNum');if(snum){snum.textContent=sc+'/10';snum.style.color=sc>=7?'var(--mint2)':sc>=5?'var(--gold)':'var(--coral)'}
+    var slbl=document.getElementById('mockScoreLabel');if(slbl)slbl.textContent=sc>=8?'Excellent!':sc>=6?'Good':sc>=4?'Needs work':'Keep practicing'
+    var avg=Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10
+    var ms=document.getElementById('mockScore');if(ms)ms.textContent=avg
+    var pb=document.getElementById('mockProgressBar');if(pb)pb.style.width=((mockCurQ+1)/(MOCK_QN[mockType2]||5)*100)+'%'
+    if(sb)sb.style.display='none'
+    var isLast=mockCurQ>=(MOCK_QN[mockType2]||5)-1
+    aiSpeak2('Score: '+sc+' out of 10. '+fb2.replace(/SCORE:\s*\d+\/10\s*/i,'').substring(0,200), function(){
+      var nb=document.getElementById('mockNextBtn')
+      if(nb){nb.style.display='block';nb.innerHTML=isLast?'<i class="fas fa-trophy"></i> See Results':'<i class="fas fa-arrow-right"></i> Next Question';nb.onclick=isLast?mockShowResults:mockNextQ}
+    })
+    if(bar){bar.textContent='● Score: '+sc+'/10';bar.style.color='var(--mint)'}
+    if(user)saveAIHistory('mock_interview','Q: '+q+' A: '+ans,'Score: '+sc+'/10')
+  }catch(e){if(sb){sb.disabled=false;sb.innerHTML='<i class="fas fa-check"></i> Submit Answer'}toast('Error: '+e.message)}
+}
+async function mockNextQ(){mockCurQ++;var qn=document.getElementById('mockQNum');if(qn)qn.textContent=mockCurQ+1;stopSpeaking2();await mockAskQ()}
+function endInterview(){if(confirm('End interview now?')){stopCamera();stopSpeaking2();stopListening2();if(mockScores.length)mockShowResults();else resetMockToSetup()}}
+function mockShowResults(){
+  stopCamera();stopSpeaking2();stopListening2()
+  var ss=document.getElementById('mockSession'),sr=document.getElementById('mockResults')
+  if(ss)ss.style.display='none';if(sr)sr.style.display='block'
+  var avg=mockScores.length?Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10:0
+  var fs=document.getElementById('mockFinalScore');if(fs){fs.textContent=avg+'/10';fs.style.color=avg>=7?'var(--mint2)':avg>=5?'var(--gold)':'var(--coral)'}
+  var fm=document.getElementById('mockFinalMsg');if(fm)fm.textContent=avg>=8?'Excellent! You are ready for top companies!':avg>=6?'Good effort! Review weak areas.':avg>=4?'Keep practicing — you are improving!':'Study fundamentals and try again.'
+  mockStats2.total++;mockStats2.scores.push(avg);localStorage.setItem('js_mock_stats',JSON.stringify(mockStats2));mockUpdateStats()
+  aiSpeak2('Interview complete! Your average score is '+avg+' out of 10. '+(avg>=7?'Great work!':'Keep practicing and you will improve!'))
+}
+function resetMockToSetup(){
+  stopCamera();stopSpeaking2();stopListening2()
+  var s=document.getElementById('mockSetup'),ss=document.getElementById('mockSession'),sr=document.getElementById('mockResults')
+  if(s)s.style.display='block';if(ss)ss.style.display='none';if(sr)sr.style.display='none'
+  mockCurQ=0;mockScores=[];mockUpdateStats()
+}
+function mockUpdateStats(){
+  var sc=mockStats2.scores
+  var sa=sc.length?Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10:'-'
+  var sb2=sc.length?Math.max.apply(null,sc):'-'
+  var e1=document.getElementById('mockStatTotal'),e2=document.getElementById('mockStatAvg'),e3=document.getElementById('mockStatBest')
+  if(e1)e1.textContent=mockStats2.total;if(e2)e2.textContent=sa;if(e3)e3.textContent=sb2
+}
+mockUpdateStats()
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=function(){}
+
+
+// ── COMMUNITY LIKE (REAL SUPABASE) ───────────────────────────
+var likedPosts = JSON.parse(localStorage.getItem('js_liked_posts')||'[]')
+async function likeCommunityPost(btn, postId){
+  if(!user){ toast('Sign in to like posts'); return }
+  var postIdStr = String(postId||btn.closest('[data-post-id]')||Date.now())
+  if(likedPosts.includes(postIdStr)){ toast('Already liked!'); return }
+  likedPosts.push(postIdStr)
+  localStorage.setItem('js_liked_posts', JSON.stringify(likedPosts))
+  // Update UI
+  var span = btn.querySelector('span')
+  var icon = btn.querySelector('i')
+  if(span) span.textContent = String(parseInt(span.textContent||'0')+1)
+  if(icon){ icon.className='fas fa-heart'; icon.style.color='#f43f5e' }
+  btn.style.color = '#f43f5e'
+  // Update Supabase
+  try{ await sbApi('PATCH','community_posts',{likes:parseInt(span?span.textContent:'1')},'id=eq.'+postIdStr) }catch(e){}
+  toast('Liked!')
+}
+
+// ── RESUME ADD SECTION ────────────────────────────────────────
+function addResumeSection(){
+  var sections = document.getElementById('resumeSections')
+  if(!sections){ toast('Open Resume Builder first'); return }
+  var newSection = document.createElement('div')
+  newSection.style.cssText = 'background:white;border:2px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px'
+  newSection.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><input class="fi" placeholder="Section Title" style="flex:1;margin-bottom:0;margin-right:10px"/><button onclick="this.parentNode.parentNode.remove()" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--bd);background:white;cursor:pointer;color:var(--t3);font-size:14px"><i class=\"fas fa-trash\"></i></button></div><textarea class="fi" placeholder="Add content here..." style="min-height:80px;resize:vertical;margin-bottom:0"></textarea>'
+  sections.appendChild(newSection)
+  newSection.scrollIntoView({behavior:'smooth'})
+  toast('New section added!')
+}
 
 </script>
 </body>
