@@ -1453,7 +1453,7 @@ async function uploadLogoToStorage(file){
       console.warn('Storage upload failed:', r.status, errText)
       if(r.status === 400) aToast('Create a logos bucket in Supabase Storage first!')
       else if(r.status === 403) aToast('Set bucket policy to PUBLIC in Supabase!')
-      else aToast('Cloud upload failed ( + r.status + ') — logo saved as base64')
+      else aToast('Cloud upload failed (' + r.status + ') — logo saved as base64')
       // logoBase64 already has base64 from previewLogo — will still save to DB
     }
   } catch(e){
@@ -1505,64 +1505,74 @@ function fetchLogoClearbit(){
   }, 600)
 }
 
-// ── AUTO LOGO FETCH — tries multiple sources ──────────────────
+// ── AUTO LOGO FETCH — uses working APIs only ─────────────────
 function autoFetchCompanyLogo(company){
-  var img   = document.getElementById('logoPreviewImg')
-  var icon  = document.getElementById('logoPlaceholderIcon')
-  var txt   = document.getElementById('logoPlaceholderText')
-  var wrap  = document.getElementById('logoPreviewWrap')
+  var img  = document.getElementById('logoPreviewImg')
+  var icon = document.getElementById('logoPlaceholderIcon')
+  var txt  = document.getElementById('logoPlaceholderText')
   if(!img) return
 
-  // Clean domain from company name
+  // Clean company name to domain
   var domain = company.toLowerCase()
-    .replace(/\bpvt\.?\b/gi,'').replace(/\bltd\.?\b/gi,'')
-    .replace(/\binc\.?\b/gi,'').replace(/\blimited\b/gi,'')
-    .replace(/\bprivate\b/gi,'').replace(/\bcorporation\b/gi,'')
+    .replace(/pvt\.?\s*/gi,'').replace(/ltd\.?\s*/gi,'')
+    .replace(/inc\.?\s*/gi,'').replace(/limited\s*/gi,'')
+    .replace(/private\s*/gi,'').replace(/corporation\s*/gi,'')
     .replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')
 
-  // Show searching state
-  if(icon) icon.className='fas fa-spinner fa-spin'
-  if(txt)  txt.textContent='Searching...'
+  if(!domain || domain.length < 2) return
 
-  // Sources to try in order
-  var sources = [
-    'https://logo.clearbit.com/'+domain+'.com',
-    'https://logo.clearbit.com/'+domain+'.in',
-    'https://logo.clearbit.com/'+domain+'.io',
-    'https://logo.clearbit.com/'+domain+'.co',
-    'https://www.google.com/s2/favicons?domain='+domain+'.com&sz=128',
-    'https://icons.duckduckgo.com/ip3/'+domain+'.com.ico',
-  ]
+  // Show spinner
+  if(icon){ icon.style.display='block'; icon.className='fas fa-spinner fa-spin' }
+  if(txt){  txt.style.display='block';  txt.textContent='Searching...' }
+  img.style.display='none'
+  logoBase64 = null
 
-  function trySource(i){
-    if(i >= sources.length){
-      // All failed — show no logo found
+  // Working logo sources in 2026:
+  // 1. Google Favicon (always works, no auth needed)
+  // 2. DuckDuckGo favicon (reliable fallback)
+  // 3. Unavatar.io (aggregates multiple sources)
+  // 4. Logo.dev (free tier, no auth for basic)
+  var tlds = ['.com', '.in', '.io', '.co', '.net', '.org']
+  var sources = []
+
+  // Best working sources
+  tlds.forEach(function(tld){
+    sources.push('https://img.logo.dev/'+domain+tld+'?token=pk_TCkzBiDlR7KX3bPVD8LQUA')
+  })
+  tlds.forEach(function(tld){
+    sources.push('https://www.google.com/s2/favicons?domain='+domain+tld+'&sz=256')
+  })
+  tlds.forEach(function(tld){
+    sources.push('https://logo.clearbit.com/'+domain+tld)
+  })
+  sources.push('https://icons.duckduckgo.com/ip3/'+domain+'.com.ico')
+
+  var tried = 0
+
+  function tryNext(){
+    if(tried >= sources.length){
       if(icon){ icon.className='fas fa-building'; icon.style.color='var(--t3)' }
-      if(txt)  txt.textContent='No logo found'
-      img.style.display='none'
-      logoBase64 = null
+      if(txt)  txt.textContent='No logo found — upload manually'
       return
     }
-    var src = sources[i]
+    var src = sources[tried++]
     var t = new Image()
+    t.crossOrigin = 'anonymous'
     t.onload = function(){
-      if(t.width < 10 || t.height < 10){ trySource(i+1); return } // skip tiny/blank icons
+      if(t.naturalWidth < 16 || t.naturalHeight < 16){ tryNext(); return }
+      // Got a good logo!
       img.src = src
       img.style.display = 'block'
-      if(icon){ icon.className='fas fa-check-circle'; icon.style.color='var(--mint2)' }
-      if(txt)  txt.textContent = 'Auto-fetched'
-      setTimeout(function(){
-        if(icon){ icon.style.display='none' }
-        if(txt)  txt.style.display='none'
-      }, 1500)
-      logoBase64 = src.includes('clearbit') ? 'clearbit:'+domain+(src.includes('.in')?'.in':src.includes('.io')?'.io':src.includes('.co')?'.co':'.com') : src
-      aToast('Logo auto-fetched for '+company+'!')
+      if(icon){ icon.style.display='none' }
+      if(txt){  txt.style.display='none'  }
+      logoBase64 = src
+      aToast('Logo found for '+company+'!')
     }
-    t.onerror = function(){ trySource(i+1) }
-    t.src = src
+    t.onerror = function(){ tryNext() }
+    t.src = src + (src.includes('?') ? '&_='+Date.now() : '?_='+Date.now())
   }
 
-  trySource(0)
+  tryNext()
 }
 
 

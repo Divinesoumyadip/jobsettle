@@ -3291,7 +3291,7 @@ function getLogo(key, company, logoUrl){
   var co = (company||'?')[0].toUpperCase()
   var color = COLORS[key]||'#6366f1'
 
-  // Colored letter box — bulletproof fallback
+  // Colored letter fallback — always works
   var letterBox = '<div style="width:40px;height:40px;border-radius:10px;background:'+color
     +';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900'
     +';color:white;font-family:Arial;flex-shrink:0;border:2px solid rgba(0,0,0,.06)">'+co+'</div>'
@@ -3304,21 +3304,27 @@ function getLogo(key, company, logoUrl){
       + letterBox
   }
 
-  // 1. Direct URL — Supabase Storage, Google favicon, DuckDuckGo, Clearbit full URL
+  // 1. Direct URL from Supabase Storage or base64 from admin upload
   if(logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('data:')))
     return safeImg(logoUrl)
 
-  // 2. Clearbit key (stored as clearbit:domain.com)
+  // 2. Clearbit key stored as clearbit:domain
   if(key && key.startsWith('clearbit:'))
     return safeImg('https://logo.clearbit.com/'+key.replace('clearbit:',''))
 
   // 3. Known built-in SVG logos
   if(key && LOGOS[key]) return LOGOS[key]
 
-  // 4. Try Clearbit for real company names (4+ chars)
-  var cleanName = (company||'').replace(/[^a-zA-Z0-9]/g,'')
-  if(cleanName.length >= 4)
-    return safeImg('https://logo.clearbit.com/'+cleanName.toLowerCase()+'.com')
+  // 4. Try logo.dev (works in 2026, free tier)
+  var cleanName = (company||'').toLowerCase()
+    .replace(/pvt\.?\s*/gi,'').replace(/ltd\.?\s*/gi,'')
+    .replace(/inc\.?\s*/gi,'').replace(/limited\s*/gi,'')
+    .replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')
+
+  if(cleanName.length >= 3){
+    var logoDevUrl = 'https://img.logo.dev/'+cleanName+'.com?token=pk_TCkzBiDlR7KX3bPVD8LQUA'
+    return safeImg(logoDevUrl)
+  }
 
   // 5. Colored letter fallback
   return letterBox
@@ -3770,7 +3776,7 @@ var realtimeChannel = null
 function subscribeToJobUpdates(){
   if(!supa){ startPollingFallback(); return }
   try{
-    realtimeChannel = supa.channel('realtime:public:jobs')
+    realtimeChannel = supa.channel('jobs-changes')
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'jobs'},function(payload){
         var j = payload.new
         if(!j) return
@@ -3827,10 +3833,18 @@ function subscribeToJobUpdates(){
         console.log('Realtime status:', status)
         if(status==='SUBSCRIBED'){
           updateLiveStatus('live')
-          console.log('Realtime connected!')
-        } else if(status==='CHANNEL_ERROR' || status==='TIMED_OUT'){
+          console.log('Realtime CONNECTED!')
+          // Stop polling if it was running
+          if(_pollInterval){ clearInterval(_pollInterval); _pollInterval=null }
+        } else if(status==='CHANNEL_ERROR' || status==='TIMED_OUT' || status==='CLOSED'){
+          console.warn('Realtime failed, switching to polling:', status)
           updateLiveStatus('polling')
           startPollingFallback()
+          // Retry realtime after 30 seconds
+          setTimeout(function(){
+            if(_pollInterval){ clearInterval(_pollInterval); _pollInterval=null }
+            subscribeToJobUpdates()
+          }, 30000)
         }
       })
   }catch(e){
