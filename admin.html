@@ -815,7 +815,7 @@ async function sbApi(method, table, body, params){
 }
 async function sbPush(table,data){ return await sbApi('POST',table,data) }
 async function sbSelect(table,query){ return await sbApi('GET',table,null,query||'select=*') }
-async function sbDelete(table,id){ await sbApi('DELETE',table,null,'id=eq.'+id) }
+async function sbDelete(table,id){ return await sbApi('DELETE',table,null,'id=eq.'+id) }
 async function sbUpdate(table,id,data){ return await sbApi('PATCH',table,data,'id=eq.'+id+'&select=*') }
 
 async function syncFromSupabase(){
@@ -828,7 +828,8 @@ async function syncFromSupabase(){
       return{id:j.id,title:j.title,company:j.company,category:(j.category||'sde').toLowerCase(),
         location:j.location||'Remote',salary:j.salary||'Competitive',exp:j.experience||'0-2 years',
         type:j.job_type||'Full-time',match_score:parseInt(j.match_score)||82,apply_link:j.apply_link||'',
-        description:j.description||'',skills:skills,badges:badges,active:j.active!==false,posted_at:j.created_at}
+        description:j.description||'',skills:skills,badges:badges,logo:j.logo||null,
+        active:j.active!==false,posted_at:j.created_at}
     })
     localStorage.setItem('js_jobs_data',JSON.stringify(jobs))
     loadAllData();renderDashboard()
@@ -860,6 +861,8 @@ function doAdminLogin(){
     document.getElementById('adminApp').style.display = 'flex'
     loadAllData()
     renderDashboard()
+    // Auto-sync from Supabase on login
+    setTimeout(syncFromSupabase, 500)
   } else {
     err.style.display = 'block'
     // Show hint
@@ -1137,9 +1140,9 @@ function saveJob(status){
           bc.postMessage({ type:'JOB_UPDATED', job: Object.assign({id:_editingJobId}, sbJob) })
           bc.close()
         }catch(er){}
-        aToast('✅ Job updated live!')
+        aToast('Job updated live!')
         _editingJobId = null
-      }).catch(function(e){ aToast('⚠️ Update failed: '+e.message) })
+      }).catch(function(e){ aToast('Update failed: '+e.message) })
       return
     }
     sbPush('jobs', sbJob).then(function(res){
@@ -1157,14 +1160,14 @@ function saveJob(status){
           bc.postMessage({ type: 'JOB_PUBLISHED', job: sbRow })
           bc.close()
         }catch(e){}
-        aToast('✅ Job is LIVE on JobSettle!')
+        aToast('Job is LIVE on JobSettle!')
         console.log('Published to Supabase:', sbRow)
       } else {
-        aToast('⚠️ Check Supabase connection — saved locally')
+        aToast('Check Supabase connection — saved locally')
       }
     }).catch(function(e){
       console.error('Supabase push failed:', e)
-      aToast('⚠️ Saved locally only — check console')
+      aToast('Saved locally only — check console')
     })
   }
 
@@ -1208,11 +1211,21 @@ function renderJobsTable(filter, cat){
 function filterJobs(q){renderJobsTable(q)}
 
 function toggleJob(id){
-  var j = jobs.find(function(x){return x.id===id})
+  var j = jobs.find(function(x){return String(x.id)===String(id)})
   if(!j) return
   j.active = !j.active
   localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
-  renderJobsTable(); aToast(j.active?'Job activated!':'Job deactivated')
+  // Update Supabase + broadcast to portal
+  sbUpdate('jobs', id, {active: j.active}).then(function(){
+    try{
+      var bc = new BroadcastChannel('jobsettle_admin')
+      var msgType = j.active ? 'JOB_PUBLISHED' : 'JOB_DELETED'
+      bc.postMessage({type: msgType, job: j, id: String(id)})
+      bc.close()
+    }catch(e){}
+  })
+  renderJobsTable()
+  aToast(j.active ? 'Job is now LIVE!' : 'Job hidden from portal')
 }
 
 function editJob(id){
@@ -1255,8 +1268,14 @@ function deleteJob(id){
   if(!confirm('Delete this job? It will be removed from the app.')) return
   jobs = jobs.filter(function(j){return j.id!==id})
   localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
-  sbDelete('jobs', id) // Delete from Supabase too
-  loadAllData(); renderJobsTable(); aToast('Job deleted from app and Supabase')
+  sbDelete('jobs', id).then(function(){
+    try{
+      var bc = new BroadcastChannel('jobsettle_admin')
+      bc.postMessage({type:'JOB_DELETED', id: String(id)})
+      bc.close()
+    }catch(e){}
+  })
+  loadAllData(); renderJobsTable(); aToast('Job deleted!')
 }
 
 // ── USERS ────────────────────────────────────────────────────
@@ -1427,19 +1446,19 @@ async function uploadLogoToStorage(file){
       if(img){ img.src = publicUrl; img.style.display = 'block' }
       document.getElementById('logoPlaceholderIcon').style.display = 'none'
       document.getElementById('logoPlaceholderText').style.display = 'none'
-      aToast('✅ Logo uploaded to cloud!')
+      aToast('Logo uploaded to cloud!')
       console.log('Logo cloud URL:', publicUrl)
     } else {
       var errText = await r.text()
       console.warn('Storage upload failed:', r.status, errText)
-      if(r.status === 400) aToast('⚠️ Create a "logos" bucket in Supabase Storage first!')
-      else if(r.status === 403) aToast('⚠️ Set bucket policy to PUBLIC in Supabase!')
-      else aToast('⚠️ Cloud upload failed (' + r.status + ') — logo saved as base64')
+      if(r.status === 400) aToast('Create a logos bucket in Supabase Storage first!')
+      else if(r.status === 403) aToast('Set bucket policy to PUBLIC in Supabase!')
+      else aToast('Cloud upload failed ( + r.status + ') — logo saved as base64')
       // logoBase64 already has base64 from previewLogo — will still save to DB
     }
   } catch(e){
     console.warn('Logo upload error:', e.message)
-    aToast('⚠️ Upload error — logo saved as base64')
+    aToast('Upload error — logo saved as base64')
   }
 }
 
@@ -1531,13 +1550,13 @@ function autoFetchCompanyLogo(company){
       img.src = src
       img.style.display = 'block'
       if(icon){ icon.className='fas fa-check-circle'; icon.style.color='var(--mint2)' }
-      if(txt)  txt.textContent = '✓ Auto-fetched'
+      if(txt)  txt.textContent = 'Auto-fetched'
       setTimeout(function(){
         if(icon){ icon.style.display='none' }
         if(txt)  txt.style.display='none'
       }, 1500)
       logoBase64 = src.includes('clearbit') ? 'clearbit:'+domain+(src.includes('.in')?'.in':src.includes('.io')?'.io':src.includes('.co')?'.co':'.com') : src
-      aToast('✅ Logo auto-fetched for '+company+'!')
+      aToast('Logo auto-fetched for '+company+'!')
     }
     t.onerror = function(){ trySource(i+1) }
     t.src = src
