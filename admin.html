@@ -344,7 +344,7 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
                 <label class="fl">Company Logo</label>
                 <div id="logoPreviewWrap" style="width:90px;height:90px;border-radius:16px;border:2px dashed var(--bd);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:var(--bg);transition:all .2s;overflow:hidden" onclick="document.getElementById('logoFileInput').click()" onmouseover="this.style.borderColor='var(--mint)'" onmouseout="this.style.borderColor='var(--bd)'">
                   <i class="fas fa-building" style="font-size:22px;color:var(--t3);margin-bottom:4px" id="logoPlaceholderIcon"></i>
-                  <span style="font-size:9px;color:var(--t3);font-family:var(--mono);text-align:center;line-height:1.3" id="logoPlaceholderText">Click to<br>upload</span>
+                  <span style="font-size:9px;color:var(--t3);font-family:var(--mono);text-align:center;line-height:1.3" id="logoPlaceholderText">Auto-fetch<br>or upload</span>
                   <img id="logoPreviewImg" src="" style="display:none;width:100%;height:100%;object-fit:contain;padding:8px"/>
                 </div>
                 <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="previewLogo(this)"/>
@@ -356,7 +356,7 @@ textarea.fi{resize:vertical;min-height:90px;line-height:1.65}
               <!-- Title + company -->
               <div style="flex:1">
                 <div style="margin-bottom:12px"><label class="fl">Job Title *</label><input class="fi" id="jTitle" placeholder="e.g. Senior Software Engineer" style="margin-bottom:0" oninput="fetchLogoClearbit()"/></div>
-                <div><label class="fl">Company Name *</label><input class="fi" id="jCompany" placeholder="e.g. Google" style="margin-bottom:0" oninput="fetchLogoClearbit()"/></div>
+                <div><label class="fl">Company Name *</label><input class="fi" id="jCompany" placeholder="e.g. Google, TCS, Flipkart..." style="margin-bottom:0" oninput="fetchLogoClearbit()" autocomplete="off"/></div>
               </div>
             </div>
             <div class="form-grid-3" style="margin-bottom:14px">
@@ -1481,38 +1481,69 @@ function fetchLogoClearbit(){
     var company = (document.getElementById('jCompany')||{}).value||''
     company = company.trim()
     if(!company || company.length < 2) return
-    if(logoBase64 && !logoBase64.startsWith('clearbit:')) return // user uploaded, don't override
-    var domain = company.toLowerCase()
-      .replace(/\s+inc\.?$/i,'').replace(/\s+ltd\.?$/i,'')
-      .replace(/\s+limited$/i,'').replace(/\s+pvt\.?$/i,'')
-      .replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')
-    var url = 'https://logo.clearbit.com/'+domain+'.com'
-    var img = document.getElementById('logoPreviewImg')
-    var icon = document.getElementById('logoPlaceholderIcon')
-    var txt = document.getElementById('logoPlaceholderText')
-    if(!img) return
-    var testImg = new Image()
-    testImg.onload = function(){
-      img.src = url; img.style.display='block'
-      if(icon) icon.style.display='none'
-      if(txt) txt.style.display='none'
-      logoBase64 = 'clearbit:'+domain+'.com'
+    if(logoBase64 && !logoBase64.startsWith('clearbit:')) return // user manually uploaded — don't override
+    autoFetchCompanyLogo(company)
+  }, 600)
+}
+
+// ── AUTO LOGO FETCH — tries multiple sources ──────────────────
+function autoFetchCompanyLogo(company){
+  var img   = document.getElementById('logoPreviewImg')
+  var icon  = document.getElementById('logoPlaceholderIcon')
+  var txt   = document.getElementById('logoPlaceholderText')
+  var wrap  = document.getElementById('logoPreviewWrap')
+  if(!img) return
+
+  // Clean domain from company name
+  var domain = company.toLowerCase()
+    .replace(/\bpvt\.?\b/gi,'').replace(/\bltd\.?\b/gi,'')
+    .replace(/\binc\.?\b/gi,'').replace(/\blimited\b/gi,'')
+    .replace(/\bprivate\b/gi,'').replace(/\bcorporation\b/gi,'')
+    .replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')
+
+  // Show searching state
+  if(icon) icon.className='fas fa-spinner fa-spin'
+  if(txt)  txt.textContent='Searching...'
+
+  // Sources to try in order
+  var sources = [
+    'https://logo.clearbit.com/'+domain+'.com',
+    'https://logo.clearbit.com/'+domain+'.in',
+    'https://logo.clearbit.com/'+domain+'.io',
+    'https://logo.clearbit.com/'+domain+'.co',
+    'https://www.google.com/s2/favicons?domain='+domain+'.com&sz=128',
+    'https://icons.duckduckgo.com/ip3/'+domain+'.com.ico',
+  ]
+
+  function trySource(i){
+    if(i >= sources.length){
+      // All failed — show no logo found
+      if(icon){ icon.className='fas fa-building'; icon.style.color='var(--t3)' }
+      if(txt)  txt.textContent='No logo found'
+      img.style.display='none'
+      logoBase64 = null
+      return
     }
-    testImg.onerror = function(){
-      // Try without .com
-      var url2 = 'https://logo.clearbit.com/'+domain+'.in'
-      var t2 = new Image()
-      t2.onload = function(){
-        img.src=url2; img.style.display='block'
-        if(icon) icon.style.display='none'
-        if(txt) txt.style.display='none'
-        logoBase64='clearbit:'+domain+'.in'
-      }
-      t2.onerror = function(){} // No logo found
-      t2.src = url2
+    var src = sources[i]
+    var t = new Image()
+    t.onload = function(){
+      if(t.width < 10 || t.height < 10){ trySource(i+1); return } // skip tiny/blank icons
+      img.src = src
+      img.style.display = 'block'
+      if(icon){ icon.className='fas fa-check-circle'; icon.style.color='var(--mint2)' }
+      if(txt)  txt.textContent = '✓ Auto-fetched'
+      setTimeout(function(){
+        if(icon){ icon.style.display='none' }
+        if(txt)  txt.style.display='none'
+      }, 1500)
+      logoBase64 = src.includes('clearbit') ? 'clearbit:'+domain+(src.includes('.in')?'.in':src.includes('.io')?'.io':src.includes('.co')?'.co':'.com') : src
+      aToast('✅ Logo auto-fetched for '+company+'!')
     }
-    testImg.src = url
-  }, 700)
+    t.onerror = function(){ trySource(i+1) }
+    t.src = src
+  }
+
+  trySource(0)
 }
 
 

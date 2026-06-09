@@ -3291,34 +3291,36 @@ function getLogo(key, company, logoUrl){
   var co = (company||'?')[0].toUpperCase()
   var color = COLORS[key]||'#6366f1'
 
-  // Simple colored-letter box — always works, no escaping issues
+  // Colored letter box — bulletproof fallback
   var letterBox = '<div style="width:40px;height:40px;border-radius:10px;background:'+color
     +';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900'
     +';color:white;font-family:Arial;flex-shrink:0;border:2px solid rgba(0,0,0,.06)">'+co+'</div>'
 
   var imgStyle = 'width:40px;height:40px;border-radius:10px;object-fit:contain;background:white;'
-    +'padding:4px;border:1.5px solid var(--bd);display:block;flex-shrink:0'
+    +'padding:3px;border:1.5px solid var(--bd);display:block;flex-shrink:0'
 
-  // 1. Direct URL (Supabase Storage) or base64 from admin upload
+  function safeImg(src){
+    return '<img src="'+src+'" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
+      + letterBox
+  }
+
+  // 1. Direct URL — Supabase Storage, Google favicon, DuckDuckGo, Clearbit full URL
   if(logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('data:')))
-    return '<img src="'+logoUrl+'" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
-      + letterBox
+    return safeImg(logoUrl)
 
-  // 2. Explicit clearbit key
+  // 2. Clearbit key (stored as clearbit:domain.com)
   if(key && key.startsWith('clearbit:'))
-    return '<img src="https://logo.clearbit.com/'+key.replace('clearbit:','')+'" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
-      + letterBox
+    return safeImg('https://logo.clearbit.com/'+key.replace('clearbit:',''))
 
   // 3. Known built-in SVG logos
   if(key && LOGOS[key]) return LOGOS[key]
 
-  // 4. Try Clearbit only for real company names (4+ chars)
+  // 4. Try Clearbit for real company names (4+ chars)
   var cleanName = (company||'').replace(/[^a-zA-Z0-9]/g,'')
   if(cleanName.length >= 4)
-    return '<img src="https://logo.clearbit.com/'+cleanName.toLowerCase()+'.com" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
-      + letterBox
+    return safeImg('https://logo.clearbit.com/'+cleanName.toLowerCase()+'.com')
 
-  // 5. Just show colored letter box
+  // 5. Colored letter fallback
   return letterBox
 }
 function ta(iso){const d=Date.now()-new Date(iso).getTime(),m=Math.floor(d/6e4),h=Math.floor(m/60),dd=Math.floor(h/24);if(dd>0)return dd+'d ago';if(h>0)return h+'h ago';if(m>0)return m+'m ago';return 'Just now'}
