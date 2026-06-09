@@ -1554,7 +1554,95 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
     </div>
   </div>
 
+  <div class="dmain">
+    <!-- DYNAMIC TOP BAR -->
+    <div class="dtop" id="dtop">
+      <div style="display:flex;flex-direction:column;justify-content:center;margin-right:12px">
+        <div id="pageTitle" style="font-size:16px;font-weight:900;color:var(--dark);letter-spacing:-.3px;line-height:1.2">Jobs Feed</div>
+        <div id="pageSubtitle" style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:1px">2,447 jobs match your profile</div>
+      </div>
+      <div class="dtop-search" id="topSearchBar"><i class="fas fa-search"></i><input type="text" placeholder="Search jobs by title, company, skill..." id="dsearch" oninput="renderJobs()"/></div>
+      <div class="dtop-right">
+        <!-- Live connection status -->
+        <div id="liveStatusBadge" style="display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(0,229,176,.1);border:1.5px solid rgba(0,229,176,.25);border-radius:8px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--mint2)">
+          <span id="liveStatusDot" style="width:6px;height:6px;border-radius:50%;background:var(--mint2);animation:pulse 1.5s infinite;flex-shrink:0"></span>
+          <span id="liveStatusTxt">LIVE</span>
+        </div>
+        <button class="notif" onclick="showAlertsView();setNav(document.querySelectorAll('.dsb-lnk')[5])"><i class="fas fa-bell"></i><div class="ndot"></div></button>
+        <button onclick="showCampusDBView();setNav(document.querySelectorAll('.dsb-lnk')[document.querySelectorAll('.dsb-lnk').length-5])" style="display:flex;align-items:center;gap:7px;padding:9px 16px;background:linear-gradient(135deg,#f43f5e,#be123c);border:none;border-radius:11px;font-family:var(--font);font-size:12.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(244,63,94,.3);transition:all .2s;white-space:nowrap" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'"><i class="fas fa-university" style="font-size:12px"></i> Campus Placements <span style="background:rgba(255,255,255,.25);padding:1px 7px;border-radius:5px;font-size:10px;font-family:var(--mono)">New</span></button>
+        <button onclick="showPremiumModal()" id="upgradeTopBtn" style="display:flex;align-items:center;gap:7px;padding:9px 18px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;border-radius:11px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(245,158,11,.4);transition:all .2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'"><i class="fas fa-crown" style="font-size:11px"></i> Upgrade</button>
+        <button class="ai-topbtn" onclick="showInterviewPrepView();setNav(document.querySelectorAll('.dsb-lnk')[4])"><i class="fas fa-robot" style="font-size:12px"></i> Use JobSettle AI</button>
+        <a href="https://t.me/YOYOAI_CRAKINTERVIEW" target="_blank" class="tg-btn"><i class="fab fa-telegram" style="color:#2aabee;font-size:15px"></i> Alerts</a>
+      </div>
+    </div>
+    <div class="dfbar" id="jobsFilterBar">
+      <div class="dfbar-in">
+        <div class="dfc on-mint" onclick="setFil(this,'all')">All India <i class="fas fa-chevron-down" style="font-size:10px"></i></div>
+        <div class="dfc" onclick="setFil(this,'sde')">SDE / Backend <i class="fas fa-chevron-down" style="font-size:10px"></i></div>
+        <div class="dfc" onclick="setFil(this,'frontend')">Frontend <i class="fas fa-chevron-down" style="font-size:10px"></i></div>
+        <div class="dfc" onclick="setFil(this,'fulltime')">Full-time <i class="fas fa-chevron-down" style="font-size:10px"></i></div>
+        <div class="dfc" onclick="setFil(this,'fresher')">Fresher <i class="fas fa-chevron-down" style="font-size:10px"></i></div>
+        <div class="dfsep"></div>
+        <div class="dfc" onclick="setFil(this,'new')"><i class="fas fa-star" style="font-size:10px;color:var(--gold)"></i> New Today</div>
+        <div class="dfc" onclick="setFil(this,'remote')"><i class="fas fa-globe" style="font-size:10px;color:var(--sky)"></i> Remote</div>
+        <div class="dfc" onclick="setFil(this,'campus')"><i class="fas fa-graduation-cap" style="font-size:10px;color:var(--violet)"></i> Campus</div>
+        <div class="dfc" onclick="setFil(this,'featured')"><i class="fas fa-trophy" style="font-size:10px;color:var(--gold)"></i> Featured</div>
+      </div>
+    </div>
+    <div class="dcontent" id="jobsView">
+      <div>
+        <div class="jobs-top">
+          <div class="jt-count"><strong id="jCount">8</strong> jobs match your profile</div>
+          <select class="jt-sort"><option>Best Match</option><option>Newest First</option><option>Highest Salary</option></select>
+        </div>
+        <div class="jlist" id="jobsList"></div>
+      </div>
+      <div class="rpanel">
+        <div class="rcard">
+          <div class="rc-head"><div class="rc-title">Profile Completion</div><div class="rc-action">Edit →</div></div>
+          <div class="rc-body">
+            <div class="pc-row"><span class="pc-label">Progress</span><span class="pc-pct" style="background:linear-gradient(135deg,var(--mint2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">40%</span></div>
+            <div class="pc-bar"><div class="pc-fill" style="width:40%"></div></div>
+            <div class="pc-items">
+              <div class="pci done"><i class="fas fa-check-circle" style="color:var(--mint2)"></i> Basic info added</div>
+              <div class="pci done"><i class="fas fa-check-circle" style="color:var(--mint2)"></i> Email verified</div>
+              <div class="pci"><i class="far fa-circle" style="color:var(--t3)"></i> Upload resume</div>
+              <div class="pci"><i class="far fa-circle" style="color:var(--t3)"></i> Add work experience</div>
+              <div class="pci"><i class="far fa-circle" style="color:var(--t3)"></i> Add skills</div>
+            </div>
+          </div>
+        </div>
+        <div class="rcard">
+          <div class="rc-head"><div class="rc-title">Saved Jobs</div><div class="rc-action">View all →</div></div>
+          <div class="rc-body" id="savedPanel"><div style="text-align:center;padding:16px 0;font-family:var(--mono);font-size:11px;color:var(--t3)">No saved jobs yet.<br/>Click <i class="fas fa-heart" style="color:var(--rose)"></i> to save.</div></div>
+        </div>
+        <div class="promo-card">
+          <span class="promo-ico"></span>
+          <div class="promo-title">Ace the Interview with JobSettle AI!</div>
+          <div class="promo-text">After applying, open JobSettle AI for real-time answers. 100% invisible on Zoom, Meet & Teams.</div>
+          <button class="btn btn-mint" style="width:100%;justify-content:center;font-size:13px;position:relative;z-index:1">Try JobSettle AI Free →</button>
+        </div>
+      </div>
+    </div>
 
+    <!-- TRACKER VIEW -->
+    <div id="trackerView" style="display:none;flex:1;overflow-y:auto;padding:22px 26px">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-size:22px;font-weight:900;color:var(--dark);letter-spacing:-.5px;margin-bottom:4px">Application Tracker</h2>
+          <p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Track every job application from applied to offer</p>
+        </div>
+        <button class="btn btn-mint btn-sm" onclick="addTrackerJob()"><i class="fas fa-plus"></i> Add Application</button>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px" id="trackerStats"></div>
+
+      <!-- Kanban board -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;align-items:start" id="kanbanBoard"></div>
+    </div>
+  </div>
 
   <!-- PROFILE VIEW -->
   <div id="profileView" style="display:none;flex:1;overflow-y:auto;padding:28px 28px">
@@ -1797,22 +1885,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 
     </div>
   </div>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-</head>
-<body>
-
-<!-- SVG LOGO DEFINITIONS (reusable) -->
-<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="ico-bag" viewBox="0 0 24 24"><path d="M6 2h12l2 4H4L6 2zm-3 5h18v14a1 1 0 01-1 1H4a1 1 0 01-1-1V7zm7 4v6m4-6v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-  <symbol id="ico-g" viewBox="0 0 24 24"><path d="M21.8 10.2H12v3.6h5.6c-.5 2.4-2.7 4.2-5.6 4.2a6.2 6.2 0 110-12.4c1.6 0 3 .6 4.1 1.6l2.6-2.6A10 10 0 002 12a10 10 0 0010 10c5.5 0 10-4.5 10-10 0-.7-.1-1.3-.2-1.8z" fill="currentColor"/></svg>
-</svg>
-
-<!-- ══════ LANDING ══════ -->
-<!-- ══════════════════════════════
-     LANDING PAGE
-══════════════════════════════ -->
-
 
 
 <!-- SAVED JOBS VIEW -->
@@ -1834,30 +1906,27 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
       <div><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Interview Prep AI</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real AI — ask anything about interviews, DSA, system design</p></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button onclick="ipSetTopic('dsa')" id="ipBtnDsa" style="padding:7px 14px;border:2px solid var(--mint4);background:var(--mint3);border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--mint2);cursor:pointer">DSA</button>
-        <button onclick="ipSetTopic('system_design')" id="ipBtnSysdesign" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">System Design</button>
+        <button onclick="ipSetTopic('system_design')" id="ipBtnSd" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">System Design</button>
         <button onclick="ipSetTopic('hr')" id="ipBtnHr" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">HR</button>
-        <button onclick="ipSetTopic('frontend')" id="ipBtnFrontend" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">Frontend</button>
+        <button onclick="ipSetTopic('frontend')" id="ipBtnFe" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">Frontend</button>
         <button onclick="ipSetTopic('sql')" id="ipBtnSql" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">SQL</button>
       </div>
     </div>
-    <div id="ipSuggestions" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
       <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">Explain Two Sum</button>
       <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">Design WhatsApp</button>
       <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">Tell me about yourself</button>
-      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">Difference: TCP vs UDP</button>
-      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">What is dynamic programming?</button>
-      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">Give me a mock question</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">Difference TCP vs UDP</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer">What is dynamic programming</button>
     </div>
     <div id="ipChatBox" style="background:white;border:2px solid var(--bd);border-radius:18px;min-height:400px;max-height:520px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
       <div style="display:flex;gap:12px;align-items:flex-start">
         <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div>
-        <div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px">
-          <div style="font-size:13.5px;color:var(--dark);line-height:1.7">Hi! I am your <strong>Interview Prep AI</strong>. I can help you with:<br><br><strong>DSA</strong> — Arrays, Trees, Graphs, DP, Sorting<br><strong>System Design</strong> — Design WhatsApp, Netflix, Uber<br><strong>HR Questions</strong> — Tell me about yourself, strengths/weaknesses<br><strong>Frontend</strong> — React, JavaScript, CSS<br><strong>SQL</strong> — Queries, indexes, joins<br><br>Ask me anything or click a suggestion above!</div>
-        </div>
+        <div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.7">Hi! I am your <strong>Interview Prep AI</strong>. Ask me anything about DSA, System Design, HR, Frontend or SQL interviews!</div></div>
       </div>
     </div>
     <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:flex-end">
-      <textarea id="ipInput" placeholder="Ask anything... e.g. Explain binary search, Design YouTube, Tell me about yourself..." style="flex:1;border:none;outline:none;font-family:var(--font);font-size:14px;color:var(--dark);resize:none;line-height:1.6;min-height:44px;max-height:120px;padding:4px 0;background:transparent" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ipSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+      <textarea id="ipInput" placeholder="Ask anything... e.g. Explain binary search, Design YouTube..." style="flex:1;border:none;outline:none;font-family:var(--font);font-size:14px;color:var(--dark);resize:none;line-height:1.6;min-height:44px;max-height:120px;padding:4px 0;background:transparent" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ipSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
       <button onclick="ipSend()" style="width:42px;height:42px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="color:white;font-size:14px"></i></button>
     </div>
     <div style="text-align:center;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--t3)">Powered by Claude AI · Answers are for practice only</div>
@@ -2008,71 +2077,56 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
   <div style="max-width:880px;margin:0 auto">
     <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Mock Interview</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real AI interviewer — get graded on every answer</p></div>
-      <button onclick="startMock(document.getElementById('mockTypeSelect').value)" style="padding:10px 22px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-play"></i> Start Interview</button>
+      <button onclick="startMock(document.getElementById('mockTypeSelect').value)" style="padding:10px 22px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer"><i class="fas fa-play"></i> Start Interview</button>
     </div>
     <div id="mockSetup" style="background:white;border:2px solid var(--bd);border-radius:18px;padding:24px;margin-bottom:16px">
       <div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px">Choose Interview Type</div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px">
-        <div onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--mint)';document.getElementById('mockTypeSelect').value='sde'" class="mock-type-opt" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--mint);border-radius:12px;cursor:pointer">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--mint3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-code" style="color:var(--mint2)"></i></div>
-          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">SDE Technical</div><div style="font-size:11px;color:var(--t3)">DSA + System Design · 5 questions</div></div>
-        </div>
-        <div onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--violet)';document.getElementById('mockTypeSelect').value='hr'" class="mock-type-opt" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--violet3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-user-tie" style="color:var(--violet)"></i></div>
-          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">HR Behavioral</div><div style="font-size:11px;color:var(--t3)">Soft skills + STAR · 5 questions</div></div>
-        </div>
-        <div onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='#3b82f6';document.getElementById('mockTypeSelect').value='frontend'" class="mock-type-opt" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--sky3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-paint-brush" style="color:var(--sky)"></i></div>
-          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">Frontend</div><div style="font-size:11px;color:var(--t3)">React + JS + CSS · 5 questions</div></div>
-        </div>
-        <div onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='#f59e0b';document.getElementById('mockTypeSelect').value='system_design'" class="mock-type-opt" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer">
-          <div style="width:40px;height:40px;border-radius:10px;background:var(--gold3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-sitemap" style="color:var(--gold)"></i></div>
-          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">System Design</div><div style="font-size:11px;color:var(--t3)">Architecture · 3 questions</div></div>
-        </div>
+        <div onclick="document.querySelectorAll('.mto').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--mint)';document.getElementById('mockTypeSelect').value='sde'" class="mto" style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--mint);border-radius:12px;cursor:pointer"><div style="width:38px;height:38px;border-radius:9px;background:var(--mint3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-code" style="color:var(--mint2)"></i></div><div><div style="font-size:13px;font-weight:800;color:var(--dark)">SDE Technical</div><div style="font-size:11px;color:var(--t3)">DSA + System Design · 5 Qs</div></div></div>
+        <div onclick="document.querySelectorAll('.mto').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--violet)';document.getElementById('mockTypeSelect').value='hr'" class="mto" style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--bd);border-radius:12px;cursor:pointer"><div style="width:38px;height:38px;border-radius:9px;background:var(--violet3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-user-tie" style="color:var(--violet)"></i></div><div><div style="font-size:13px;font-weight:800;color:var(--dark)">HR Behavioral</div><div style="font-size:11px;color:var(--t3)">STAR method · 5 Qs</div></div></div>
+        <div onclick="document.querySelectorAll('.mto').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--sky)';document.getElementById('mockTypeSelect').value='frontend'" class="mto" style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--bd);border-radius:12px;cursor:pointer"><div style="width:38px;height:38px;border-radius:9px;background:var(--sky3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-paint-brush" style="color:var(--sky)"></i></div><div><div style="font-size:13px;font-weight:800;color:var(--dark)">Frontend</div><div style="font-size:11px;color:var(--t3)">React + JS + CSS · 5 Qs</div></div></div>
+        <div onclick="document.querySelectorAll('.mto').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--gold)';document.getElementById('mockTypeSelect').value='system_design'" class="mto" style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--bd);border-radius:12px;cursor:pointer"><div style="width:38px;height:38px;border-radius:9px;background:var(--gold3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-sitemap" style="color:var(--gold)"></i></div><div><div style="font-size:13px;font-weight:800;color:var(--dark)">System Design</div><div style="font-size:11px;color:var(--t3)">Architecture · 3 Qs</div></div></div>
       </div>
       <input type="hidden" id="mockTypeSelect" value="sde"/>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <label style="font-size:13px;font-weight:700;color:var(--dark)">Target company (optional):</label>
-        <input id="mockCompanyInput" class="fi" placeholder="e.g. Google, TCS, Flipkart..." style="flex:1;margin-bottom:0;max-width:260px"/>
-      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label style="font-size:13px;font-weight:700;color:var(--dark)">Target company (optional):</label><input id="mockCompanyInput" class="fi" placeholder="e.g. Google, TCS..." style="flex:1;margin-bottom:0;max-width:240px"/></div>
     </div>
     <div id="mockSession" style="display:none">
-      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
-        <div style="font-family:var(--mono);font-size:11px;color:var(--t3);white-space:nowrap">Q <span id="mockQNum">1</span>/<span id="mockQTotal">5</span></div>
-        <div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div id="mockProgressBar" style="height:100%;width:20%;background:linear-gradient(90deg,var(--mint),var(--violet));border-radius:4px;transition:width .5s ease"></div></div>
-        <div id="mockScore" style="font-family:var(--mono);font-size:11px;color:var(--mint2);font-weight:700">Score: 0</div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--t3)">Q<span id="mockQNum">1</span>/<span id="mockQTotal">5</span></div>
+        <div style="flex:1;height:7px;background:var(--bg);border-radius:4px;overflow:hidden"><div id="mockProgressBar" style="height:100%;width:20%;background:linear-gradient(90deg,var(--mint),var(--violet));border-radius:4px;transition:width .5s"></div></div>
+        <div id="mockScore" style="font-family:var(--mono);font-size:11px;color:var(--mint2);font-weight:700">Avg: -</div>
       </div>
-      <div style="background:linear-gradient(135deg,#0a0a1a,#1a0840);border-radius:18px;padding:24px;margin-bottom:14px">
-        <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);margin-bottom:10px;letter-spacing:1px" id="mockQLabel">QUESTION 1</div>
-        <div id="mockQuestion" style="font-size:16px;font-weight:700;color:white;line-height:1.7">Loading question...</div>
+      <div style="background:linear-gradient(135deg,#0a0a1a,#1a0840);border-radius:16px;padding:22px;margin-bottom:12px">
+        <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);margin-bottom:8px" id="mockQLabel">QUESTION 1</div>
+        <div id="mockQuestion" style="font-size:15px;font-weight:700;color:white;line-height:1.7">Loading...</div>
       </div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px">
-        <textarea id="mockAnswer" placeholder="Type your answer here... Be detailed. Explain your approach, time/space complexity, trade-offs." style="width:100%;border:none;outline:none;font-family:var(--font);font-size:14px;color:var(--dark);resize:none;line-height:1.7;min-height:120px;background:transparent"></textarea>
+      <div style="background:white;border:2px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px">
+        <textarea id="mockAnswer" placeholder="Type your answer here... Be detailed. Explain your approach step by step." style="width:100%;border:none;outline:none;font-family:var(--font);font-size:14px;color:var(--dark);resize:none;line-height:1.7;min-height:110px;background:transparent"></textarea>
       </div>
-      <div id="mockFeedback" style="display:none;background:var(--bg);border:2px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:900;color:var(--dark);margin-bottom:10px"><i class="fas fa-robot" style="color:var(--violet);margin-right:6px"></i>AI Feedback</div>
-        <div id="mockFeedbackText" style="font-size:13.5px;color:var(--dark);line-height:1.75;white-space:pre-wrap"></div>
-        <div id="mockScoreCard" style="display:none;margin-top:14px;padding:12px 16px;background:white;border-radius:10px;display:flex;align-items:center;gap:14px">
-          <div style="font-size:32px;font-weight:900" id="mockScoreNum">-</div>
+      <div id="mockFeedback" style="display:none;background:var(--bg);border:2px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:900;color:var(--dark);margin-bottom:8px"><i class="fas fa-robot" style="color:var(--violet);margin-right:6px"></i>AI Feedback</div>
+        <div id="mockFeedbackText" style="font-size:13px;color:var(--dark);line-height:1.75;white-space:pre-wrap"></div>
+        <div id="mockScoreCard" style="display:none;margin-top:12px;padding:10px 14px;background:white;border-radius:9px;display:flex;align-items:center;gap:12px">
+          <div style="font-size:28px;font-weight:900" id="mockScoreNum">-</div>
           <div><div style="font-size:12px;font-weight:800;color:var(--dark)" id="mockScoreLabel">Score</div><div style="font-size:11px;color:var(--t3)">out of 10</div></div>
         </div>
       </div>
       <div style="display:flex;gap:10px">
-        <button id="mockSubmitBtn" onclick="mockSubmitAnswer()" style="flex:1;padding:13px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer"><i class="fas fa-check"></i> Submit Answer</button>
-        <button id="mockNextBtn" onclick="mockNextQuestion()" style="display:none;flex:1;padding:13px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer"><i class="fas fa-arrow-right"></i> Next Question</button>
+        <button id="mockSubmitBtn" onclick="mockSubmitAnswer()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer"><i class="fas fa-check"></i> Submit Answer</button>
+        <button id="mockNextBtn" onclick="mockNextQuestion()" style="display:none;flex:1;padding:12px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer"><i class="fas fa-arrow-right"></i> Next</button>
       </div>
     </div>
-    <div id="mockResults" style="display:none;background:white;border:2px solid var(--bd);border-radius:18px;padding:28px;text-align:center;margin-bottom:16px">
-      <div style="font-size:40px;margin-bottom:12px">🎉</div>
-      <div style="font-size:20px;font-weight:900;color:var(--dark);margin-bottom:8px">Interview Complete!</div>
-      <div style="font-size:40px;font-weight:900;margin:14px 0" id="mockFinalScore">-</div>
-      <div style="font-size:14px;color:var(--t2);margin-bottom:20px" id="mockFinalMsg"></div>
-      <button onclick="document.getElementById('mockSession').style.display='none';document.getElementById('mockResults').style.display='none';document.getElementById('mockSetup').style.display='block'" style="padding:12px 28px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer">Try Again</button>
+    <div id="mockResults" style="display:none;background:white;border:2px solid var(--bd);border-radius:16px;padding:24px;text-align:center;margin-bottom:14px">
+      <div style="font-size:36px;margin-bottom:10px">🎉</div>
+      <div style="font-size:19px;font-weight:900;color:var(--dark);margin-bottom:6px">Interview Complete!</div>
+      <div style="font-size:36px;font-weight:900;margin:12px 0" id="mockFinalScore">-</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:16px" id="mockFinalMsg"></div>
+      <button onclick="document.getElementById('mockSession').style.display='none';document.getElementById('mockResults').style.display='none';document.getElementById('mockSetup').style.display='block'" style="padding:11px 26px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer">Try Again</button>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;text-align:center"><div id="mockStatTotal" style="font-size:24px;font-weight:900;color:var(--dark);margin-bottom:4px">0</div><div style="font-size:11px;color:var(--t3);font-weight:600">Mocks Done</div></div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;text-align:center"><div id="mockStatAvg" style="font-size:24px;font-weight:900;color:var(--mint2);margin-bottom:4px">-</div><div style="font-size:11px;color:var(--t3);font-weight:600">Avg Score</div></div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;text-align:center"><div id="mockStatBest" style="font-size:24px;font-weight:900;color:var(--violet);margin-bottom:4px">-</div><div style="font-size:11px;color:var(--t3);font-weight:600">Best Score</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      <div style="background:white;border:2px solid var(--bd);border-radius:12px;padding:14px;text-align:center"><div id="mockStatTotal" style="font-size:22px;font-weight:900;color:var(--dark);margin-bottom:3px">0</div><div style="font-size:11px;color:var(--t3)">Mocks Done</div></div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:12px;padding:14px;text-align:center"><div id="mockStatAvg" style="font-size:22px;font-weight:900;color:var(--mint2);margin-bottom:3px">-</div><div style="font-size:11px;color:var(--t3)">Avg Score</div></div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:12px;padding:14px;text-align:center"><div id="mockStatBest" style="font-size:22px;font-weight:900;color:var(--violet);margin-bottom:3px">-</div><div style="font-size:11px;color:var(--t3)">Best Score</div></div>
     </div>
   </div>
 </div>
@@ -6963,173 +7017,6 @@ function analyzeRejection(){
   },2000)
 }
 
-
-
-
-// ══════════════════════════════════════════════════════
-// REAL AI INTERVIEW PREP — Powered by Claude via Netlify
-// ══════════════════════════════════════════════════════
-var ipTopic = 'dsa'
-var ipHistory = []
-var IP_SYSTEM = {
-  dsa: 'You are an expert DSA interview coach for top Indian tech companies. Give clear concise answers with time/space complexity. Use examples. Keep responses under 300 words.',
-  system_design: 'You are an expert system design interview coach. Help candidates design scalable systems. Cover requirements, components, databases, scaling, trade-offs. Be practical.',
-  hr: 'You are an HR interview coach for tech companies in India. Help candidates answer behavioral questions using STAR method. Give sample answers and tips.',
-  frontend: 'You are a frontend interview expert (React, JavaScript, CSS). Give clear code examples. Cover browser concepts, performance, modern JS.',
-  sql: 'You are a SQL and database interview expert. Provide clear query examples, explain indexing, joins, normalization.'
-}
-function ipSetTopic(t){
-  ipTopic = t; ipHistory = []
-  var map = {dsa:'ipBtnDsa',system_design:'ipBtnSysdesign',hr:'ipBtnHr',frontend:'ipBtnFrontend',sql:'ipBtnSql'}
-  Object.keys(map).forEach(function(k){
-    var b = document.getElementById(map[k]); if(!b) return
-    b.style.background = k===t ? 'var(--violet3)' : 'white'
-    b.style.borderColor = k===t ? 'var(--violet)' : 'var(--bd)'
-    b.style.color = k===t ? 'var(--violet2)' : 'var(--t2)'
-  })
-  var names = {dsa:'DSA',system_design:'System Design',hr:'HR & Behavioral',frontend:'Frontend',sql:'SQL'}
-  var box = document.getElementById('ipChatBox'); if(!box) return
-  box.innerHTML = '<div style="display:flex;gap:12px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.7">Topic: <strong>'+(names[t]||t)+'</strong>. Ask me anything!</div></div></div>'
-}
-function ipAsk(text){ document.getElementById('ipInput').value = text; ipSend() }
-async function ipSend(){
-  var inp = document.getElementById('ipInput')
-  var msg = (inp.value||'').trim(); if(!msg) return
-  inp.value = ''; inp.style.height = 'auto'
-  var box = document.getElementById('ipChatBox')
-  box.innerHTML += '<div style="display:flex;gap:12px;align-items:flex-start;justify-content:flex-end"><div style="max-width:80%;background:linear-gradient(135deg,var(--violet),var(--violet2));border-radius:14px;padding:12px 16px"><div style="font-size:13.5px;color:white;line-height:1.65">'+msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div></div>'
-  var tid = 'tp'+Date.now()
-  box.innerHTML += '<div id="'+tid+'" style="display:flex;gap:12px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="background:var(--bg);border-radius:14px;padding:14px 16px"><span style="color:var(--t3)">Thinking...</span></div></div>'
-  box.scrollTop = box.scrollHeight
-  ipHistory.push({role:'user',content:msg})
-  if(ipHistory.length > 20) ipHistory = ipHistory.slice(-20)
-  try {
-    var r = await fetch('/.netlify/functions/ai', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:IP_SYSTEM[ipTopic]||IP_SYSTEM.dsa,messages:ipHistory})
-    })
-    var d = await r.json()
-    var reply = (d.content&&d.content[0]&&d.content[0].text)||'Sorry, no response. Try again.'
-    ipHistory.push({role:'assistant',content:reply})
-    var el = document.getElementById(tid); if(el) el.remove()
-    box.innerHTML += '<div style="display:flex;gap:12px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.75;white-space:pre-wrap">'+reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div></div>'
-    box.scrollTop = box.scrollHeight
-  } catch(e) {
-    var el = document.getElementById(tid); if(el) el.remove()
-    box.innerHTML += '<div style="display:flex;gap:12px"><div style="width:34px;height:34px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="background:var(--coral3);border-radius:14px;padding:14px 16px"><div style="font-size:13px;color:var(--coral)">Error: '+e.message+'</div></div></div>'
-    box.scrollTop = box.scrollHeight
-  }
-}
-
-// ══════════════════════════════════════════════════════
-// REAL AI MOCK INTERVIEW
-// ══════════════════════════════════════════════════════
-var mockCurrentQ=0, mockScores=[], mockType='sde', mockCompany=''
-var mockStats=JSON.parse(localStorage.getItem('js_mock_stats')||'{"total":0,"scores":[]}')
-var MOCK_QN={sde:5,hr:5,frontend:5,system_design:3}
-var MOCK_SYS={
-  sde:'You are a strict SDE interviewer. Ask challenging DSA and system design questions. Evaluate answers and give SCORE: X/10 on first line, then detailed feedback.',
-  hr:'You are an experienced HR interviewer. Ask behavioral questions. Evaluate using STAR method. Give SCORE: X/10 on first line, then feedback.',
-  frontend:'You are a senior frontend engineer interviewing candidates. Ask React, JS, CSS questions. Give SCORE: X/10 on first line, then feedback.',
-  system_design:'You are a principal engineer doing system design interviews. Give SCORE: X/10 on first line, then feedback.'
-}
-async function startMock(type){
-  mockType=type||'sde'; mockCompany=document.getElementById('mockCompanyInput').value.trim()
-  mockCurrentQ=0; mockScores=[]
-  document.getElementById('mockSetup').style.display='none'
-  document.getElementById('mockSession').style.display='block'
-  document.getElementById('mockResults').style.display='none'
-  document.getElementById('mockFeedback').style.display='none'
-  document.getElementById('mockSubmitBtn').style.display='block'
-  document.getElementById('mockSubmitBtn').textContent='Submit Answer'
-  document.getElementById('mockNextBtn').style.display='none'
-  document.getElementById('mockAnswer').value=''
-  document.getElementById('mockQTotal').textContent=MOCK_QN[mockType]||5
-  document.getElementById('mockQNum').textContent='1'
-  document.getElementById('mockScore').textContent='Score: 0'
-  document.getElementById('mockProgressBar').style.width=(100/(MOCK_QN[mockType]||5))+'%'
-  await mockAskQuestion()
-}
-async function mockAskQuestion(){
-  var total=MOCK_QN[mockType]||5, qn=mockCurrentQ+1
-  document.getElementById('mockQuestion').textContent='Generating question...'
-  document.getElementById('mockQLabel').textContent='QUESTION '+qn+' of '+total+' - '+mockType.toUpperCase().replace('_',' ')
-  document.getElementById('mockFeedback').style.display='none'
-  document.getElementById('mockAnswer').value=''
-  document.getElementById('mockSubmitBtn').style.display='block'
-  document.getElementById('mockSubmitBtn').disabled=false
-  document.getElementById('mockSubmitBtn').textContent='Submit Answer'
-  document.getElementById('mockNextBtn').style.display='none'
-  var ctx = mockCompany ? ' Candidate targets '+mockCompany+'.' : ''
-  try {
-    var r = await fetch('/.netlify/functions/ai',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:MOCK_SYS[mockType],
-        messages:[{role:'user',content:'Give question '+qn+' of '+total+' for a '+mockType.replace('_',' ')+' interview.'+ctx+' Just the question, no preamble.'}]})
-    })
-    var d=await r.json()
-    document.getElementById('mockQuestion').textContent=(d.content&&d.content[0]&&d.content[0].text)||'Explain your approach to a complex problem.'
-  } catch(e){ document.getElementById('mockQuestion').textContent='Network error. Please check connection.' }
-}
-async function mockSubmitAnswer(){
-  var ans=document.getElementById('mockAnswer').value.trim()
-  if(!ans){toast('Please type your answer!');return}
-  var btn=document.getElementById('mockSubmitBtn')
-  btn.disabled=true; btn.textContent='Evaluating...'
-  var q=document.getElementById('mockQuestion').textContent
-  try {
-    var r=await fetch('/.netlify/functions/ai',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:MOCK_SYS[mockType],
-        messages:[{role:'user',content:'Question: '+q+' --- Candidate answer: '+ans+' --- Evaluate. Start with SCORE: X/10 then give detailed feedback on what was good, what was missing, and a model answer hint.'}]})
-    })
-    var d=await r.json()
-    var fb=(d.content&&d.content[0]&&d.content[0].text)||'Could not evaluate.'
-    var sm=fb.match(/SCORE:\s*(\d+)/i); var sc=sm?parseInt(sm[1]):5
-    mockScores.push(sc)
-    document.getElementById('mockFeedback').style.display='block'
-    document.getElementById('mockFeedbackText').textContent=fb.replace(/SCORE:\s*\d+\/10\s*/i,'').trim()
-    document.getElementById('mockScoreCard').style.display='flex'
-    document.getElementById('mockScoreNum').textContent=sc+'/10'
-    document.getElementById('mockScoreNum').style.color=sc>=7?'var(--mint2)':sc>=5?'var(--gold)':'var(--coral)'
-    document.getElementById('mockScoreLabel').textContent=sc>=8?'Excellent!':sc>=6?'Good':sc>=4?'Needs work':'Keep practicing'
-    var avg=Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10
-    document.getElementById('mockScore').textContent='Avg: '+avg+'/10'
-    document.getElementById('mockProgressBar').style.width=((mockCurrentQ+1)/(MOCK_QN[mockType]||5)*100)+'%'
-    btn.style.display='none'
-    var isLast=mockCurrentQ>=(MOCK_QN[mockType]||5)-1
-    var nb=document.getElementById('mockNextBtn')
-    nb.style.display='block'
-    if(isLast){nb.textContent='See Results';nb.onclick=mockShowResults}
-    else{nb.textContent='Next Question';nb.onclick=mockNextQuestion}
-  } catch(e){btn.disabled=false;btn.textContent='Submit Answer';toast('Error: '+e.message)}
-}
-async function mockNextQuestion(){
-  mockCurrentQ++
-  if(mockCurrentQ>=(MOCK_QN[mockType]||5)){mockShowResults();return}
-  document.getElementById('mockQNum').textContent=mockCurrentQ+1
-  await mockAskQuestion()
-}
-function mockShowResults(){
-  document.getElementById('mockSession').style.display='none'
-  document.getElementById('mockResults').style.display='block'
-  var avg=mockScores.length?Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10:0
-  document.getElementById('mockFinalScore').textContent=avg+'/10'
-  document.getElementById('mockFinalScore').style.color=avg>=7?'var(--mint2)':avg>=5?'var(--gold)':'var(--coral)'
-  document.getElementById('mockFinalMsg').textContent=avg>=8?'Excellent! Ready for top companies.':avg>=6?'Good effort! Focus on weak areas.':avg>=4?'Keep practicing — review fundamentals.':'More practice needed.'
-  mockStats.total++; mockStats.scores.push(avg)
-  localStorage.setItem('js_mock_stats',JSON.stringify(mockStats))
-  var sc=mockStats.scores, sa=sc.length?Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10:'—', sb=sc.length?Math.max.apply(null,sc):'—'
-  var e1=document.getElementById('mockStatTotal'),e2=document.getElementById('mockStatAvg'),e3=document.getElementById('mockStatBest')
-  if(e1)e1.textContent=mockStats.total; if(e2)e2.textContent=sa; if(e3)e3.textContent=sb
-}
-;(function(){
-  var sc=mockStats.scores, sa=sc.length?Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10:'—', sb=sc.length?Math.max.apply(null,sc):'—'
-  var e1=document.getElementById('mockStatTotal'),e2=document.getElementById('mockStatAvg'),e3=document.getElementById('mockStatBest')
-  if(e1)e1.textContent=mockStats.total; if(e2)e2.textContent=sa; if(e3)e3.textContent=sb
-})()
-
-
 // INIT — Real Supabase Auth
 setupAuthListener()
 initAuth()
@@ -7205,6 +7092,149 @@ try{
   }
   console.log('Admin BroadcastChannel listening ✅')
 }catch(e){ console.warn('BroadcastChannel not supported:', e.message) }
+
+// ── INTERVIEW PREP AI ─────────────────────────────────────────
+var ipTopic='dsa', ipHistory=[]
+var IP_SYS={
+  dsa:'You are an expert DSA interview coach for Indian tech companies. Give clear answers with time/space complexity. Under 300 words.',
+  system_design:'You are an expert system design interview coach. Cover requirements, components, scaling, trade-offs. Be practical and concise.',
+  hr:'You are an HR interview coach. Help with behavioral questions using STAR method. Give sample answers.',
+  frontend:'You are a frontend interview expert. React, JS, CSS. Give code examples where helpful.',
+  sql:'You are a SQL/database interview expert. Clear query examples, indexing, joins, normalization.'
+}
+function ipSetTopic(t){
+  ipTopic=t; ipHistory=[]
+  var ids={dsa:'ipBtnDsa',system_design:'ipBtnSd',hr:'ipBtnHr',frontend:'ipBtnFe',sql:'ipBtnSql'}
+  Object.keys(ids).forEach(function(k){
+    var b=document.getElementById(ids[k]); if(!b)return
+    b.style.background=k===t?'var(--violet3)':'white'
+    b.style.borderColor=k===t?'var(--violet)':'var(--bd)'
+    b.style.color=k===t?'var(--violet2)':'var(--t2)'
+  })
+  var box=document.getElementById('ipChatBox'); if(!box)return
+  var names={dsa:'DSA',system_design:'System Design',hr:'HR',frontend:'Frontend',sql:'SQL'}
+  box.innerHTML='<div style="display:flex;gap:12px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.7">Topic: <strong>'+(names[t]||t)+'</strong>. Ask me anything!</div></div></div>'
+}
+function ipAsk(t){var i=document.getElementById('ipInput');if(i){i.value=t;ipSend()}}
+async function ipSend(){
+  var inp=document.getElementById('ipInput')
+  var msg=(inp?inp.value:'').trim(); if(!msg)return
+  if(inp){inp.value='';inp.style.height='auto'}
+  var box=document.getElementById('ipChatBox'); if(!box)return
+  var esc=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  box.innerHTML+='<div style="display:flex;justify-content:flex-end"><div style="max-width:80%;background:linear-gradient(135deg,var(--violet),var(--violet2));border-radius:14px;padding:12px 16px"><div style="font-size:13.5px;color:white;line-height:1.65">'+esc(msg)+'</div></div></div>'
+  var tid='tp'+Date.now()
+  box.innerHTML+='<div id="'+tid+'" style="display:flex;gap:12px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="background:var(--bg);border-radius:14px;padding:14px 16px;color:var(--t3);font-size:13px">Thinking...</div></div>'
+  box.scrollTop=box.scrollHeight
+  ipHistory.push({role:'user',content:msg})
+  if(ipHistory.length>20)ipHistory=ipHistory.slice(-20)
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:IP_SYS[ipTopic]||IP_SYS.dsa,messages:ipHistory})})
+    var d=await r.json()
+    var reply=(d.content&&d.content[0]&&d.content[0].text)||'No response. Try again.'
+    ipHistory.push({role:'assistant',content:reply})
+    var el=document.getElementById(tid);if(el)el.remove()
+    box.innerHTML+='<div style="display:flex;gap:12px"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.75;white-space:pre-wrap">'+esc(reply)+'</div></div></div>'
+    box.scrollTop=box.scrollHeight
+  }catch(e){
+    var el=document.getElementById(tid);if(el)el.remove()
+    box.innerHTML+='<div style="background:var(--coral3);border-radius:12px;padding:12px 16px;font-size:13px;color:var(--coral)">Error: '+e.message+'. Make sure Netlify function is set up.</div>'
+    box.scrollTop=box.scrollHeight
+  }
+}
+
+// ── MOCK INTERVIEW AI ─────────────────────────────────────────
+var mockCurQ=0,mockScores=[],mockType2='sde',mockCo=''
+var mockStats2=JSON.parse(localStorage.getItem('js_mock_stats')||'{"total":0,"scores":[]}')
+var MOCK_QN={sde:5,hr:5,frontend:5,system_design:3}
+var MOCK_SYS2={
+  sde:'You are a strict SDE interviewer. Ask DSA and system design questions. Evaluate answers. Always start response with SCORE: X/10 then give feedback.',
+  hr:'You are an HR interviewer. Ask behavioral questions. Evaluate using STAR. Always start with SCORE: X/10 then feedback.',
+  frontend:'You are a senior frontend engineer interviewing candidates. Always start with SCORE: X/10 then feedback.',
+  system_design:'You are a principal engineer doing system design interviews. Always start with SCORE: X/10 then feedback.'
+}
+async function startMock(type){
+  mockType2=type||'sde'
+  mockCo=(document.getElementById('mockCompanyInput')||{}).value||''
+  mockCurQ=0;mockScores=[]
+  var s=document.getElementById('mockSetup'),ss=document.getElementById('mockSession'),sr=document.getElementById('mockResults')
+  if(s)s.style.display='none'
+  if(ss)ss.style.display='block'
+  if(sr)sr.style.display='none'
+  var fb=document.getElementById('mockFeedback');if(fb)fb.style.display='none'
+  var sb=document.getElementById('mockSubmitBtn');if(sb){sb.style.display='block';sb.disabled=false;sb.textContent='Submit Answer'}
+  var nb=document.getElementById('mockNextBtn');if(nb)nb.style.display='none'
+  var ma=document.getElementById('mockAnswer');if(ma)ma.value=''
+  var qt=document.getElementById('mockQTotal');if(qt)qt.textContent=MOCK_QN[mockType2]||5
+  var qn=document.getElementById('mockQNum');if(qn)qn.textContent='1'
+  var ms=document.getElementById('mockScore');if(ms)ms.textContent='Avg: -'
+  var pb=document.getElementById('mockProgressBar');if(pb)pb.style.width=(100/(MOCK_QN[mockType2]||5))+'%'
+  await mockAskQ()
+}
+async function mockAskQ(){
+  var total=MOCK_QN[mockType2]||5,qn=mockCurQ+1
+  var mq=document.getElementById('mockQuestion');if(mq)mq.textContent='Generating question...'
+  var ql=document.getElementById('mockQLabel');if(ql)ql.textContent='QUESTION '+qn+' of '+total
+  var fb=document.getElementById('mockFeedback');if(fb)fb.style.display='none'
+  var ma=document.getElementById('mockAnswer');if(ma)ma.value=''
+  var sb=document.getElementById('mockSubmitBtn');if(sb){sb.style.display='block';sb.disabled=false;sb.textContent='Submit Answer'}
+  var nb=document.getElementById('mockNextBtn');if(nb)nb.style.display='none'
+  var ctx=mockCo?' Candidate targets '+mockCo+'.':''
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:MOCK_SYS2[mockType2],messages:[{role:'user',content:'Give question '+qn+' of '+total+' for a '+mockType2.replace('_',' ')+' interview.'+ctx+' Just the question text, no preamble.'}]})})
+    var d=await r.json()
+    var q=(d.content&&d.content[0]&&d.content[0].text)||'Explain your problem-solving approach.'
+    var mq2=document.getElementById('mockQuestion');if(mq2)mq2.textContent=q
+  }catch(e){var mq3=document.getElementById('mockQuestion');if(mq3)mq3.textContent='Network error. Check connection.'}
+}
+async function mockSubmitAnswer(){
+  var ma=document.getElementById('mockAnswer')
+  var ans=(ma?ma.value:'').trim();if(!ans){toast('Type your answer first!');return}
+  var sb=document.getElementById('mockSubmitBtn');if(sb){sb.disabled=true;sb.textContent='Evaluating...'}
+  var mq=document.getElementById('mockQuestion')
+  var q=mq?mq.textContent:''
+  try{
+    var r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:MOCK_SYS2[mockType2],messages:[{role:'user',content:'Question: '+q+' --- Answer: '+ans+' --- Evaluate. Start with SCORE: X/10 then give detailed feedback.'}]})})
+    var d=await r.json()
+    var fb2=(d.content&&d.content[0]&&d.content[0].text)||'Could not evaluate.'
+    var sm=fb2.match(/SCORE:\s*(\d+)/i);var sc=sm?parseInt(sm[1]):5
+    mockScores.push(sc)
+    var fb=document.getElementById('mockFeedback');if(fb)fb.style.display='block'
+    var ft=document.getElementById('mockFeedbackText');if(ft)ft.textContent=fb2.replace(/SCORE:\s*\d+\/10\s*/i,'').trim()
+    var scard=document.getElementById('mockScoreCard');if(scard)scard.style.display='flex'
+    var snum=document.getElementById('mockScoreNum');if(snum){snum.textContent=sc+'/10';snum.style.color=sc>=7?'var(--mint2)':sc>=5?'var(--gold)':'var(--coral)'}
+    var slbl=document.getElementById('mockScoreLabel');if(slbl)slbl.textContent=sc>=8?'Excellent!':sc>=6?'Good':sc>=4?'Needs work':'Keep practicing'
+    var avg=Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10
+    var ms=document.getElementById('mockScore');if(ms)ms.textContent='Avg: '+avg+'/10'
+    var pb=document.getElementById('mockProgressBar');if(pb)pb.style.width=((mockCurQ+1)/(MOCK_QN[mockType2]||5)*100)+'%'
+    if(sb)sb.style.display='none'
+    var nb=document.getElementById('mockNextBtn');if(nb){nb.style.display='block';nb.textContent=mockCurQ>=(MOCK_QN[mockType2]||5)-1?'See Results':'Next Question';nb.onclick=mockCurQ>=(MOCK_QN[mockType2]||5)-1?mockShowResults:mockNextQ}
+  }catch(e){if(sb){sb.disabled=false;sb.textContent='Submit Answer'}toast('Error: '+e.message)}
+}
+async function mockNextQ(){
+  mockCurQ++
+  var qn=document.getElementById('mockQNum');if(qn)qn.textContent=mockCurQ+1
+  await mockAskQ()
+}
+function mockShowResults(){
+  var ss=document.getElementById('mockSession'),sr=document.getElementById('mockResults')
+  if(ss)ss.style.display='none';if(sr)sr.style.display='block'
+  var avg=mockScores.length?Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10:0
+  var fs=document.getElementById('mockFinalScore');if(fs){fs.textContent=avg+'/10';fs.style.color=avg>=7?'var(--mint2)':avg>=5?'var(--gold)':'var(--coral)'}
+  var fm=document.getElementById('mockFinalMsg');if(fm)fm.textContent=avg>=8?'Excellent! Ready for top companies.':avg>=6?'Good effort! Focus on weak areas.':avg>=4?'Keep practicing.':'Study fundamentals and try again.'
+  mockStats2.total++;mockStats2.scores.push(avg)
+  localStorage.setItem('js_mock_stats',JSON.stringify(mockStats2))
+  mockUpdateStats()
+}
+function mockUpdateStats(){
+  var sc=mockStats2.scores
+  var sa=sc.length?Math.round(sc.reduce(function(a,b){return a+b},0)/sc.length*10)/10:'-'
+  var sb2=sc.length?Math.max.apply(null,sc):'-'
+  var e1=document.getElementById('mockStatTotal'),e2=document.getElementById('mockStatAvg'),e3=document.getElementById('mockStatBest')
+  if(e1)e1.textContent=mockStats2.total;if(e2)e2.textContent=sa;if(e3)e3.textContent=sb2
+}
+mockUpdateStats()
+
 </script>
 </body>
 </html>
