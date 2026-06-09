@@ -3288,27 +3288,39 @@ const LOGOS={
 }
 const COLORS={google:'#4285f4',amazon:'#ff9900',microsoft:'#00a4ef',flipkart:'#2874f0',swiggy:'#ff5200',tcs:'#6c2fa0',razorpay:'#2d89ef',zepto:'#8b5cf6'}
 function getLogo(key, company, logoUrl){
-  var co = (company||'?')[0]
+  var co = (company||'?')[0].toUpperCase()
   var color = COLORS[key]||'#6366f1'
-  var fallback = '<svg viewBox="0 0 40 40" width="40" height="40"><rect width="40" height="40" rx="10" fill="'+color+'"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="16" font-weight="900" font-family="Arial">'+co+'</text></svg>'
-  var imgStyle = 'width:40px;height:40px;border-radius:10px;object-fit:contain;background:white;padding:4px;border:1.5px solid var(--bd)'
 
-  // Direct URL from Supabase Storage OR base64 from admin upload
-  if(logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('data:'))){
-    return '<img src="'+logoUrl+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
-  }
-  // Clearbit stored URL
-  if(key && key.startsWith('clearbit:')){
-    var cbUrl = 'https://logo.clearbit.com/'+key.replace('clearbit:','')
-    return '<img src="'+cbUrl+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
-  }
-  // Known logo
+  // Simple colored-letter box — always works, no escaping issues
+  var letterBox = '<div style="width:40px;height:40px;border-radius:10px;background:'+color
+    +';display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900'
+    +';color:white;font-family:Arial;flex-shrink:0;border:2px solid rgba(0,0,0,.06)">'+co+'</div>'
+
+  var imgStyle = 'width:40px;height:40px;border-radius:10px;object-fit:contain;background:white;'
+    +'padding:4px;border:1.5px solid var(--bd);display:block;flex-shrink:0'
+
+  // 1. Direct URL (Supabase Storage) or base64 from admin upload
+  if(logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('data:')))
+    return '<img src="'+logoUrl+'" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
+      + letterBox
+
+  // 2. Explicit clearbit key
+  if(key && key.startsWith('clearbit:'))
+    return '<img src="https://logo.clearbit.com/'+key.replace('clearbit:','')+'" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
+      + letterBox
+
+  // 3. Known built-in SVG logos
   if(key && LOGOS[key]) return LOGOS[key]
-  // Auto Clearbit by company name
-  var cbDomain = (company||'').toLowerCase().replace(/\s+/g,'').replace(/[^a-z0-9]/g,'')+'.com'
-  return '<img src="https://logo.clearbit.com/'+cbDomain+'" style="'+imgStyle+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\'")+'\'" />'
-}
 
+  // 4. Try Clearbit only for real company names (4+ chars)
+  var cleanName = (company||'').replace(/[^a-zA-Z0-9]/g,'')
+  if(cleanName.length >= 4)
+    return '<img src="https://logo.clearbit.com/'+cleanName.toLowerCase()+'.com" style="'+imgStyle+'" onerror="this.replaceWith(this.nextSibling)" />'
+      + letterBox
+
+  // 5. Just show colored letter box
+  return letterBox
+}
 function ta(iso){const d=Date.now()-new Date(iso).getTime(),m=Math.floor(d/6e4),h=Math.floor(m/60),dd=Math.floor(h/24);if(dd>0)return dd+'d ago';if(h>0)return h+'h ago';if(m>0)return m+'m ago';return 'Just now'}
 
 // SCREENS
@@ -3766,12 +3778,12 @@ function subscribeToJobUpdates(){
         cachedJobs.unshift({
           id:String(j.id), title:j.title, company:j.company,
           logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
-          logo_url:j.logo||null, // FIX: include logo_url from Supabase
+          logo_url:j.logo||null,
           location:j.location||'Remote', salary:j.salary||'Competitive',
           exp:j.experience||'0-2 years', type:j.job_type||'Full-time',
           category:(j.category||'sde').toLowerCase(),
           badges:badges, match_score:parseInt(j.match_score)||82,
-          apply_link:j.apply_link||'', skills:skills,
+          apply_link:j.apply_link||'', description:j.description||'', skills:skills,
           posted_at:j.created_at
         })
         localStorage.setItem('js_jobs_data',JSON.stringify(cachedJobs))
@@ -6963,6 +6975,68 @@ function analyzeRejection(){
 setupAuthListener()
 initAuth()
 window.addEventListener('storage',e=>{if(e.key==='js_jobs_data'){cachedJobs=JSON.parse(e.newValue||'null')||FALLBACK_JOBS;renderJobs()}})
+
+// ── BROADCASTCHANNEL: instant cross-tab update from admin panel ──
+try{
+  var _adminBC = new BroadcastChannel('jobsettle_admin')
+  _adminBC.onmessage = function(e){
+    if(!e.data) return
+    if(e.data.type === 'JOB_PUBLISHED'){
+      var j = e.data.job
+      if(!j) return
+      var badges={}; try{badges=typeof j.badges==='string'?JSON.parse(j.badges):j.badges||{}}catch(err){}
+      var skills=[]; try{skills=typeof j.skills==='string'?JSON.parse(j.skills):j.skills||[]}catch(err){}
+      var newJob = {
+        id: String(j.id),
+        title: j.title,
+        company: j.company,
+        logo_key: (j.company||'').toLowerCase().replace(/\s+/g,''),
+        logo_url: j.logo || null,
+        location: j.location||'Remote',
+        salary: j.salary||'Competitive',
+        exp: j.experience||'0-2 years',
+        type: j.job_type||'Full-time',
+        category: (j.category||'sde').toLowerCase(),
+        badges: badges,
+        match_score: parseInt(j.match_score)||82,
+        apply_link: j.apply_link||'',
+        description: j.description||'',
+        skills: skills,
+        posted_at: j.created_at
+      }
+      // Remove old version if exists, add new at top
+      cachedJobs = cachedJobs.filter(function(x){ return String(x.id) !== String(j.id) })
+      cachedJobs.unshift(newJob)
+      localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+      renderJobs(); updateCounts(); updateCatCounts()
+      flashLiveBadge()
+      toast('🔴 NEW JOB LIVE: ' + j.title + ' at ' + j.company)
+      console.log('Admin broadcast received — job added live:', newJob)
+    }
+    if(e.data.type === 'JOB_UPDATED'){
+      var j = e.data.job
+      var idx = cachedJobs.findIndex(function(x){ return String(x.id)===String(j.id) })
+      if(idx >= 0){
+        var badges={}; try{badges=typeof j.badges==='string'?JSON.parse(j.badges):j.badges||{}}catch(err){}
+        var skills=[]; try{skills=typeof j.skills==='string'?JSON.parse(j.skills):j.skills||[]}catch(err){}
+        cachedJobs[idx] = Object.assign(cachedJobs[idx], {
+          title:j.title, company:j.company, location:j.location,
+          salary:j.salary, exp:j.experience, type:j.job_type,
+          category:(j.category||'sde').toLowerCase(),
+          logo_url: j.logo || null,
+          logo_key:(j.company||'').toLowerCase().replace(/\s+/g,''),
+          badges:badges, skills:skills,
+          match_score:parseInt(j.match_score)||82,
+          apply_link:j.apply_link||''
+        })
+        localStorage.setItem('js_jobs_data', JSON.stringify(cachedJobs))
+        renderJobs()
+        toast('Job updated: ' + j.title)
+      }
+    }
+  }
+  console.log('Admin BroadcastChannel listening ✅')
+}catch(e){ console.warn('BroadcastChannel not supported:', e.message) }
 </script>
 </body>
 </html>function copyRefLink(){
