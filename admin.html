@@ -825,7 +825,7 @@ async function syncFromSupabase(){
     jobs=data.map(function(j){
       var badges={};try{badges=typeof j.badges==='string'?JSON.parse(j.badges):j.badges||{}}catch(e){}
       var skills=[];try{skills=typeof j.skills==='string'?JSON.parse(j.skills):j.skills||[]}catch(e){}
-      return{id:j.id,title:j.title,company:j.company,category:(j.category||'sde').toLowerCase(),
+      return{id:j.id,supabase_id:j.id,title:j.title,company:j.company,category:(j.category||'sde').toLowerCase(),
         location:j.location||'Remote',salary:j.salary||'Competitive',exp:j.experience||'0-2 years',
         type:j.job_type||'Full-time',match_score:parseInt(j.match_score)||82,apply_link:j.apply_link||'',
         description:j.description||'',skills:skills,badges:badges,logo:j.logo||null,
@@ -1134,15 +1134,17 @@ function saveJob(status){
     }
     // ── EDIT existing job (PATCH) ──
     if(_editingJobId){
-      sbUpdate('jobs', _editingJobId, sbJob).then(function(res){
+      var editLocal = jobs.find(function(x){ return String(x.id)===String(_editingJobId) })
+      var sbEditId = (editLocal && editLocal.supabase_id) || _editingJobId
+      sbUpdate('jobs', sbEditId, sbJob).then(function(res){
         try{
           var bc = new BroadcastChannel('jobsettle_admin')
-          bc.postMessage({ type:'JOB_UPDATED', job: Object.assign({id:_editingJobId}, sbJob) })
+          bc.postMessage({ type:'JOB_UPDATED', job: Object.assign({id:sbEditId}, sbJob) })
           bc.close()
         }catch(er){}
-        aToast('Job updated live!')
+        aToast(res!==null ? 'Job updated live!' : 'Update failed — saved locally', res!==null?0:1)
         _editingJobId = null
-      }).catch(function(e){ aToast('Update failed: '+e.message) })
+      }).catch(function(e){ aToast('Update failed: '+e.message, 1) })
       return
     }
     sbPush('jobs', sbJob).then(function(res){
@@ -1215,12 +1217,14 @@ function toggleJob(id){
   if(!j) return
   j.active = !j.active
   localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
+  // Use the real Supabase row id when we have it
+  var sbId = j.supabase_id || j.id
   // Update Supabase + broadcast to portal
-  sbUpdate('jobs', id, {active: j.active}).then(function(){
+  sbUpdate('jobs', sbId, {active: j.active}).then(function(){
     try{
       var bc = new BroadcastChannel('jobsettle_admin')
       var msgType = j.active ? 'JOB_PUBLISHED' : 'JOB_DELETED'
-      bc.postMessage({type: msgType, job: j, id: String(id)})
+      bc.postMessage({type: msgType, job: Object.assign({}, j, {id: sbId}), id: String(sbId)})
       bc.close()
     }catch(e){}
   })
@@ -1266,12 +1270,14 @@ function editJob(id){
 
 function deleteJob(id){
   if(!confirm('Delete this job? It will be removed from the app.')) return
-  jobs = jobs.filter(function(j){return j.id!==id})
+  var j = jobs.find(function(x){return String(x.id)===String(id)})
+  var sbId = (j && j.supabase_id) || id
+  jobs = jobs.filter(function(x){return String(x.id)!==String(id)})
   localStorage.setItem('js_jobs_data', JSON.stringify(jobs))
-  sbDelete('jobs', id).then(function(){
+  sbDelete('jobs', sbId).then(function(){
     try{
       var bc = new BroadcastChannel('jobsettle_admin')
-      bc.postMessage({type:'JOB_DELETED', id: String(id)})
+      bc.postMessage({type:'JOB_DELETED', id: String(sbId)})
       bc.close()
     }catch(e){}
   })
@@ -1573,6 +1579,459 @@ function autoFetchCompanyLogo(company){
 
   tryNext()
 }
+// ══════════════════════════════════════════════════════════════
+// MISSING FUNCTION LAYER — added so every admin button works and
+// every write hits Supabase (which is what triggers realtime on
+// the 50k student devices via postgres_changes subscriptions).
+// ══════════════════════════════════════════════════════════════
+
+// ── TOAST ─────────────────────────────────────────────────────
+function aToast(msg, isErr){
+  var t = document.getElementById('_aToast')
+  if(!t){
+    t = document.createElement('div')
+    t.id = '_aToast'
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);'
+      + 'background:#06070f;color:#fff;padding:13px 22px;border-radius:12px;font-family:var(--font);'
+      + 'font-size:13.5px;font-weight:700;z-index:99999;box-shadow:0 12px 40px rgba(0,0,0,.35);'
+      + 'opacity:0;transition:all .25s;max-width:90vw;text-align:center;pointer-events:none'
+    document.body.appendChild(t)
+  }
+  t.textContent = msg
+  t.style.background = isErr ? 'linear-gradient(135deg,#ff5f6d,#e03444)' : '#06070f'
+  requestAnimationFrame(function(){
+    t.style.opacity = '1'
+    t.style.transform = 'translateX(-50%) translateY(0)'
+  })
+  clearTimeout(t._timer)
+  t._timer = setTimeout(function(){
+    t.style.opacity = '0'
+    t.style.transform = 'translateX(-50%) translateY(20px)'
+  }, 2600)
+}
+
+// ── DB CONNECTION TEST ─────────────────────────────────────────
+async function testSupabase(){
+  aToast('Testing Supabase connection...')
+  var res = await sbSelect('jobs', 'select=id&limit=1')
+  if(res !== null){
+    aToast('Connected to Supabase! Database is live.')
+  } else {
+    aToast('Cannot reach Supabase — check URL/key & RLS policies', 1)
+  }
+}
+
+// ── GLOBAL SEARCH (topbar) ─────────────────────────────────────
+function globalSearch(q){
+  q = (q||'').trim()
+  if(!q){ return }
+  // Jump to Manage Jobs and filter
+  showPage('manage-jobs', document.querySelectorAll('.adm-lnk')[3])
+  var box = document.getElementById('jobSearch')
+  if(box) box.value = q
+  renderJobsTable(q)
+}
+
+// ── COMMUNITY MODERATION ───────────────────────────────────────
+async function loadPendingPosts(){
+  var list = document.getElementById('pendingPostsList')
+  if(list) list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:30px">Loading...</div>'
+  var data = await sbSelect('community_posts', 'select=*&status=eq.pending&order=created_at.desc&limit=100')
+  if(!list) return
+  if(!data || !data.length){
+    list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">No pending posts. All caught up!</div>'
+    return
+  }
+  list.innerHTML = data.map(function(p){
+    var tags = Array.isArray(p.tags) ? p.tags : []
+    return '<div style="background:white;border:1.5px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px">'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+      + '<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:13px">'+((p.user_name||'?')[0]||'?').toUpperCase()+'</div>'
+      + '<div><div style="font-weight:800;font-size:13px;color:var(--dark)">'+(p.user_name||'Anonymous')+'</div>'
+      + '<div style="font-family:var(--mono);font-size:10px;color:var(--t3)">'+(p.created_at?new Date(p.created_at).toLocaleString('en-IN'):'')+'</div></div></div>'
+      + '<div style="font-size:13.5px;color:var(--t1);line-height:1.6;margin-bottom:10px">'+escHtml(p.content||'')+'</div>'
+      + (tags.length?'<div style="margin-bottom:10px">'+tags.map(function(t){return '<span style="font-family:var(--mono);font-size:10px;background:var(--violet3);color:var(--violet2);padding:2px 8px;border-radius:6px;margin-right:5px">#'+escHtml(t)+'</span>'}).join('')+'</div>':'')
+      + '<div style="display:flex;gap:8px">'
+      + '<button class="btn btn-mint btn-sm" onclick="approvePost(\''+p.id+'\',this)"><i class="fas fa-check"></i>Approve</button>'
+      + '<button class="btn btn-coral btn-sm" onclick="rejectPost(\''+p.id+'\',this)"><i class="fas fa-times"></i>Reject</button>'
+      + '</div></div>'
+  }).join('')
+}
+async function approvePost(id, btn){
+  if(btn) btn.disabled = true
+  var r = await sbUpdate('community_posts', id, {status:'approved'})
+  if(r !== null){ aToast('Post approved — now live in community!'); loadPendingPosts() }
+  else { aToast('Approve failed', 1); if(btn) btn.disabled = false }
+}
+async function rejectPost(id, btn){
+  if(btn) btn.disabled = true
+  var r = await sbUpdate('community_posts', id, {status:'rejected'})
+  if(r !== null){ aToast('Post rejected'); loadPendingPosts() }
+  else { aToast('Reject failed', 1); if(btn) btn.disabled = false }
+}
+
+// ── CAMPUS MODERATION ──────────────────────────────────────────
+async function loadPendingCampus(){
+  var list = document.getElementById('pendingCampusList')
+  if(list) list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:30px">Loading...</div>'
+  var data = await sbSelect('campus_placements', 'select=*&verified=eq.false&order=created_at.desc&limit=100')
+  if(!list) return
+  if(!data || !data.length){
+    list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">No pending reports.</div>'
+    return
+  }
+  list.innerHTML = data.map(function(c){
+    return '<div style="background:white;border:1.5px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">'
+      + '<div><div style="font-weight:800;font-size:15px;color:var(--dark)">'+escHtml(c.company||'')+' · '+escHtml(c.role||'')+'</div>'
+      + '<div style="font-size:12px;color:var(--t3);font-family:var(--mono)">'+escHtml(c.college||'')+' · '+(c.year||'')+'</div></div>'
+      + '<div style="color:var(--mint2);font-weight:900;font-family:var(--mono);white-space:nowrap">₹'+(c.package||0)+' LPA</div></div>'
+      + (c.oa_questions?'<div style="font-size:12.5px;margin:6px 0"><b>OA:</b> '+escHtml(c.oa_questions)+'</div>':'')
+      + (c.interview_rounds?'<div style="font-size:12.5px;margin:6px 0"><b>Rounds:</b> '+escHtml(c.interview_rounds)+'</div>':'')
+      + (c.tips?'<div style="font-size:12.5px;margin:6px 0"><b>Tips:</b> '+escHtml(c.tips)+'</div>':'')
+      + '<div style="display:flex;gap:8px;margin-top:10px">'
+      + '<button class="btn btn-mint btn-sm" onclick="verifyCampus(\''+c.id+'\',this)"><i class="fas fa-check"></i>Verify</button>'
+      + '<button class="btn btn-coral btn-sm" onclick="deleteCampus(\''+c.id+'\',this)"><i class="fas fa-trash"></i>Remove</button>'
+      + '</div></div>'
+  }).join('')
+}
+async function verifyCampus(id, btn){
+  if(btn) btn.disabled = true
+  var r = await sbUpdate('campus_placements', id, {verified:true})
+  if(r !== null){ aToast('Verified — now visible to students!'); loadPendingCampus() }
+  else { aToast('Verify failed', 1); if(btn) btn.disabled = false }
+}
+async function deleteCampus(id, btn){
+  if(!confirm('Remove this report?')) return
+  if(btn) btn.disabled = true
+  var r = await sbDelete('campus_placements', id)
+  if(r !== null){ aToast('Report removed'); loadPendingCampus() }
+  else { aToast('Remove failed', 1); if(btn) btn.disabled = false }
+}
+
+// ── REFERRALS MODERATION ───────────────────────────────────────
+var _referralsCache = []
+async function loadPendingReferrals(){
+  var list = document.getElementById('referralsList')
+  if(list) list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:30px">Loading...</div>'
+  var data = await sbSelect('referrals', 'select=*&order=created_at.desc&limit=200')
+  _referralsCache = data || []
+  // Stats
+  var total = _referralsCache.length
+  var pending = _referralsCache.filter(function(r){return r.status==='pending'}).length
+  var approved = _referralsCache.filter(function(r){return r.status==='approved'}).length
+  var paid = approved * 500
+  setTxt('refStatTotal', total)
+  setTxt('refStatPending', pending)
+  setTxt('refStatApproved', approved)
+  setTxt('refStatPayout', '₹'+paid.toLocaleString('en-IN'))
+  if(!list) return
+  if(!_referralsCache.length){
+    list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">No referrals yet.</div>'
+    return
+  }
+  list.innerHTML = _referralsCache.map(function(r){
+    var sc = r.status==='approved'?'sb-active':r.status==='rejected'?'sb-hot':'sb-new'
+    return '<div style="display:flex;align-items:center;gap:12px;background:white;border:1.5px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:10px">'
+      + '<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:13px;color:var(--dark)">'+escHtml(r.referred_email||'—')+'</div>'
+      + '<div style="font-family:var(--mono);font-size:10px;color:var(--t3)">ref by '+escHtml(String(r.referrer_id||'').substring(0,8))+' · '+(r.created_at?new Date(r.created_at).toLocaleDateString('en-IN'):'')+'</div></div>'
+      + '<span class="sbadge '+sc+'">'+(r.status||'pending').toUpperCase()+'</span>'
+      + (r.status==='pending'?'<button class="btn btn-mint btn-sm" onclick="approveReferral(\''+r.id+'\',this)"><i class="fas fa-check"></i>Approve ₹500</button>':'')
+      + '</div>'
+  }).join('')
+}
+async function approveReferral(id, btn){
+  if(btn) btn.disabled = true
+  var r = await sbUpdate('referrals', id, {status:'approved'})
+  if(r !== null){ aToast('Referral approved — ₹500 credited!'); loadPendingReferrals() }
+  else { aToast('Approve failed', 1); if(btn) btn.disabled = false }
+}
+function exportReferrals(){
+  if(!_referralsCache.length){ aToast('Nothing to export — load referrals first', 1); return }
+  var rows = [['Referred Email','Referrer','Status','Created']]
+  _referralsCache.forEach(function(r){
+    rows.push([r.referred_email||'', r.referrer_id||'', r.status||'', r.created_at||''])
+  })
+  var csv = rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(',')}).join('\n')
+  var a = document.createElement('a')
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download = 'jobsettle-referrals.csv'; a.click()
+  aToast('Referrals exported!')
+}
+
+// ── AMBASSADOR APPLICATIONS ────────────────────────────────────
+async function loadAmbassadorApps(){
+  var list = document.getElementById('ambassadorAppsList')
+  if(list) list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:30px">Loading...</div>'
+  var data = await sbSelect('ambassadors', 'select=*&order=submitted_at.desc&limit=200')
+  if(!list) return
+  if(!data || !data.length){
+    list.innerHTML = '<div style="text-align:center;color:var(--t3);padding:40px;font-family:var(--mono);font-size:13px">No applications yet.</div>'
+    return
+  }
+  list.innerHTML = data.map(function(a){
+    var sc = a.status==='approved'?'sb-active':a.status==='rejected'?'sb-hot':'sb-new'
+    return '<div style="background:white;border:1.5px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">'
+      + '<div><div style="font-weight:800;font-size:15px;color:var(--dark)">'+escHtml(a.name||'')+'</div>'
+      + '<div style="font-size:12px;color:var(--t3);font-family:var(--mono)">'+escHtml(a.email||'')+' · '+escHtml(a.college||'')+' · '+escHtml(a.year||'')+'</div></div>'
+      + '<span class="sbadge '+sc+'">'+(a.status||'pending').toUpperCase()+'</span></div>'
+      + (a.branch?'<div style="font-size:12.5px"><b>Branch:</b> '+escHtml(a.branch)+'</div>':'')
+      + (a.phone?'<div style="font-size:12.5px"><b>Phone:</b> '+escHtml(a.phone)+'</div>':'')
+      + (a.why?'<div style="font-size:12.5px;margin-top:6px;color:var(--t2)">"'+escHtml(a.why)+'"</div>':'')
+      + (a.status==='pending'?'<div style="display:flex;gap:8px;margin-top:10px">'
+        + '<button class="btn btn-mint btn-sm" onclick="approveAmbassador(\''+a.id+'\',this)"><i class="fas fa-check"></i>Approve</button>'
+        + '<button class="btn btn-coral btn-sm" onclick="rejectAmbassador(\''+a.id+'\',this)"><i class="fas fa-times"></i>Reject</button>'
+        + '</div>':'')
+      + '</div>'
+  }).join('')
+}
+async function approveAmbassador(id, btn){
+  if(btn) btn.disabled = true
+  var r = await sbUpdate('ambassadors', id, {status:'approved'})
+  if(r !== null){ aToast('Ambassador approved!'); loadAmbassadorApps() }
+  else { aToast('Approve failed', 1); if(btn) btn.disabled = false }
+}
+async function rejectAmbassador(id, btn){
+  if(btn) btn.disabled = true
+  var r = await sbUpdate('ambassadors', id, {status:'rejected'})
+  if(r !== null){ aToast('Application rejected'); loadAmbassadorApps() }
+  else { aToast('Reject failed', 1); if(btn) btn.disabled = false }
+}
+
+// ── COLLEGE CONNECT ────────────────────────────────────────────
+var _collegesCache = []
+async function renderColleges(){
+  var tbody = document.getElementById('collegesTableBody')
+  if(tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:24px">Loading...</td></tr>'
+  var data = await sbSelect('colleges', 'select=*&order=created_at.desc&limit=300')
+  _collegesCache = data || []
+  drawCollegeRows(_collegesCache)
+}
+function drawCollegeRows(rows){
+  var tbody = document.getElementById('collegesTableBody')
+  if(!tbody) return
+  if(!rows.length){
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:30px;font-family:var(--mono)">No colleges yet — add one on the left.</td></tr>'
+    return
+  }
+  tbody.innerHTML = rows.map(function(c){
+    var parts = Array.isArray(c.partnership) ? c.partnership : []
+    return '<tr><td><div style="font-weight:800">'+escHtml(c.name||'')+'</div>'
+      + (c.website?'<a href="'+escAttr(c.website)+'" target="_blank" style="font-size:11px;color:var(--sky);font-family:var(--mono)">'+escHtml(c.website)+'</a>':'')+'</td>'
+      + '<td><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--gold)">'+escHtml(c.type||'')+'</span></td>'
+      + '<td style="font-size:12px">'+escHtml(c.city||'')+'</td>'
+      + '<td style="font-family:var(--mono);font-size:12px">'+(c.students||'—')+'</td>'
+      + '<td style="font-size:11px">'+parts.map(function(p){return escHtml(p)}).join(', ')+'</td>'
+      + '<td style="font-size:11px"><div style="font-weight:700">'+escHtml(c.po_name||'—')+'</div><div style="color:var(--t3);font-family:var(--mono)">'+escHtml(c.po_email||'')+'</div></td>'
+      + '<td><button class="btn btn-coral btn-sm" onclick="deleteCollege(\''+c.id+'\',this)"><i class="fas fa-trash"></i></button></td></tr>'
+  }).join('')
+}
+function filterColleges(q){
+  q = (q||'').toLowerCase()
+  drawCollegeRows(_collegesCache.filter(function(c){
+    return !q || (c.name||'').toLowerCase().includes(q) || (c.city||'').toLowerCase().includes(q)
+  }))
+}
+async function saveCollege(){
+  var name = (document.getElementById('colName')||{}).value
+  var city = (document.getElementById('colCity')||{}).value
+  if(!name || !name.trim()){ aToast('Enter college name', 1); return }
+  if(!city || !city.trim()){ aToast('Enter city/state', 1); return }
+  var partnership = []
+  document.querySelectorAll('#page-colleges .badge-opt.on').forEach(function(b){ partnership.push(b.textContent.trim()) })
+  var college = {
+    name: name.trim(),
+    city: city.trim(),
+    type: (document.getElementById('colType')||{}).value || 'Private',
+    students: parseInt((document.getElementById('colStudents')||{}).value) || null,
+    website: (document.getElementById('colWebsite')||{}).value || null,
+    po_name: (document.getElementById('colPOName')||{}).value || null,
+    po_email: (document.getElementById('colPOEmail')||{}).value || null,
+    partnership: partnership,
+    created_at: new Date().toISOString()
+  }
+  aToast('Saving college...')
+  var r = await sbPush('colleges', college)
+  if(r !== null){
+    aToast('College partner added!')
+    ;['colName','colCity','colStudents','colWebsite','colPOName','colPOEmail'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.value=''
+    })
+    renderColleges(); updateCollegeStats()
+  } else {
+    aToast('Save failed — check colleges table exists in Supabase', 1)
+  }
+}
+async function deleteCollege(id, btn){
+  if(!confirm('Remove this college partner?')) return
+  if(btn) btn.disabled = true
+  var r = await sbDelete('colleges', id)
+  if(r !== null){ aToast('College removed'); renderColleges(); updateCollegeStats() }
+  else { aToast('Remove failed', 1); if(btn) btn.disabled = false }
+}
+function updateCollegeStats(){
+  var list = _collegesCache || []
+  var totalStudents = list.reduce(function(s,c){ return s + (parseInt(c.students)||0) }, 0)
+  var drives = list.filter(function(c){ return (c.partnership||[]).indexOf('Campus Drive')>-1 }).length
+  setTxt('statColleges', list.length)
+  setTxt('statStudentsReached', totalStudents.toLocaleString('en-IN'))
+  setTxt('statCampusDrives', drives)
+  setTxt('statPlacements', Math.round(totalStudents*0.04))
+}
+function sendBulkEmail(){
+  var subj = (document.getElementById('bulkSubject')||{}).value
+  if(!subj || !subj.trim()){ aToast('Enter a subject', 1); return }
+  if(!_collegesCache.length){ aToast('No college partners to email yet', 1); return }
+  var emails = _collegesCache.map(function(c){return c.po_email}).filter(Boolean)
+  if(!emails.length){ aToast('No placement-officer emails on file', 1); return }
+  // Open default mail client with BCC to all partners
+  var body = (document.getElementById('bulkMsg')||{}).value || ''
+  var link = 'mailto:?bcc='+encodeURIComponent(emails.join(','))
+    + '&subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body)
+  window.location.href = link
+  aToast('Opening mail client for '+emails.length+' partners...')
+}
+
+// ── CAMPUS AMBASSADORS (management) ────────────────────────────
+var _ambCache = []
+async function renderAmbassadors(){
+  var tbody = document.getElementById('ambassadorsTableBody')
+  if(tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:24px">Loading...</td></tr>'
+  var data = await sbSelect('ambassadors', 'select=*&order=referrals.desc&limit=300')
+  _ambCache = data || []
+  drawAmbRows(_ambCache)
+  drawAmbLeaderboard(_ambCache)
+}
+function drawAmbRows(rows){
+  var tbody = document.getElementById('ambassadorsTableBody')
+  if(!tbody) return
+  if(!rows.length){
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:30px;font-family:var(--mono)">No ambassadors yet.</td></tr>'
+    return
+  }
+  tbody.innerHTML = rows.map(function(a){
+    var refs = parseInt(a.referrals)||0
+    var sc = a.status==='approved'?'sb-active':a.status==='rejected'?'sb-hot':'sb-new'
+    return '<tr><td><div style="display:flex;align-items:center;gap:8px">'
+      + '<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--mint));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:white">'+((a.name||'?')[0]||'?').toUpperCase()+'</div>'
+      + '<div><div style="font-weight:700">'+escHtml(a.name||'')+'</div><div style="font-size:10px;color:var(--t3);font-family:var(--mono)">'+escHtml(a.email||'')+'</div></div></div></td>'
+      + '<td style="font-size:12px">'+escHtml(a.college||'')+'</td>'
+      + '<td style="font-family:var(--mono);font-size:12px">'+escHtml(a.year||'')+'</td>'
+      + '<td style="font-family:var(--mono);font-weight:700;color:var(--mint2)">'+refs+'</td>'
+      + '<td style="font-family:var(--mono);color:#b45309;font-weight:700">₹'+(refs*500).toLocaleString('en-IN')+'</td>'
+      + '<td><span class="sbadge '+sc+'">'+(a.status||'pending').toUpperCase()+'</span></td>'
+      + '<td><button class="btn btn-coral btn-sm" onclick="deleteAmbassador(\''+a.id+'\',this)"><i class="fas fa-trash"></i></button></td></tr>'
+  }).join('')
+}
+function drawAmbLeaderboard(rows){
+  var el = document.getElementById('ambLeaderboard')
+  if(!el) return
+  var top = rows.slice().sort(function(a,b){return (parseInt(b.referrals)||0)-(parseInt(a.referrals)||0)}).slice(0,5)
+  if(!top.length){ el.innerHTML = '<div style="color:var(--t3);font-family:var(--mono);font-size:12px;text-align:center;padding:14px">No data yet</div>'; return }
+  var medals = ['#ffb400','#9ca3af','#cd7f32','var(--t3)','var(--t3)']
+  el.innerHTML = top.map(function(a,i){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)">'
+      + '<div style="font-family:var(--mono);font-weight:900;color:'+medals[i]+';width:22px">#'+(i+1)+'</div>'
+      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--dark)">'+escHtml(a.name||'')+'</div>'
+      + '<div style="font-size:10px;color:var(--t3);font-family:var(--mono)">'+escHtml(a.college||'')+'</div></div>'
+      + '<div style="font-family:var(--mono);font-weight:700;color:var(--mint2)">'+(parseInt(a.referrals)||0)+' refs</div></div>'
+  }).join('')
+}
+function filterAmbassadors(q){
+  q = (q||'').toLowerCase()
+  drawAmbRows(_ambCache.filter(function(a){
+    return !q || (a.name||'').toLowerCase().includes(q) || (a.college||'').toLowerCase().includes(q)
+  }))
+}
+var _ambAvatarData = null
+function previewAmbAvatar(inp){
+  if(!inp.files || !inp.files[0]) return
+  var file = inp.files[0]
+  if(file.size > 2*1024*1024){ aToast('Image too large! Max 2MB', 1); return }
+  var reader = new FileReader()
+  reader.onload = function(e){
+    _ambAvatarData = e.target.result
+    var img = document.getElementById('ambAvatarImg')
+    var icon = document.getElementById('ambAvatarIcon')
+    if(img){ img.src = e.target.result; img.style.display = 'block' }
+    if(icon) icon.style.display = 'none'
+  }
+  reader.readAsDataURL(file)
+}
+async function saveAmbassador(){
+  var name = (document.getElementById('ambName')||{}).value
+  var email = (document.getElementById('ambEmail')||{}).value
+  var college = (document.getElementById('ambCollege')||{}).value
+  if(!name||!name.trim()){ aToast('Enter ambassador name', 1); return }
+  if(!email||!email.trim()){ aToast('Enter email', 1); return }
+  if(!college||!college.trim()){ aToast('Enter college', 1); return }
+  var amb = {
+    name:name.trim(), email:email.trim(), college:college.trim(),
+    year:(document.getElementById('ambYear')||{}).value,
+    branch:(document.getElementById('ambBranch')||{}).value||null,
+    phone:(document.getElementById('ambPhone')||{}).value||null,
+    linkedin:(document.getElementById('ambLinkedin')||{}).value||null,
+    why:(document.getElementById('ambWhy')||{}).value||null,
+    avatar_url:_ambAvatarData||null,
+    referrals:0, status:'approved',
+    submitted_at:new Date().toISOString()
+  }
+  aToast('Adding ambassador...')
+  var r = await sbPush('ambassadors', amb)
+  if(r !== null){
+    aToast('Ambassador added!')
+    ;['ambName','ambEmail','ambCollege','ambBranch','ambPhone','ambLinkedin','ambWhy'].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.value=''
+    })
+    _ambAvatarData = null
+    var img=document.getElementById('ambAvatarImg'), icon=document.getElementById('ambAvatarIcon')
+    if(img){ img.src=''; img.style.display='none' }
+    if(icon) icon.style.display='block'
+    renderAmbassadors(); updateAmbStats()
+  } else {
+    aToast('Save failed — check ambassadors table in Supabase', 1)
+  }
+}
+async function deleteAmbassador(id, btn){
+  if(!confirm('Remove this ambassador?')) return
+  if(btn) btn.disabled = true
+  var r = await sbDelete('ambassadors', id)
+  if(r !== null){ aToast('Ambassador removed'); renderAmbassadors(); updateAmbStats() }
+  else { aToast('Remove failed', 1); if(btn) btn.disabled = false }
+}
+function updateAmbStats(){
+  var list = _ambCache || []
+  var totalRefs = list.reduce(function(s,a){ return s + (parseInt(a.referrals)||0) }, 0)
+  var colleges = {}; list.forEach(function(a){ if(a.college) colleges[a.college]=1 })
+  setTxt('statAmb', list.length)
+  setTxt('statAmbReferrals', totalRefs)
+  setTxt('statAmbEarned', '₹'+(totalRefs*500).toLocaleString('en-IN'))
+  setTxt('statAmbColleges', Object.keys(colleges).length)
+}
+function sendAmbMessage(){
+  if(!_ambCache.length){ aToast('No ambassadors to message', 1); return }
+  var emails = _ambCache.map(function(a){return a.email}).filter(Boolean)
+  if(!emails.length){ aToast('No emails on file', 1); return }
+  window.location.href = 'mailto:?bcc='+encodeURIComponent(emails.join(','))+'&subject='+encodeURIComponent('JobSettle Ambassador Update')
+  aToast('Opening mail client for '+emails.length+' ambassadors...')
+}
+function exportAmbassadors(){
+  if(!_ambCache.length){ aToast('Nothing to export', 1); return }
+  var rows = [['Name','Email','College','Year','Referrals','Status']]
+  _ambCache.forEach(function(a){ rows.push([a.name||'',a.email||'',a.college||'',a.year||'',a.referrals||0,a.status||'']) })
+  var csv = rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(',')}).join('\n')
+  var a = document.createElement('a')
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
+  a.download = 'jobsettle-ambassadors.csv'; a.click()
+  aToast('Ambassadors exported!')
+}
+
+// ── SHARED HELPERS ─────────────────────────────────────────────
+function setTxt(id, val){ var el=document.getElementById(id); if(el) el.textContent = val }
+function escHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function escAttr(s){ return escHtml(s).replace(/"/g,'&quot;') }
+
 // Enter key login
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&document.getElementById('loginScreen').style.display!=='none'){doAdminLogin()}
