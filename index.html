@@ -1902,16 +1902,51 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 <!-- INTERVIEW PREP VIEW -->
 <div id="interviewPrepView" style="display:none;flex:1;overflow-y:auto;padding:24px 26px">
   <div style="max-width:880px;margin:0 auto">
-    <div style="margin-bottom:24px"><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Interview Prep</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Practice questions, tips and AI-powered prep</p></div>
-    <div style="background:linear-gradient(135deg,#0a0a1a,#1a0840);border-radius:20px;padding:28px;margin-bottom:20px;display:flex;align-items:center;gap:24px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(108,71,255,.3),transparent 70%);pointer-events:none"></div>
-      <div style="font-size:52px"><i class="fas fa-robot" style="font-size:40px;color:#6c47ff"></i></div>
-      <div style="flex:1;position:relative;z-index:1">
-        <div style="font-size:18px;font-weight:900;color:white;margin-bottom:6px">JobSettle AI Copilot</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:16px">Real-time answers during interviews. 100% invisible on Zoom, Meet & Teams.</div>
-        <button onclick="toast('Opening JobSettle AI!')" style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(0,212,164,.35)"><i class="fas fa-robot"></i> Launch AI Copilot</button>
+    <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Interview Prep AI</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real AI — ask anything about interviews, DSA, system design</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="ipSetTopic('dsa')" id="ipBtnDsa" style="padding:7px 14px;border:2px solid var(--mint4);background:var(--mint3);border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--mint2);cursor:pointer">DSA</button>
+        <button onclick="ipSetTopic('system_design')" id="ipBtnSystem_design" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">System Design</button>
+        <button onclick="ipSetTopic('hr')" id="ipBtnHr" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">HR</button>
+        <button onclick="ipSetTopic('frontend')" id="ipBtnFrontend" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">Frontend</button>
+        <button onclick="ipSetTopic('sql')" id="ipBtnSql" style="padding:7px 14px;border:2px solid var(--bd);background:white;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:800;color:var(--t2);cursor:pointer">SQL</button>
       </div>
     </div>
+
+    <!-- Quick suggestion chips -->
+    <div id="ipSuggestions" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--bd)'">Explain Two Sum</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--bd)'">Design WhatsApp</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--bd)'">Tell me about yourself</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--bd)'">Difference: TCP vs UDP</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--bd)'">What is dynamic programming?</button>
+      <button onclick="ipAsk(this.textContent)" style="padding:7px 14px;background:white;border:2px solid var(--bd);border-radius:20px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--violet)'" onmouseout="this.style.borderColor='var(--bd)'">Give me a mock question</button>
+    </div>
+
+    <!-- Chat area -->
+    <div id="ipChatBox" style="background:white;border:2px solid var(--bd);border-radius:18px;min-height:400px;max-height:520px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div>
+        <div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px">
+          <div style="font-size:13.5px;color:var(--dark);line-height:1.7">Hi! I am your <strong>Interview Prep AI</strong>. I can help you with:<br><br>
+          <strong>DSA</strong> — Arrays, Trees, Graphs, DP, Sorting<br>
+          <strong>System Design</strong> — Design WhatsApp, Netflix, Uber<br>
+          <strong>HR Questions</strong> — Tell me about yourself, strengths/weaknesses<br>
+          <strong>Frontend</strong> — React, JavaScript, CSS<br>
+          <strong>SQL</strong> — Queries, indexes, joins<br><br>
+          Ask me anything or click a suggestion above!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:flex-end">
+      <textarea id="ipInput" placeholder="Ask anything... e.g. Explain binary search, Design YouTube, Tell me about yourself..." style="flex:1;border:none;outline:none;font-family:var(--font);font-size:14px;color:var(--dark);resize:none;line-height:1.6;min-height:44px;max-height:120px;padding:4px 0;background:transparent" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ipSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+      <button id="ipSendBtn" onclick="ipSend()" style="width:42px;height:42px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 4px 12px rgba(108,71,255,.3)"><i class="fas fa-paper-plane" style="color:white;font-size:14px"></i></button>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--t3)">Powered by Claude AI · Answers are for practice only</div>
+  </div>
+</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
       <div style="background:linear-gradient(160deg,#eafff8,#d0fdf0);border:2px solid #b8f5e0;border-radius:16px;padding:20px;cursor:pointer" onclick="toast('DSA Questions loaded!')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'" style="transition:all .2s"><i class="fas fa-code" style="font-size:22px;color:var(--mint2);margin-bottom:10px;display:block"></i><div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px">DSA</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3)">150+ questions</div></div>
       <div style="background:linear-gradient(160deg,#f0eaff,#e2d5ff);border:2px solid #d0c0ff;border-radius:16px;padding:20px;cursor:pointer" onclick="toast('System Design Questions loaded!')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'" style="transition:all .2s"><i class="fas fa-sitemap" style="font-size:22px;color:var(--violet);margin-bottom:10px;display:block"></i><div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px">System Design</div><div style="font-family:var(--mono);font-size:10px;color:var(--t3)">80+ questions</div></div>
@@ -2076,36 +2111,94 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1)}
 <!-- MOCK INTERVIEW VIEW -->
 <div id="mockView" style="display:none;flex:1;overflow-y:auto;padding:24px 26px">
   <div style="max-width:880px;margin:0 auto">
-    <div style="margin-bottom:24px"><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Mock Interview</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Practice with AI — get real-time feedback on your answers</p></div>
-    <div style="background:linear-gradient(135deg,#0a0a1a,#1a0440);border-radius:20px;padding:32px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(0,212,164,.15),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(124,92,252,.12),transparent 60%);pointer-events:none"></div>
-      <div style="position:relative;z-index:1">
-        <div style="font-size:56px;margin-bottom:16px"><i class="fas fa-microphone" style="font-size:40px;color:#9898b8;opacity:.3"></i></div>
-        <h3 style="font-size:22px;font-weight:900;color:white;margin-bottom:10px;letter-spacing:-.4px">AI Mock Interviewer</h3>
-        <p style="font-size:14px;color:rgba(255,255,255,.5);max-width:420px;margin:0 auto 24px;line-height:1.7">Answer questions out loud or type your responses. Get instant feedback on clarity, depth and confidence.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <button onclick="toast('Starting SDE Mock Interview...')" style="display:flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:11px;font-family:var(--font);font-size:13.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(0,212,164,.35)"><i class="fas fa-play"></i> Start SDE Mock</button>
-          <button onclick="toast('Starting HR Mock Interview...')" style="display:flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:11px;font-family:var(--font);font-size:13.5px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 16px rgba(124,92,252,.3)"><i class="fas fa-comments"></i> Start HR Mock</button>
+    <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div><h2 style="font-size:20px;font-weight:900;color:var(--dark);letter-spacing:-.4px;margin-bottom:4px">Mock Interview</h2><p style="font-family:var(--mono);font-size:11px;color:var(--t3)">Real AI interviewer — get graded on every answer</p></div>
+      <div id="mockStatus" style="display:flex;align-items:center;gap:8px">
+        <button onclick="startMock(document.getElementById('mockTypeSelect').value)" style="padding:10px 22px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(0,212,164,.3)"><i class="fas fa-play"></i> Start Interview</button>
+      </div>
+    </div>
+
+    <!-- Setup panel -->
+    <div id="mockSetup" style="background:white;border:2px solid var(--bd);border-radius:18px;padding:24px;margin-bottom:16px">
+      <div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px">Choose Interview Type</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px">
+        <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .15s" onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--mint)';document.getElementById('mockTypeSelect').value='sde'">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--mint3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-code" style="color:var(--mint2)"></i></div>
+          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">SDE Technical</div><div style="font-size:11px;color:var(--t3)">DSA + System Design · 5 questions</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .15s" onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='var(--violet)';document.getElementById('mockTypeSelect').value='hr'">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--violet3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-user-tie" style="color:var(--violet)"></i></div>
+          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">HR Behavioral</div><div style="font-size:11px;color:var(--t3)">Soft skills + STAR · 5 questions</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .15s" onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='#3b82f6';document.getElementById('mockTypeSelect').value='frontend'">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--sky3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-paint-brush" style="color:var(--sky)"></i></div>
+          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">Frontend</div><div style="font-size:11px;color:var(--t3)">React + JS + CSS · 5 questions</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .15s" onclick="document.querySelectorAll('.mock-type-opt').forEach(e=>e.style.borderColor='var(--bd)');this.style.borderColor='#f59e0b';document.getElementById('mockTypeSelect').value='system_design'">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--gold3);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-sitemap" style="color:var(--gold)"></i></div>
+          <div><div style="font-size:13px;font-weight:800;color:var(--dark)">System Design</div><div style="font-size:11px;color:var(--t3)">Architecture · 3 questions</div></div>
+        </label>
+      </div>
+      <input type="hidden" id="mockTypeSelect" value="sde"/>
+      <div style="display:flex;gap:10px;align-items:center">
+        <label style="font-size:13px;font-weight:700;color:var(--dark)">Your target company (optional):</label>
+        <input id="mockCompanyInput" class="fi" placeholder="e.g. Google, TCS, Flipkart..." style="flex:1;margin-bottom:0;max-width:260px"/>
+      </div>
+    </div>
+
+    <!-- Interview session -->
+    <div id="mockSession" style="display:none">
+      <!-- Progress bar -->
+      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--t3);white-space:nowrap">Question <span id="mockQNum">1</span> of <span id="mockQTotal">5</span></div>
+        <div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div id="mockProgressBar" style="height:100%;width:20%;background:linear-gradient(90deg,var(--mint),var(--violet));border-radius:4px;transition:width .5s ease"></div></div>
+        <div id="mockScore" style="font-family:var(--mono);font-size:11px;color:var(--mint2);font-weight:700">Score: 0</div>
+      </div>
+
+      <!-- Question card -->
+      <div style="background:linear-gradient(135deg,#0a0a1a,#1a0840);border-radius:18px;padding:24px;margin-bottom:14px">
+        <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);margin-bottom:10px;letter-spacing:1px" id="mockQLabel">QUESTION 1 · SDE TECHNICAL</div>
+        <div id="mockQuestion" style="font-size:16px;font-weight:700;color:white;line-height:1.7">Loading question...</div>
+      </div>
+
+      <!-- Answer area -->
+      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px">
+        <textarea id="mockAnswer" placeholder="Type your answer here... Be detailed. Explain your approach, time/space complexity, trade-offs." style="width:100%;border:none;outline:none;font-family:var(--font);font-size:14px;color:var(--dark);resize:none;line-height:1.7;min-height:120px;background:transparent"></textarea>
+      </div>
+
+      <!-- AI Feedback area -->
+      <div id="mockFeedback" style="display:none;background:var(--bg);border:2px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:900;color:var(--dark);margin-bottom:10px;display:flex;align-items:center;gap:8px"><i class="fas fa-robot" style="color:var(--violet)"></i> AI Feedback</div>
+        <div id="mockFeedbackText" style="font-size:13.5px;color:var(--dark);line-height:1.75"></div>
+        <div id="mockScoreCard" style="display:none;margin-top:14px;padding:12px 16px;background:white;border-radius:10px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:32px;font-weight:900" id="mockScoreNum">—</div>
+          <div><div style="font-size:12px;font-weight:800;color:var(--dark)" id="mockScoreLabel">Score</div><div style="font-size:11px;color:var(--t3)" id="mockScoreDesc">out of 10</div></div>
         </div>
       </div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
-      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--dark);margin-bottom:6px">0</div><div style="font-size:12px;color:var(--t3);font-weight:600">Mocks Completed</div></div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--mint2);margin-bottom:6px">—</div><div style="font-size:12px;color:var(--t3);font-weight:600">Avg Score</div></div>
-      <div style="background:white;border:2px solid var(--bd);border-radius:16px;padding:20px;text-align:center"><div style="font-size:28px;font-weight:900;color:var(--violet);margin-bottom:6px">—</div><div style="font-size:12px;color:var(--t3);font-weight:600">Strongest Topic</div></div>
-    </div>
-    <div style="background:white;border:2px solid var(--bd);border-radius:18px;padding:22px">
-      <div style="font-size:14px;font-weight:900;color:var(--dark);margin-bottom:16px">Choose Interview Type</div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
-        <div onclick="toast('SDE Technical Interview started!')" style="padding:16px;background:var(--bg);border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--mint)';this.style.background='var(--mint3)'" onmouseout="this.style.borderColor='var(--bd)';this.style.background='var(--bg)'"><div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px"><i class="fas fa-code" style="color:var(--mint2);margin-right:8px"></i>SDE Technical</div><div style="font-size:12px;color:var(--t3)">DSA + System Design · 45 min</div></div>
-        <div onclick="toast('HR Interview started!')" style="padding:16px;background:var(--bg);border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--violet)';this.style.background='var(--violet3)'" onmouseout="this.style.borderColor='var(--bd)';this.style.background='var(--bg)'"><div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px"><i class="fas fa-user-tie" style="color:var(--violet);margin-right:8px"></i>HR Behavioral</div><div style="font-size:12px;color:var(--t3)">Soft skills · 30 min</div></div>
-        <div onclick="toast('Frontend Interview started!')" style="padding:16px;background:var(--bg);border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#3b82f6';this.style.background='var(--b3)'" onmouseout="this.style.borderColor='var(--bd)';this.style.background='var(--bg)'"><div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px"><i class="fas fa-paint-brush" style="color:#3b82f6;margin-right:8px"></i>Frontend</div><div style="font-size:12px;color:var(--t3)">React + JS + CSS · 40 min</div></div>
-        <div onclick="toast('System Design Interview started!')" style="padding:16px;background:var(--bg);border:2px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#f59e0b';this.style.background='var(--y3)'" onmouseout="this.style.borderColor='var(--bd)';this.style.background='var(--bg)'"><div style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px"><i class="fas fa-sitemap" style="color:#f59e0b;margin-right:8px"></i>System Design</div><div style="font-size:12px;color:var(--t3)">Architecture · 50 min</div></div>
+
+      <div style="display:flex;gap:10px">
+        <button id="mockSubmitBtn" onclick="mockSubmitAnswer()" style="flex:1;padding:13px;background:linear-gradient(135deg,var(--violet),var(--violet2));border:none;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer;box-shadow:0 4px 14px rgba(108,71,255,.3)"><i class="fas fa-check"></i> Submit Answer</button>
+        <button id="mockNextBtn" onclick="mockNextQuestion()" style="display:none;flex:1;padding:13px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer"><i class="fas fa-arrow-right"></i> Next Question</button>
       </div>
+    </div>
+
+    <!-- Results panel -->
+    <div id="mockResults" style="display:none;background:white;border:2px solid var(--bd);border-radius:18px;padding:28px;text-align:center">
+      <div style="font-size:48px;margin-bottom:14px">🎉</div>
+      <div style="font-size:22px;font-weight:900;color:var(--dark);margin-bottom:8px">Interview Complete!</div>
+      <div style="font-size:48px;font-weight:900;margin:16px 0" id="mockFinalScore" style="color:var(--mint2)">—</div>
+      <div style="font-size:14px;color:var(--t2);margin-bottom:20px" id="mockFinalMsg"></div>
+      <button onclick="document.getElementById('mockSession').style.display='none';document.getElementById('mockResults').style.display='none';document.getElementById('mockSetup').style.display='block'" style="padding:12px 28px;background:linear-gradient(135deg,var(--mint),var(--mint2));border:none;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:800;color:white;cursor:pointer">Try Again</button>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px">
+      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;text-align:center"><div id="mockStatTotal" style="font-size:24px;font-weight:900;color:var(--dark);margin-bottom:4px">0</div><div style="font-size:11px;color:var(--t3);font-weight:600">Mocks Done</div></div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;text-align:center"><div id="mockStatAvg" style="font-size:24px;font-weight:900;color:var(--mint2);margin-bottom:4px">—</div><div style="font-size:11px;color:var(--t3);font-weight:600">Avg Score</div></div>
+      <div style="background:white;border:2px solid var(--bd);border-radius:14px;padding:16px;text-align:center"><div id="mockStatBest" style="font-size:24px;font-weight:900;color:var(--violet);margin-bottom:4px">—</div><div style="font-size:11px;color:var(--t3);font-weight:600">Best Score</div></div>
     </div>
   </div>
 </div>
-
 <!-- LEADERBOARD VIEW -->
 <div id="leaderboardView" style="display:none;flex:1;overflow-y:auto;padding:24px 26px">
   <div style="max-width:760px;margin:0 auto">
@@ -7066,7 +7159,314 @@ try{
       }
     }
   }
-  console.log('Admin BroadcastChannel listening ✅')
+
+// ══════════════════════════════════════════════════════
+// REAL AI INTERVIEW PREP — Powered by Claude API
+// ══════════════════════════════════════════════════════
+
+var ipTopic = 'dsa'
+var ipHistory = [] // full conversation history for context
+
+var IP_SYSTEM = {
+  dsa: 'You are an expert DSA interview coach for top Indian tech companies (Google, Amazon, Flipkart, TCS). Give clear, concise answers with time/space complexity. Use examples. Format with line breaks for readability. Keep responses under 300 words unless asked for more.',
+  system_design: 'You are an expert system design interview coach. Help candidates design scalable systems. Cover: requirements, high-level design, components, databases, scaling, trade-offs. Keep responses focused and practical.',
+  hr: 'You are an HR interview coach for tech companies in India. Help candidates answer behavioral questions using the STAR method. Give sample answers and tips. Be encouraging and practical.',
+  frontend: 'You are a frontend interview expert (React, JavaScript, CSS, HTML). Give clear code examples when needed. Cover browser concepts, performance, modern JS features.',
+  sql: 'You are a SQL and database interview expert. Provide clear query examples, explain concepts like indexing, joins, normalization. Use practical Indian tech company context.'
+}
+
+function ipSetTopic(topic){
+  ipTopic = topic
+  ipHistory = [] // reset chat on topic change
+  // Update button styles
+  var topics = ['dsa','system_design','hr','frontend','sql']
+  topics.forEach(function(t){
+    var btn = document.getElementById('ipBtn' + t.charAt(0).toUpperCase() + t.slice(1))
+    if(!btn) btn = document.getElementById('ipBtn' + t)
+    // Try exact id
+    btn = document.getElementById('ipBtn' + t.charAt(0).toUpperCase() + t.slice(1).replace('_design','Design').replace('_',''))
+    if(!btn){
+      // find by data or text
+      var allBtns = document.querySelectorAll('#interviewPrepView button')
+      allBtns.forEach(function(b){ 
+        if(b.id && b.id.toLowerCase().includes(t.replace('_',''))){ btn = b }
+      })
+    }
+    if(btn){
+      if(t === topic){
+        btn.style.background = 'var(--violet3)'
+        btn.style.borderColor = 'var(--violet)'
+        btn.style.color = 'var(--violet2)'
+      } else {
+        btn.style.background = 'white'
+        btn.style.borderColor = 'var(--bd)'
+        btn.style.color = 'var(--t2)'
+      }
+    }
+  })
+  // Clear chat and show welcome
+  var box = document.getElementById('ipChatBox')
+  if(box){
+    var topicNames = {dsa:'DSA', system_design:'System Design', hr:'HR & Behavioral', frontend:'Frontend', sql:'SQL & Databases'}
+    box.innerHTML = '<div style="display:flex;gap:12px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.7">Topic switched to <strong>'+topicNames[topic]+'</strong>. Ask me anything about this topic, or I can give you a practice question!</div></div></div>'
+  }
+}
+
+function ipAsk(text){
+  document.getElementById('ipInput').value = text
+  ipSend()
+}
+
+async function ipSend(){
+  var input = document.getElementById('ipInput')
+  var msg = (input.value||'').trim()
+  if(!msg) return
+
+  input.value = ''
+  input.style.height = 'auto'
+
+  // Add user message to UI
+  var box = document.getElementById('ipChatBox')
+  box.innerHTML += '<div style="display:flex;gap:12px;align-items:flex-start;justify-content:flex-end"><div style="max-width:80%;background:linear-gradient(135deg,var(--violet),var(--violet2));border-radius:14px;padding:12px 16px"><div style="font-size:13.5px;color:white;line-height:1.65">'+escHtml(msg)+'</div></div></div>'
+
+  // Add typing indicator
+  var typingId = 'typing_'+Date.now()
+  box.innerHTML += '<div id="'+typingId+'" style="display:flex;gap:12px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="background:var(--bg);border-radius:14px;padding:14px 16px"><div style="display:flex;gap:5px;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:var(--t3);animation:pulse 1s infinite"></span><span style="width:7px;height:7px;border-radius:50%;background:var(--t3);animation:pulse 1s .2s infinite"></span><span style="width:7px;height:7px;border-radius:50%;background:var(--t3);animation:pulse 1s .4s infinite"></span></div></div></div>'
+  box.scrollTop = box.scrollHeight
+
+  // Add to history
+  ipHistory.push({role:'user', content: msg})
+
+  // Call Claude API
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: IP_SYSTEM[ipTopic] || IP_SYSTEM.dsa,
+        messages: ipHistory
+      })
+    })
+    var data = await resp.json()
+    var reply = (data.content && data.content[0] && data.content[0].text) || 'Sorry, I could not get a response. Please try again.'
+    
+    // Add to history
+    ipHistory.push({role:'assistant', content: reply})
+    // Keep history max 10 turns for performance
+    if(ipHistory.length > 20) ipHistory = ipHistory.slice(-20)
+
+    // Remove typing, add response
+    var typingEl = document.getElementById(typingId)
+    if(typingEl) typingEl.remove()
+    box.innerHTML += '<div style="display:flex;gap:12px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violet2));display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="flex:1;background:var(--bg);border-radius:14px;padding:14px 16px"><div style="font-size:13.5px;color:var(--dark);line-height:1.75;white-space:pre-wrap">'+escHtml(reply)+'</div></div></div>'
+    box.scrollTop = box.scrollHeight
+  } catch(e) {
+    var typingEl = document.getElementById(typingId)
+    if(typingEl) typingEl.remove()
+    box.innerHTML += '<div style="display:flex;gap:12px;align-items:flex-start"><div style="width:34px;height:34px;border-radius:50%;background:var(--coral);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-robot" style="color:white;font-size:14px"></i></div><div style="background:var(--coral3);border-radius:14px;padding:14px 16px"><div style="font-size:13px;color:var(--coral)">Error: '+e.message+'. Please check your connection.</div></div></div>'
+    box.scrollTop = box.scrollHeight
+  }
+}
+
+function escHtml(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+// ══════════════════════════════════════════════════════
+// REAL AI MOCK INTERVIEW
+// ══════════════════════════════════════════════════════
+
+var mockQuestions = []
+var mockCurrentQ = 0
+var mockScores = []
+var mockType = 'sde'
+var mockCompany = ''
+var mockStats = JSON.parse(localStorage.getItem('js_mock_stats')||'{"total":0,"scores":[]}')
+
+var MOCK_SYSTEM = {
+  sde: 'You are a strict SDE interviewer at a top tech company. Ask challenging DSA and system design questions. Evaluate answers and give a score from 1-10 with detailed feedback on: correctness, approach, time/space complexity, communication. Be constructive but honest.',
+  hr: 'You are an experienced HR interviewer at a top tech company in India. Ask behavioral questions and evaluate using the STAR method. Score 1-10 on: relevance, structure, specifics, professionalism. Give actionable feedback.',
+  frontend: 'You are a senior frontend engineer interviewing candidates. Ask React, JavaScript, CSS questions. Evaluate code quality, browser knowledge, performance awareness. Score 1-10 with detailed feedback.',
+  system_design: 'You are a principal engineer conducting a system design interview. Ask candidates to design scalable systems. Evaluate: requirements gathering, high-level design, component choice, scaling, trade-offs. Score 1-10 with feedback.'
+}
+
+var MOCK_Q_COUNTS = {sde:5, hr:5, frontend:5, system_design:3}
+
+async function startMock(type){
+  mockType = type || 'sde'
+  mockCompany = document.getElementById('mockCompanyInput').value.trim()
+  mockCurrentQ = 0
+  mockScores = []
+
+  // Show session, hide setup/results
+  document.getElementById('mockSetup').style.display = 'none'
+  document.getElementById('mockSession').style.display = 'block'
+  document.getElementById('mockResults').style.display = 'none'
+  document.getElementById('mockFeedback').style.display = 'none'
+  document.getElementById('mockSubmitBtn').style.display = 'block'
+  document.getElementById('mockNextBtn').style.display = 'none'
+  document.getElementById('mockAnswer').value = ''
+
+  var total = MOCK_Q_COUNTS[mockType] || 5
+  document.getElementById('mockQTotal').textContent = total
+  document.getElementById('mockQNum').textContent = '1'
+  document.getElementById('mockScore').textContent = 'Score: 0'
+  document.getElementById('mockProgressBar').style.width = (100/total)+'%'
+
+  // Generate first question
+  await mockAskQuestion()
+}
+
+async function mockAskQuestion(){
+  var total = MOCK_Q_COUNTS[mockType] || 5
+  var qNum = mockCurrentQ + 1
+  document.getElementById('mockQuestion').textContent = 'Generating question...'
+  document.getElementById('mockQLabel').textContent = 'QUESTION '+qNum+' · '+mockType.toUpperCase().replace('_',' ')
+  document.getElementById('mockFeedback').style.display = 'none'
+  document.getElementById('mockAnswer').value = ''
+  document.getElementById('mockSubmitBtn').style.display = 'block'
+  document.getElementById('mockNextBtn').style.display = 'none'
+
+  var companyCtx = mockCompany ? ' This candidate is targeting '+mockCompany+'.' : ''
+  var prompt = 'Give me question number '+qNum+' of '+total+' for a '+mockType.replace('_',' ')+' interview.'+companyCtx+' Just give the question text only, no preamble. Make it realistic and challenging.'
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: MOCK_SYSTEM[mockType],
+        messages: [{role:'user', content: prompt}]
+      })
+    })
+    var data = await resp.json()
+    var q = (data.content && data.content[0] && data.content[0].text) || 'Explain your approach to solving a complex algorithmic problem.'
+    document.getElementById('mockQuestion').textContent = q
+    mockQuestions[mockCurrentQ] = q
+  } catch(e) {
+    document.getElementById('mockQuestion').textContent = 'Network error. Please check your connection and try again.'
+  }
+}
+
+async function mockSubmitAnswer(){
+  var answer = document.getElementById('mockAnswer').value.trim()
+  if(!answer){ toast('Please type your answer first!'); return }
+
+  var btn = document.getElementById('mockSubmitBtn')
+  btn.disabled = true
+  btn.textContent = 'Evaluating...'
+
+  var question = document.getElementById('mockQuestion').textContent
+  var prompt = 'Question: ' + question + ' --- Candidate answer: ' + answer + ' --- Evaluate this answer. Give: 1) Score out of 10, 2) What was good, 3) What was missing or wrong, 4) Model answer hint. Start your response with SCORE: X/10 on first line.'
+
+
+
+
+
+
+
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        system: MOCK_SYSTEM[mockType],
+        messages: [{role:'user', content: prompt}]
+      })
+    })
+    var data = await resp.json()
+    var feedback = (data.content && data.content[0] && data.content[0].text) || 'Could not evaluate. Please try again.'
+    
+    // Extract score
+    var scoreMatch = feedback.match(/SCORE:\s*(\d+)/i)
+    var score = scoreMatch ? parseInt(scoreMatch[1]) : 5
+    mockScores.push(score)
+
+    // Show feedback
+    document.getElementById('mockFeedback').style.display = 'block'
+    document.getElementById('mockFeedbackText').style.whiteSpace = 'pre-wrap'
+    document.getElementById('mockFeedbackText').textContent = feedback.replace(/SCORE:\s*\d+\/10\s*/i,'').trim()
+    document.getElementById('mockScoreCard').style.display = 'flex'
+    document.getElementById('mockScoreNum').textContent = score+'/10'
+    document.getElementById('mockScoreNum').style.color = score>=7?'var(--mint2)':score>=5?'var(--gold)':'var(--coral)'
+    document.getElementById('mockScoreLabel').textContent = score>=8?'Excellent!':score>=6?'Good':score>=4?'Needs work':'Practice more'
+
+    // Update running score
+    var avg = Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length * 10)/10
+    document.getElementById('mockScore').textContent = 'Avg: '+avg+'/10'
+
+    // Update progress
+    var total = MOCK_Q_COUNTS[mockType] || 5
+    document.getElementById('mockProgressBar').style.width = ((mockCurrentQ+1)/total*100)+'%'
+
+    btn.disabled = false
+    btn.style.display = 'none'
+
+    var isLast = (mockCurrentQ >= (MOCK_Q_COUNTS[mockType]||5) - 1)
+    if(isLast){
+      var nextBtn = document.getElementById('mockNextBtn')
+      nextBtn.style.display = 'block'
+      nextBtn.textContent = 'See Results'
+      nextBtn.onclick = mockShowResults
+    } else {
+      document.getElementById('mockNextBtn').style.display = 'block'
+    }
+  } catch(e) {
+    btn.disabled = false
+    btn.textContent = 'Submit Answer'
+    toast('Error evaluating: '+e.message)
+  }
+}
+
+async function mockNextQuestion(){
+  mockCurrentQ++
+  var total = MOCK_Q_COUNTS[mockType] || 5
+  if(mockCurrentQ >= total){ mockShowResults(); return }
+  document.getElementById('mockQNum').textContent = mockCurrentQ + 1
+  document.getElementById('mockSubmitBtn').textContent = 'Submit Answer'
+  document.getElementById('mockSubmitBtn').disabled = false
+  await mockAskQuestion()
+}
+
+function mockShowResults(){
+  document.getElementById('mockSession').style.display = 'none'
+  document.getElementById('mockResults').style.display = 'block'
+  var avg = mockScores.length ? Math.round(mockScores.reduce(function(a,b){return a+b},0)/mockScores.length*10)/10 : 0
+  var pct = Math.round(avg/10*100)
+  document.getElementById('mockFinalScore').textContent = avg+'/10'
+  document.getElementById('mockFinalScore').style.color = avg>=7?'var(--mint2)':avg>=5?'var(--gold)':'var(--coral)'
+  document.getElementById('mockFinalMsg').textContent = avg>=8?'Excellent performance! You are ready for top companies.':avg>=6?'Good effort! Focus on the areas where you lost marks.':avg>=4?'Keep practicing. Review your weak areas.':'More practice needed. Study the fundamentals and try again.'
+  
+  // Save stats
+  mockStats.total++
+  mockStats.scores.push(avg)
+  localStorage.setItem('js_mock_stats', JSON.stringify(mockStats))
+  
+  // Update stat display
+  var allScores = mockStats.scores
+  var statAvg = allScores.length ? Math.round(allScores.reduce(function(a,b){return a+b},0)/allScores.length*10)/10 : '—'
+  var statBest = allScores.length ? Math.max.apply(null,allScores) : '—'
+  document.getElementById('mockStatTotal').textContent = mockStats.total
+  document.getElementById('mockStatAvg').textContent = statAvg
+  document.getElementById('mockStatBest').textContent = statBest
+}
+
+// Load mock stats on page ready
+(function(){
+  var allScores = mockStats.scores
+  var statAvg = allScores.length ? Math.round(allScores.reduce(function(a,b){return a+b},0)/allScores.length*10)/10 : '—'
+  var statBest = allScores.length ? Math.max.apply(null,allScores) : '—'
+  if(document.getElementById('mockStatTotal')) document.getElementById('mockStatTotal').textContent = mockStats.total
+  if(document.getElementById('mockStatAvg'))   document.getElementById('mockStatAvg').textContent = statAvg
+  if(document.getElementById('mockStatBest'))  document.getElementById('mockStatBest').textContent = statBest
+})()
+
+    console.log('Admin BroadcastChannel listening ✅')
 }catch(e){ console.warn('BroadcastChannel not supported:', e.message) }
 </script>
 </body>
